@@ -1,0 +1,417 @@
+.md-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* --- Metrics Grid --- */
+.md-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.md-metric-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.md-metric-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.md-metric-icon-wrap.primary {
+  background-color: var(--light-sage);
+  color: var(--primary-sage);
+}
+.md-metric-icon-wrap.warning {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+.md-metric-icon-wrap.danger {
+  background-color: var(--alert-red-bg);
+  color: var(--alert-red-text);
+}
+.md-metric-icon-wrap.neutral {
+  background-color: #F3F4F6;
+  color: #6B7280;
+}
+.md-metric-info {
+  display: flex;
+  flex-direction: column;
+}
+.md-metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+.md-metric-label {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* --- Main Layout --- */
+.md-main-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
+/* --- Left: Document List --- */
+.md-list-section {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.md-list-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.md-list-header h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.md-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.md-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--background);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+.md-search-box input {
+  border: none;
+  background: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--text-main);
+  width: 180px;
+}
+.md-icon-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s;
+}
+.md-icon-btn:hover {
+  background-color: var(--background);
+  color: var(--text-main);
+}
+
+.md-doc-list {
+  display: flex;
+  flex-direction: column;
+}
+.md-doc-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  gap: 16px;
+  transition: background-color 0.2s;
+}
+.md-doc-item:hover {
+  background-color: #FAFCFB;
+}
+.md-doc-item:last-child {
+  border-bottom: none;
+}
+.md-doc-icon {
+  width: 40px;
+  height: 40px;
+  background-color: var(--background);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+}
+.md-file-icon.pdf-icon { color: #EF4444; }
+.md-file-icon.img-icon { color: #3B82F6; }
+.md-file-icon.default-icon { color: #8B5CF6; }
+
+.md-doc-details {
+  flex: 1;
+}
+.md-doc-details h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+.md-doc-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.md-dot {
+  opacity: 0.5;
+}
+.md-doc-error {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--alert-red-text);
+  background-color: var(--alert-red-bg);
+  padding: 6px 12px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.md-doc-status {
+  width: 130px;
+  display: flex;
+  justify-content: flex-end;
+}
+.md-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.md-badge.verified {
+  background-color: var(--light-sage);
+  color: var(--primary-sage);
+}
+.md-badge.pending {
+  background-color: #FEF3C7;
+  color: #D97706;
+}
+.md-badge.action-required {
+  background-color: var(--alert-red-bg);
+  color: var(--alert-red-text);
+}
+
+.md-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 4px;
+  z-index: 10;
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+}
+.md-dropdown button {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: var(--text-main);
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.md-dropdown button:hover {
+  background-color: var(--background);
+}
+.md-dropdown button.delete {
+  color: var(--alert-red-text);
+}
+.md-dropdown button.delete:hover {
+  background-color: var(--alert-red-bg);
+}
+.md-empty {
+  padding: 40px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+/* --- Right: Upload Area --- */
+.md-side-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.md-upload-card {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 24px;
+}
+.md-upload-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+.md-upload-card p {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+}
+.md-dropzone {
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  padding: 32px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-color: #FAFCFB;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.md-dropzone.is-dragover {
+  border-color: var(--primary-sage);
+  background-color: var(--light-sage);
+}
+
+.md-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 24px 16px;
+}
+
+.md-filter-chip {
+  border: 1px solid var(--border-color);
+  background: var(--background);
+  color: var(--text-secondary);
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.md-filter-chip.active {
+  background: var(--light-sage);
+  color: var(--primary-sage);
+  border-color: var(--primary-sage);
+}
+
+.md-progress {
+  margin-top: 8px;
+  height: 6px;
+  background: #E5E7EB;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.md-progress-bar {
+  height: 100%;
+  background: var(--primary-sage);
+  transition: width 0.12s linear;
+}
+
+.md-upload-notice {
+  margin-bottom: 12px;
+  display: block;
+}
+
+.md-dropzone:focus-visible {
+  outline: 2px solid var(--primary-sage);
+  outline-offset: 2px;
+}
+.md-dropzone-icon {
+  color: var(--primary-sage);
+  margin-bottom: 12px;
+}
+.md-dropzone h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+.md-dropzone p {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin: 8px 0;
+}
+
+.md-upload-tips {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+}
+.md-upload-tips h5 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+.md-upload-tips ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.md-upload-tips li {
+  font-size: 13px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.md-upload-tips li svg {
+  color: var(--primary-sage);
+}
+
+.md-security-card {
+  background-color: var(--light-peach);
+  border: 1px solid #CCE3DD;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.md-security-icon {
+  color: var(--primary-peach);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.md-security-card h4 {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+  margin-bottom: 4px;
+}
+.md-security-card p {
+  font-size: 12px;
+  color: var(--text-main);
+  line-height: 1.4;
+}

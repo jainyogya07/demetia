@@ -1,0 +1,1246 @@
+{
+  "note": "Official / Wikimedia Commons banner or emblem URLs for 124 schemes. Do not render these images in the website UI yet. bannerSource: wikimedia.",
+  "count": 124,
+  "schemes": {
+    "SRV-1001": {
+      "id": "SRV-1001",
+      "officialName": "Indira Gandhi National Widow Pension Scheme (IGNWPS)",
+      "sourcePortal": "https://nsap.nic.in/",
+      "officialLink": "https://www.myscheme.gov.in/schemes/ignwps",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Ministry_of_Rural_Development.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1002": {
+      "id": "SRV-1002",
+      "officialName": "Pradhan Mantri Awas Yojana - Gramin (Widow / Single Women Priority)",
+      "sourcePortal": "https://pmayg.nic.in/",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Ministry_of_Rural_Development.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1003": {
+      "id": "SRV-1003",
+      "officialName": "National Family Benefit Scheme (NFBS)",
+      "sourcePortal": "https://nsap.nic.in/",
+      "officialLink": "https://www.myscheme.gov.in/schemes/nfbs",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Ministry_of_Rural_Development.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1004": {
+      "id": "SRV-1004",
+      "officialName": "Support to Training and Employment Programme for Women (STEP)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Ministry_of_Women_and_Child_Development.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1005": {
+      "id": "SRV-1005",
+      "officialName": "Pradhan Mantri Matru Vandana Yojana (PMMVY) - Special Provision",
+      "sourcePortal": "https://www.myscheme.gov.in/schemes/pmmvy",
+      "officialLink": "https://www.myscheme.gov.in/schemes/pmmvy",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Ministry_of_Women_and_Child_Development.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1006": {
+      "id": "SRV-1006",
+      "officialName": "Prime Minister's Scholarship Scheme (PMSS) for Wards of Deceased CAPF/Assam Rifles/Police",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1007": {
+      "id": "SRV-1007",
+      "officialName": "NALSA - Free Legal Aid Scheme for Women & Widows",
+      "sourcePortal": "https://nalsa.gov.in/",
+      "officialLink": "https://nalsa.gov.in/services/legal-aid",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c9/National_Legal_Services_Authority_Logo.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1008": {
+      "id": "SRV-1008",
+      "officialName": "Swadhar Greh Scheme (Support for Women in Difficult Circumstances)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/e/ef/Ministry_of_Women_and_Child_Development.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1009": {
+      "id": "SRV-1009",
+      "officialName": "Deendayal Antyodaya Yojana - NRLM (SHG Bank Linkage for Destitute Women)",
+      "sourcePortal": "https://www.myscheme.gov.in/schemes/aay",
+      "officialLink": "https://www.myscheme.gov.in/schemes/aay",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Ministry_of_Rural_Development.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1010": {
+      "id": "SRV-1010",
+      "officialName": "National Safai Karamcharis Finance & Development Corp - Loan to Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/6/66/Ministry_of_Social_Justice_and_Empowerment.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1011": {
+      "id": "SRV-1011",
+      "officialName": "UP Vidhwa Pension Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/schemes/wpup",
+      "officialLink": "https://www.myscheme.gov.in/schemes/wpup",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Seal_of_Uttar_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1012": {
+      "id": "SRV-1012",
+      "officialName": "Sanjay Gandhi Niradhar Anudan Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Maharashtra%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Maharashtra%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Seal_of_Maharashtra.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1013": {
+      "id": "SRV-1013",
+      "officialName": "Destitute Widow Pension Scheme (DWPS)",
+      "sourcePortal": "https://www.myscheme.gov.in/schemes/dwps",
+      "officialLink": "https://www.myscheme.gov.in/schemes/dwps",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Seal_of_Tamil_Nadu.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1014": {
+      "id": "SRV-1014",
+      "officialName": "Delhi Financial Assistance to Women in Distress (Widow Pension)",
+      "sourcePortal": "https://www.myscheme.gov.in/schemes/dpswdwp",
+      "officialLink": "https://www.myscheme.gov.in/schemes/dpswdwp",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/2/24/Seal_of_the_National_Capital_Territory_of_Delhi.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1015": {
+      "id": "SRV-1015",
+      "officialName": "Widow & Destitute Women Pension Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Haryana%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Haryana%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/36/Emblem_of_Haryana.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1016": {
+      "id": "SRV-1016",
+      "officialName": "Financial Assistance to Widows and Destitute Women",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Punjab%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Punjab%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Seal_of_the_Government_Of_Punjab_%28Black_On_White%29.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1017": {
+      "id": "SRV-1017",
+      "officialName": "Mukhyamantri Ekal Nari Samman Pension Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Rajasthan%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Rajasthan%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Emblem_Rajasthan.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1018": {
+      "id": "SRV-1018",
+      "officialName": "Sandhya Suraksha / Destitute Widow Pension",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Karnataka%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Karnataka%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1019": {
+      "id": "SRV-1019",
+      "officialName": "YSR Pension Kanuka / Widow Pension",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Andhra%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Andhra%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/37/Emblem_of_Andhra_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1020": {
+      "id": "SRV-1020",
+      "officialName": "Aasara Pension for Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Telangana%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Telangana%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/en/6/61/Emblem_of_Telangana.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1021": {
+      "id": "SRV-1021",
+      "officialName": "Destitute / Widow Pension (Sevana)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Kerala%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Kerala%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Government_of_Kerala_Logo.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1022": {
+      "id": "SRV-1022",
+      "officialName": "Ganga Swarupa Yojana (Vidhav Sahay)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Gujarat%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Gujarat%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/Seal_of_Gujarat.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1023": {
+      "id": "SRV-1023",
+      "officialName": "Indira Gandhi Kalyani Pension / Vidhwa Pension",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Madhya%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Madhya%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Emblem_of_Madhya_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1024": {
+      "id": "SRV-1024",
+      "officialName": "Laxmibai Samajik Suraksha Pension Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Bihar%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Bihar%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Seal_of_Bihar.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1025": {
+      "id": "SRV-1025",
+      "officialName": "Widow Pension Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=West%20Bengal%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=West%20Bengal%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Seal_of_West_Bengal.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1026": {
+      "id": "SRV-1026",
+      "officialName": "Madhu Babu Pension Yojana (MBPY - Widow)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Odisha%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Odisha%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/10/Seal_of_Odisha.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1027": {
+      "id": "SRV-1027",
+      "officialName": "Indira Miri Universal Widow Pension Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Assam%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Assam%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Seal_of_Assam.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1028": {
+      "id": "SRV-1028",
+      "officialName": "HP Widow / Destitute Women Pension",
+      "sourcePortal": "https://www.myscheme.gov.in/schemes/wdenp",
+      "officialLink": "https://www.myscheme.gov.in/schemes/wdenp",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1029": {
+      "id": "SRV-1029",
+      "officialName": "Vidhwa Pension Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Uttarakhand%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Uttarakhand%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/9/99/Seal_of_Uttarakhand.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1030": {
+      "id": "SRV-1030",
+      "officialName": "Swami Vivekananda Nishakt / Widow Pension",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Jharkhand%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Jharkhand%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Seal_of_Jharkhand.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1031": {
+      "id": "SRV-1031",
+      "officialName": "Sukhada Sahara Pension Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Chhattisgarh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Chhattisgarh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/8/87/Coat_of_arms_of_Chhattisgarh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1032": {
+      "id": "SRV-1032",
+      "officialName": "Dayanand Social Security Scheme (DSSS - Widow)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Goa%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Goa%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/2/26/Emblem_of_Goa.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1033": {
+      "id": "SRV-1033",
+      "officialName": "Integrated Social Security Scheme (ISSS - Widow)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Jammu%20&%20Kashmir%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Jammu%20&%20Kashmir%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Government_of_Jammu_and_Kashmir.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1034": {
+      "id": "SRV-1034",
+      "officialName": "ISSS Financial Assistance to Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Ladakh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Ladakh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/32/Administration_of_Ladakh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1035": {
+      "id": "SRV-1035",
+      "officialName": "State Widow Pension Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Tripura%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Tripura%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/13/Emblem_of_Tripura.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1036": {
+      "id": "SRV-1036",
+      "officialName": "Manipur State Widow Pension Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Manipur%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Manipur%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Emblem_of_Manipur.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1037": {
+      "id": "SRV-1037",
+      "officialName": "National Social Assistance - Widow Pension",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Meghalaya%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Meghalaya%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Ministry_of_Rural_Development.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1038": {
+      "id": "SRV-1038",
+      "officialName": "Indira Gandhi Widow Pension Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Mizoram%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Mizoram%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Ministry_of_Rural_Development.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1039": {
+      "id": "SRV-1039",
+      "officialName": "State NSAP Widow Pension",
+      "sourcePortal": "https://nsap.nic.in/",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Nagaland%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c8/Ministry_of_Rural_Development.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1040": {
+      "id": "SRV-1040",
+      "officialName": "Sikkim Destitute Widow Pension Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Sikkim%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Sikkim%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c0/Seal_of_Sikkim.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1041": {
+      "id": "SRV-1041",
+      "officialName": "Arunachal Social Security Widow Pension",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Arunachal%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Arunachal%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1042": {
+      "id": "SRV-1042",
+      "officialName": "Financial Assistance to Widows and Destitute Women",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Chandigarh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Chandigarh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/32/Seal_of_Chandigarh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1043": {
+      "id": "SRV-1043",
+      "officialName": "Widow Pension Scheme (Social Welfare)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Puducherry%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Puducherry%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/12/Seal_of_Puducherry.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1044": {
+      "id": "SRV-1044",
+      "officialName": "Financial Assistance to Destitute Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Andaman%20and%20Nicobar%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Andaman%20and%20Nicobar%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/8/8b/Seal_of_Andaman_and_Nicobar_Islands.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1045": {
+      "id": "SRV-1045",
+      "officialName": "Social Assistance Widow Pension Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Dadra%20&%20Nagar%20Haveli%20&%20Daman%20&%20Diu%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Dadra%20&%20Nagar%20Haveli%20&%20Daman%20&%20Diu%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/7/73/Seal_of_Dadra_and_Nagar_Haveli_and_Daman_and_Diu.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1046": {
+      "id": "SRV-1046",
+      "officialName": "Destitute Widow Welfare Pension",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Lakshadweep%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Lakshadweep%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/57/LAKSHADWEEP_EMBLEM_CLEAR.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1047": {
+      "id": "SRV-1047",
+      "officialName": "Vidhwa Punarvivah Protsahan Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Uttar%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Uttar%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Seal_of_Uttar_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1048": {
+      "id": "SRV-1048",
+      "officialName": "Mukhyamantri Kalyani Vivah Sahayata Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Madhya%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Madhya%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Emblem_of_Madhya_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1049": {
+      "id": "SRV-1049",
+      "officialName": "Mukhyamantri Vidhwa Punarvivah Uphaar Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Rajasthan%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Rajasthan%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Emblem_Rajasthan.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1050": {
+      "id": "SRV-1050",
+      "officialName": "Widow Remarriage Incentive Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Himachal%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Himachal%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1051": {
+      "id": "SRV-1051",
+      "officialName": "Widow Remarriage Encouragement Assistance",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Maharashtra%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Maharashtra%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Seal_of_Maharashtra.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1052": {
+      "id": "SRV-1052",
+      "officialName": "Ganga Swarupa Punarvivah Arthik Sahay Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Gujarat%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Gujarat%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/Seal_of_Gujarat.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1053": {
+      "id": "SRV-1053",
+      "officialName": "Mangalya Scheme (Financial Assistance for Widow Remarriage)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Kerala%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Kerala%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Government_of_Kerala_Logo.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1054": {
+      "id": "SRV-1054",
+      "officialName": "Incentive for Widow Remarriage",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Karnataka%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Karnataka%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1055": {
+      "id": "SRV-1055",
+      "officialName": "Kanyadan / Mukhya Mantri Vivah Shagun Yojana (Widow's Daughter)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Haryana%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Haryana%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/36/Emblem_of_Haryana.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1056": {
+      "id": "SRV-1056",
+      "officialName": "Moovalur Ramamirtham Ammaiyar Marriage Scheme (Widow Daughter)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Tamil%20Nadu%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Tamil%20Nadu%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Seal_of_Tamil_Nadu.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1057": {
+      "id": "SRV-1057",
+      "officialName": "Financial Assistance for Marriage of Daughters of Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Delhi%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Delhi%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/2/24/Seal_of_the_National_Capital_Territory_of_Delhi.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1058": {
+      "id": "SRV-1058",
+      "officialName": "Ashirwad Scheme (Shagun for Widow's Daughter Marriage)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Punjab%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Punjab%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Seal_of_the_Government_Of_Punjab_%28Black_On_White%29.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1059": {
+      "id": "SRV-1059",
+      "officialName": "Rupashree Prakalpa (Priority for Daughters of Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=West%20Bengal%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=West%20Bengal%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Seal_of_West_Bengal.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1060": {
+      "id": "SRV-1060",
+      "officialName": "Mukhyamantri Kanya Ratna / Marriage Aid for Widow's Children",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Odisha%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Odisha%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/10/Seal_of_Odisha.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1061": {
+      "id": "SRV-1061",
+      "officialName": "Arundhati Gold Scheme (Applicable to Widow's Daughters)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Assam%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Assam%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Seal_of_Assam.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1062": {
+      "id": "SRV-1062",
+      "officialName": "Kanya Vivah Yojana (Priority for Widowed Mothers)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Bihar%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Bihar%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Seal_of_Bihar.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1063": {
+      "id": "SRV-1063",
+      "officialName": "Mukhya Mantri Kanyadan Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Jharkhand%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Jharkhand%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Seal_of_Jharkhand.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1064": {
+      "id": "SRV-1064",
+      "officialName": "Gaura Devi Kanyadhan / Widow's Daughter Marriage Aid",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Uttarakhand%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Uttarakhand%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/9/99/Seal_of_Uttarakhand.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1065": {
+      "id": "SRV-1065",
+      "officialName": "YSR Kalyanamasthu (Special Support for Widowed Mothers)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Andhra%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Andhra%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/37/Emblem_of_Andhra_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1066": {
+      "id": "SRV-1066",
+      "officialName": "Kalyana Lakshmi / Shaadi Mubarak (Widow Parent Priority)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Telangana%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Telangana%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/en/6/61/Emblem_of_Telangana.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1067": {
+      "id": "SRV-1067",
+      "officialName": "UP Mahila Samarthya Yojana (Self-Help for Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Uttar%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Uttar%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Seal_of_Uttar_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1068": {
+      "id": "SRV-1068",
+      "officialName": "Tejaswini Rural Women Empowerment Programme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Maharashtra%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Maharashtra%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Seal_of_Maharashtra.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1069": {
+      "id": "SRV-1069",
+      "officialName": "Indira Mahila Shakti Udyam Protsahan Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Rajasthan%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Rajasthan%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Emblem_Rajasthan.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1070": {
+      "id": "SRV-1070",
+      "officialName": "Delhi SC/ST/OBC/Widows Minorities Financial & Development Corp (DSFDC) Loan",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Delhi%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Delhi%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/2/24/Seal_of_the_National_Capital_Territory_of_Delhi.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1071": {
+      "id": "SRV-1071",
+      "officialName": "Free Sewing Machine Scheme (Sathiyavani Muthu Ammaiyar)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Tamil%20Nadu%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Tamil%20Nadu%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Seal_of_Tamil_Nadu.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1072": {
+      "id": "SRV-1072",
+      "officialName": "Manav Garima Yojana (Equipment Kits for Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Gujarat%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Gujarat%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/Seal_of_Gujarat.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1073": {
+      "id": "SRV-1073",
+      "officialName": "Mukhyamantri Nari Samman Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Madhya%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Madhya%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Emblem_of_Madhya_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1074": {
+      "id": "SRV-1074",
+      "officialName": "Haryana Women Development Corporation (HWDC) Education Loan Subsidy",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Haryana%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Haryana%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/36/Emblem_of_Haryana.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1075": {
+      "id": "SRV-1075",
+      "officialName": "Mai Bhago Istri Shakti Scheme",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Punjab%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Punjab%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Seal_of_the_Government_Of_Punjab_%28Black_On_White%29.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1076": {
+      "id": "SRV-1076",
+      "officialName": "Chetana Scheme for Rehabilitation of Destitute Women",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Karnataka%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Karnataka%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1077": {
+      "id": "SRV-1077",
+      "officialName": "Saranya Scheme (Self-Employment Scheme for Destitute Women)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Kerala%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Kerala%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Government_of_Kerala_Logo.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1078": {
+      "id": "SRV-1078",
+      "officialName": "YSR Cheyutha (Financial Support for Single Women & Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Andhra%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Andhra%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/37/Emblem_of_Andhra_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1079": {
+      "id": "SRV-1079",
+      "officialName": "Stree Nidhi Credit Cooperative Federation Loan",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Telangana%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Telangana%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/en/6/61/Emblem_of_Telangana.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1080": {
+      "id": "SRV-1080",
+      "officialName": "Swami Vivekananda Merit-cum-Means Scholarship for Wards of Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=West%20Bengal%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=West%20Bengal%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Seal_of_West_Bengal.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1081": {
+      "id": "SRV-1081",
+      "officialName": "Biju Shishu Suraksha Yojana (Support for Orphaned Children of Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Odisha%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Odisha%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/10/Seal_of_Odisha.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1082": {
+      "id": "SRV-1082",
+      "officialName": "Swanirbhar Naari Scheme (Direct Procurement from Weavers/Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Assam%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Assam%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/0/0e/Seal_of_Assam.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1083": {
+      "id": "SRV-1083",
+      "officialName": "Mukhyamantri Mahila Udyami Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Bihar%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Bihar%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Seal_of_Bihar.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1084": {
+      "id": "SRV-1084",
+      "officialName": "Mother Teresa Asahay Matri Sambal Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Himachal%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Himachal%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1085": {
+      "id": "SRV-1085",
+      "officialName": "Chief Minister Harela Skill Scheme for Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Uttarakhand%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Uttarakhand%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/9/99/Logo_of_the_Pradhan_Mantri_Kaushal_Vikas_Yojna.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1086": {
+      "id": "SRV-1086",
+      "officialName": "Tejaswini Project (Adolescent Girls & Young Widows Empowerment)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Jharkhand%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Jharkhand%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Seal_of_Jharkhand.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1087": {
+      "id": "SRV-1087",
+      "officialName": "Ayushman Bharat - PM-JAY (Automatic Inclusion for Destitute/Widow Households)",
+      "sourcePortal": "https://nha.gov.in/PM-JAY",
+      "officialLink": "https://www.myscheme.gov.in/schemes/ab-pmjay",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Ministry_of_Health_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1088": {
+      "id": "SRV-1088",
+      "officialName": "Antyodaya Anna Yojana (AAY - Priority for Widows without Support)",
+      "sourcePortal": "https://www.myscheme.gov.in/schemes/aay",
+      "officialLink": "https://www.myscheme.gov.in/schemes/aay",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1089": {
+      "id": "SRV-1089",
+      "officialName": "Employees' Provident Fund - EPS 95 Widow Pension",
+      "sourcePortal": "https://www.epfindia.gov.in/",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1090": {
+      "id": "SRV-1090",
+      "officialName": "ESIC Dependent Benefit Scheme for Widows of Insured Workers",
+      "sourcePortal": "https://www.esic.gov.in/",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Ministry_of_Health_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1091": {
+      "id": "SRV-1091",
+      "officialName": "Armed Forces Battle Casualties Welfare Fund (Ex-Gratia to War Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Ministry_of_Defence_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1092": {
+      "id": "SRV-1092",
+      "officialName": "Central Soldier Board (KSB) - Financial Assistance for Non-Pensioner Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Central%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Ministry_of_Defence_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1093": {
+      "id": "SRV-1093",
+      "officialName": "Ramai Awas Yojana (Priority for SC/Neo-Buddhist Widows)",
+      "sourcePortal": "https://pmayg.nic.in/",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Maharashtra%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Seal_of_Maharashtra.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1094": {
+      "id": "SRV-1094",
+      "officialName": "Mukhyamantri Awas Yojana - Gramin (Widows of Calamity Victims)",
+      "sourcePortal": "https://pmayg.nic.in/",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Uttar%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Seal_of_Uttar_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1095": {
+      "id": "SRV-1095",
+      "officialName": "Palhar Yojana (Financial Support for Foster/Widow Children)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Rajasthan%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Rajasthan%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Emblem_Rajasthan.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1096": {
+      "id": "SRV-1096",
+      "officialName": "Free Bus Travel Scheme for Women (Zero-Fare Pass)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Tamil%20Nadu%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Tamil%20Nadu%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Seal_of_Tamil_Nadu.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1097": {
+      "id": "SRV-1097",
+      "officialName": "Delhi Financial Aid for Legal Support to Women",
+      "sourcePortal": "https://nalsa.gov.in/",
+      "officialLink": "https://nalsa.gov.in/services/legal-aid",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/2/24/Seal_of_the_National_Capital_Territory_of_Delhi.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1098": {
+      "id": "SRV-1098",
+      "officialName": "Manaswini Scheme for Destitute and Separated Women",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Karnataka%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Karnataka%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1099": {
+      "id": "SRV-1099",
+      "officialName": "Aswasakiranam Scheme (Assistance to Caregiver Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Kerala%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Kerala%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/5b/Government_of_Kerala_Logo.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1100": {
+      "id": "SRV-1100",
+      "officialName": "Free Health Insurance under Sarbat Sehat Bima Yojana (Widows Coverage)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Punjab%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Punjab%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Seal_of_the_Government_Of_Punjab_%28Black_On_White%29.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1101": {
+      "id": "SRV-1101",
+      "officialName": "Maa Annapurna Yojana (Grain Subsidy for Widow Beneficiaries)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Gujarat%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Gujarat%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/Seal_of_Gujarat.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1102": {
+      "id": "SRV-1102",
+      "officialName": "YSR Sunna Vaddi (Zero Interest Loans for Women SHGs)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Andhra%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Andhra%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/37/Emblem_of_Andhra_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1103": {
+      "id": "SRV-1103",
+      "officialName": "Arogyasri Health Scheme (Free Hospitalization for BPL Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Telangana%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Telangana%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/en/6/61/Emblem_of_Telangana.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1104": {
+      "id": "SRV-1104",
+      "officialName": "Haryana Matrushakti Udayamita Yojana",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Haryana%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Haryana%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/36/Emblem_of_Haryana.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1105": {
+      "id": "SRV-1105",
+      "officialName": "Sambal 2.0 Yojana (Special Death and Disability Assistance to Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Madhya%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Madhya%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Emblem_of_Madhya_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1106": {
+      "id": "SRV-1106",
+      "officialName": "Noni Suraksha Yojana (Financial Security for Daughters of Widows)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Chhattisgarh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Chhattisgarh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/8/87/Coat_of_arms_of_Chhattisgarh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1107": {
+      "id": "SRV-1107",
+      "officialName": "Teelu Rauteli Special Award & Social Pension for Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Uttarakhand%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Uttarakhand%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/9/99/Seal_of_Uttarakhand.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1108": {
+      "id": "SRV-1108",
+      "officialName": "Beti Hai Anmol Yojana (Assistance for Widowed Mother's Daughters)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Himachal%20Pradesh%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Himachal%20Pradesh%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1109": {
+      "id": "SRV-1109",
+      "officialName": "Griha Aadhar Scheme for Housewives and Widows",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Goa%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Goa%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/2/26/Emblem_of_Goa.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1110": {
+      "id": "SRV-1110",
+      "officialName": "State Marriage Assistance Scheme (SMAS) for Poor Girls / Widows' Wards",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Jammu%20&%20Kashmir%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Jammu%20&%20Kashmir%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7e/Government_of_Jammu_and_Kashmir.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "SRV-1111": {
+      "id": "SRV-1111",
+      "officialName": "Nirman Kusuma (Financial Aid for ITI/Diploma of Construction Worker Widows' Wards)",
+      "sourcePortal": "https://www.myscheme.gov.in/search?q=Odisha%20widow",
+      "officialLink": "https://www.myscheme.gov.in/search?q=Odisha%20widow",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/10/Seal_of_Odisha.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-P01": {
+      "id": "DB2-P01",
+      "officialName": "Karnataka Widow Pension (state-funded, above central base)",
+      "sourcePortal": "https://sw.karnataka.gov.in",
+      "officialLink": "https://sw.karnataka.gov.in",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Seal_of_Karnataka.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-P02": {
+      "id": "DB2-P02",
+      "officialName": "Rajasthan Widow Pension Scheme",
+      "sourcePortal": "https://ssp.rajasthan.gov.in",
+      "officialLink": "https://ssp.rajasthan.gov.in",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1e/Emblem_Rajasthan.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-P03": {
+      "id": "DB2-P03",
+      "officialName": "Punjab Old Age/Widow Pension Scheme",
+      "sourcePortal": "https://socialsecurity.punjab.gov.in",
+      "officialLink": "https://socialsecurity.punjab.gov.in",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f0/Seal_of_the_Government_Of_Punjab_%28Black_On_White%29.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-P04": {
+      "id": "DB2-P04",
+      "officialName": "Gujarat Widow Pension Yojana",
+      "sourcePortal": "https://digitalgujarat.gov.in",
+      "officialLink": "https://digitalgujarat.gov.in",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/0/08/Seal_of_Gujarat.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-P05": {
+      "id": "DB2-P05",
+      "officialName": "MP Vidhwa/Nirashrit Pension Yojana",
+      "sourcePortal": "https://socialjustice.mp.gov.in",
+      "officialLink": "https://socialjustice.mp.gov.in",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/a/ae/Emblem_of_Madhya_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-P06": {
+      "id": "DB2-P06",
+      "officialName": "Bihar Vidhwa Pension Yojana",
+      "sourcePortal": "https://sspmis.bihar.gov.in",
+      "officialLink": "https://sspmis.bihar.gov.in",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e9/Seal_of_Bihar.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-P07": {
+      "id": "DB2-P07",
+      "officialName": "आंध्र प्रदेश विधवा पेंशन (पोर्टल पर सत्यापित करें)",
+      "sourcePortal": null,
+      "officialLink": null,
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/3/37/Emblem_of_Andhra_Pradesh.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-L01": {
+      "id": "DB2-L01",
+      "officialName": "National Legal Services Authority (NALSA)",
+      "sourcePortal": "https://nalsa.gov.in/",
+      "officialLink": "https://nalsa.gov.in",
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c9/National_Legal_Services_Authority_Logo.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-L02": {
+      "id": "DB2-L02",
+      "officialName": "State Legal Services Authority (SLSA)",
+      "sourcePortal": "https://nalsa.gov.in/",
+      "officialLink": null,
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/c/c9/National_Legal_Services_Authority_Logo.png",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-PR01": {
+      "id": "DB2-PR01",
+      "officialName": "Hindu Succession Act, 1956 (amended 2005) — Hindus, Buddhists, Jains, Sikhs",
+      "sourcePortal": "https://nalsa.gov.in/",
+      "officialLink": null,
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-PR02": {
+      "id": "DB2-PR02",
+      "officialName": "Muslim Personal Law (Shariat) Application Act, 1937 — Muslims",
+      "sourcePortal": "https://nalsa.gov.in/",
+      "officialLink": null,
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-PR03": {
+      "id": "DB2-PR03",
+      "officialName": "Indian Succession Act, 1925 — Christians",
+      "sourcePortal": "https://nalsa.gov.in/",
+      "officialLink": null,
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    },
+    "DB2-PR04": {
+      "id": "DB2-PR04",
+      "officialName": "Indian Succession Act, 1925 (if married under Special Marriage Act) — All communities (special marriage)",
+      "sourcePortal": "https://nalsa.gov.in/",
+      "officialLink": null,
+      "bannerUrl": "https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg",
+      "bannerFile": null,
+      "bannerNote": "Official/Wikimedia logo URL only — not shown in the web UI.",
+      "bannerSource": "wikimedia"
+    }
+  }
+}

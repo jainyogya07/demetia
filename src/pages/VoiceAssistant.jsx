@@ -10,11 +10,11 @@ function VoiceAssistant() {
       <div className="voice-assistant-stage">
         <img
           src={SmritiAvatar}
-          alt="Smriti voice assistant"
+          alt="Care Agent voice assistant"
           className="voice-assistant-avatar"
         />
         <h1>I'm here to listen</h1>
-        <p>Tap the microphone to start a live voice conversation with Smriti.</p>
+        <p>Tap the microphone to start a live voice conversation with Care Agent.</p>
         <button
           type="button"
           className="voice-assistant-mic"

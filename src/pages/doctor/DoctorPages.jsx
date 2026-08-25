@@ -600,7 +600,7 @@ export function DoctorProfile() {
             <div><dt>Phone</dt><dd><a href={`tel:${DR_CLINIC.phone.replace(/\D/g, '')}`}>{DR_CLINIC.phone}</a></dd></div>
             <div><dt>Email</dt><dd>{DR_CLINIC.email}</dd></div>
           </dl>
-          <p className="os-meta">Voice gender for Smriti stays on the patient app — not on this desk.</p>
+          <p className="os-meta">Voice gender for Care Agent stays on the patient app — not on this desk.</p>
         </Panel>
         <Panel title="Today’s board">
           <p className="os-today-line"><strong>10:15</strong> Latveria Devi · review</p>

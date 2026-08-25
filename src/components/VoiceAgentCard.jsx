@@ -12,7 +12,7 @@ function VoiceAgentCard() {
           <img src={SmritiAvatar} alt="" />
         </div>
         <div>
-          <h3 className="voice-agent-title">Smriti</h3>
+          <h3 className="voice-agent-title">Care Agent</h3>
           <p className="voice-agent-description">Voice companion. Speak when you want.</p>
         </div>
       </div>

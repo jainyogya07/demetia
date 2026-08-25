@@ -235,7 +235,7 @@ function Settings() {
         <div className="settings-section-head">
           <Globe size={18} />
           <div>
-            <h3>Companion voice</h3>
+            <h3>Care Agent voice</h3>
             <p>Female (Kore) or male (Charon). Switch reconnects the live call.</p>
           </div>
         </div>

@@ -20,7 +20,7 @@ function BrandLogo({ compact = false }) {
         </svg>
       </div>
       <div>
-        <div className="ss-brand-name">Smriti Saathi</div>
+        <div className="ss-brand-name">Caresahaay</div>
         <div className="ss-brand-sub">Your Memory Companion</div>
       </div>
     </div>

@@ -15,7 +15,7 @@ const GAME_LIST = [
     id: 'story-solver',
     featured: true,
     title: 'Past stories',
-    description: 'Smriti tells a full memory, asks from that scene, then continues the same story.',
+    description: 'Care Agent tells a full memory, asks from that scene, then continues the same story.',
     difficulty: 'Featured · 8–10 min',
     icon: BookOpen,
   },

@@ -35,7 +35,7 @@ function HomeLanding() {
           <p className="ss-home-eyebrow">Memory companion · North-East India</p>
           <h1>A calm voice, in the language of home.</h1>
           <p className="ss-home-lede">
-            Smriti Saathi is a professional companion for elders and the people who care for them —
+            Caresahaay is a professional companion for elders and the people who care for them —
             spoken reminders, gentle games, and a quiet view for family and clinic.
           </p>
         </div>

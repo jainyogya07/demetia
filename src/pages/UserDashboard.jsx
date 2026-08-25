@@ -209,7 +209,7 @@ function UserDashboard() {
           Last sync: today, 4:20 PM
         </div>
         <div className="ss-foot-help">
-          Need help? Talk to Smriti or call your caregiver.
+          Need help? Talk to Care Agent or call your caregiver.
         </div>
       </footer>
     </div>

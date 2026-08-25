@@ -116,12 +116,12 @@ export const EMERGENCY_LINES = [
 ];
 
 const en = {
-  brand: 'Smriti Saathi',
+  brand: 'Caresahaay',
   brandSub: 'Your Memory Companion',
   modules: {
     home: 'Home',
     games: 'My Brain Games',
-    ai: 'Talk to Smriti',
+    ai: 'Talk to Care Agent',
     routine: 'My Daily Routine',
     medicine: 'Medicine & Health',
     progress: 'Memory Progress',
@@ -217,7 +217,7 @@ const en = {
     inProgress: 'In progress',
   },
   voice: {
-    talkTo: 'Talk to Smriti',
+    talkTo: 'Talk to Care Agent',
     description: 'I am here to talk with you, answer your questions and help you.',
     talkByVoice: 'Tap to Speak',
     typeMessage: 'Type a message',
@@ -354,7 +354,7 @@ const hi = {
     inProgress: 'चल रहा है',
   },
   voice: {
-    talkTo: 'सहेली से बात करें',
+    talkTo: 'केयर एजेंट से बात करें',
     description: 'आप अपनी भाषा में टाइप या बोल सकती हैं।',
     talkByVoice: 'आवाज़ से बात करें',
     typeMessage: 'संदेश लिखें',
@@ -488,7 +488,7 @@ const bn = {
   },
   status: { pending: 'বাকি', recommended: 'সুপারিশকৃত', inProgress: 'চলছে' },
   voice: {
-    talkTo: 'সহেলির সঙ্গে কথা বলুন',
+    talkTo: 'কেয়ার এজেন্টের সঙ্গে কথা বলুন',
     description: 'আপনার ভাষায় টাইপ বা কথা বলতে পারেন।',
     talkByVoice: 'কণ্ঠে কথা বলুন',
     typeMessage: 'বার্তা লিখুন',
@@ -602,7 +602,7 @@ const ta = {
   },
   status: { pending: 'நிலுவை', recommended: 'பரிந்துரை', inProgress: 'நடைபெறுகிறது' },
   voice: {
-    talkTo: 'சகேலியிடம் பேசுங்கள்',
+    talkTo: 'கேர் ஏஜென்டிடம் பேசுங்கள்',
     description: 'உங்கள் மொழியில் தட்டச்சு செய்யலாம் அல்லது பேசலாம்.',
     talkByVoice: 'குரலில் பேசுங்கள்',
     typeMessage: 'செய்தி எழுதுங்கள்',
@@ -716,7 +716,7 @@ const te = {
   },
   status: { pending: 'పెండింగ్', recommended: 'సిఫార్సు', inProgress: 'జరుగుతోంది' },
   voice: {
-    talkTo: 'సహేలితో మాట్లాడండి',
+    talkTo: 'కేర్ ఏజెంట్‌తో మాట్లాడండి',
     description: 'మీ భాషలో టైప్ చేయవచ్చు లేదా మాట్లాడవచ్చు.',
     talkByVoice: 'వాయిస్‌తో మాట్లాడండి',
     typeMessage: 'సందేశం రాయండి',
@@ -830,7 +830,7 @@ const mr = {
   },
   status: { pending: 'प्रलंबित', recommended: 'शिफारस', inProgress: 'प्रगतीत' },
   voice: {
-    talkTo: 'सहेलीशी बोला',
+    talkTo: 'केअर एजंटशी बोला',
     description: 'तुमच्या भाषेत टाइप किंवा बोलू शकता.',
     talkByVoice: 'आवाजाने बोला',
     typeMessage: 'संदेश लिहा',
@@ -944,7 +944,7 @@ const gu = {
   },
   status: { pending: 'બાકી', recommended: 'ભલામણ', inProgress: 'ચાલુ' },
   voice: {
-    talkTo: 'સહેલી સાથે વાત કરો',
+    talkTo: 'કેર એજન્ટ સાથે વાત કરો',
     description: 'તમારી ભાષામાં ટાઇપ અથવા બોલી શકો છો.',
     talkByVoice: 'અવાજથી વાત કરો',
     typeMessage: 'સંદેશ લખો',
@@ -1058,7 +1058,7 @@ const kn = {
   },
   status: { pending: 'ಬಾಕಿ', recommended: 'ಶಿಫಾರಸು', inProgress: 'ಪ್ರಗತಿಯಲ್ಲಿ' },
   voice: {
-    talkTo: 'ಸಹೇಲಿಯೊಂದಿಗೆ ಮಾತನಾಡಿ',
+    talkTo: 'ಕೇರ್ ಏಜೆಂಟ್ ಜೊತೆ ಮಾತನಾಡಿ',
     description: 'ನಿಮ್ಮ ಭಾಷೆಯಲ್ಲಿ ಟೈಪ್ ಅಥವಾ ಮಾತನಾಡಬಹುದು.',
     talkByVoice: 'ಧ್ವನಿಯಿಂದ ಮಾತನಾಡಿ',
     typeMessage: 'ಸಂದೇಶ ಬರೆಯಿರಿ',
@@ -1172,7 +1172,7 @@ const ml = {
   },
   status: { pending: 'ബാക്കി', recommended: 'ശുപാർശ', inProgress: 'പുരോഗതിയിൽ' },
   voice: {
-    talkTo: 'സഹേലിയോട് സംസാരിക്കുക',
+    talkTo: 'കെയർ ഏജന്റിനോട് സംസാരിക്കുക',
     description: 'നിങ്ങളുടെ ഭാഷയിൽ ടൈപ്പ് ചെയ്യുകയോ സംസാരിക്കുകയോ ചെയ്യാം.',
     talkByVoice: 'ശബ്ദത്തിൽ സംസാരിക്കുക',
     typeMessage: 'സന്ദേശം എഴുതുക',
@@ -1286,7 +1286,7 @@ const pa = {
   },
   status: { pending: 'ਬਾਕੀ', recommended: 'ਸਿਫ਼ਾਰਸ਼ੀ', inProgress: 'ਚੱਲ ਰਿਹਾ' },
   voice: {
-    talkTo: 'ਸਹੇਲੀ ਨਾਲ ਗੱਲ ਕਰੋ',
+    talkTo: 'ਕੇਅਰ ਏਜੰਟ ਨਾਲ ਗੱਲ ਕਰੋ',
     description: 'ਤੁਸੀਂ ਆਪਣੀ ਭਾਸ਼ਾ ਵਿੱਚ ਟਾਈਪ ਜਾਂ ਬੋਲ ਸਕਦੇ ਹੋ।',
     talkByVoice: 'ਆਵਾਜ਼ ਨਾਲ ਗੱਲ ਕਰੋ',
     typeMessage: 'ਸੁਨੇਹਾ ਲਿਖੋ',

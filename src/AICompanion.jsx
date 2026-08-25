@@ -60,7 +60,7 @@ const SaheliCallStage = ({
         <div className="ai-call-studio" />
         <div className="ai-call-perspective">
           <div className={`ai-call-head ${statusClass}`} style={headMotionStyle}>
-            <img className="ai-call-photo" src={SmritiAvatar} alt="Smriti" />
+            <img className="ai-call-photo" src={SmritiAvatar} alt="Care Agent" />
             <div className="ai-call-shoulders" />
             <div className="ai-call-jaw" style={jawStyle}>
               <img src={SmritiAvatar} alt="" />
@@ -90,7 +90,7 @@ const SaheliCallStage = ({
 
         <div className="ai-call-nameplate">
           <span className="ai-call-name">
-            Smriti <Heart size={13} className="ai-name-heart" />
+            Care Agent <Heart size={13} className="ai-name-heart" />
           </span>
           <span className={`ai-status-indicator ${statusClass}`}>
             <span className="ai-status-dot" />
@@ -137,8 +137,8 @@ const AICompanion = () => {
       id: 'welcome',
       role: 'ai',
       text: prefs.voice?.gender === 'male'
-        ? 'Namaste. Main Smriti Saathi hoon — aapka memory saathi. Jis bhasha mein aap baat karenge, usi mein jawab dunga.'
-        : 'Namaste. Main Smriti hoon — aapki memory saathi. Jis bhasha mein aap baat karenge, usi mein jawab dungi.',
+        ? 'Namaste. Main Care Agent hoon — aapka memory saathi. Jis bhasha mein aap baat karenge, usi mein jawab dunga.'
+        : 'Namaste. Main Care Agent hoon — aapki memory saathi. Jis bhasha mein aap baat karenge, usi mein jawab dungi.',
       time: getTimeString(),
     }
   ]);
@@ -423,11 +423,11 @@ const AICompanion = () => {
   };
 
   const getCallBadge = () => {
-    if (isSpeaking) return 'Smriti • Speaking';
-    if (isListening) return 'Smriti • On call';
-    if (isConnected) return 'Smriti • Live';
-    if (connectionStatus === 'connecting') return 'Smriti • Connecting';
-    return 'Smriti';
+    if (isSpeaking) return 'Care Agent • Speaking';
+    if (isListening) return 'Care Agent • On call';
+    if (isConnected) return 'Care Agent • Live';
+    if (connectionStatus === 'connecting') return 'Care Agent • Connecting';
+    return 'Care Agent';
   };
 
   const showTyping = typedTurnActive && isThinking && !transcript?.trim() && !lastError;
@@ -471,7 +471,7 @@ const AICompanion = () => {
                       className={`ai-caption-line ${line.role}${line.live ? ' live' : ''}`}
                     >
                       <span className="ai-caption-who">
-                        {line.role === 'user' ? 'You' : 'Smriti'}
+                        {line.role === 'user' ? 'You' : 'Care Agent'}
                       </span>
                       {line.text}
                     </p>
@@ -521,7 +521,7 @@ const AICompanion = () => {
                 style={{ backgroundColor: 'var(--alert-red-text)', marginTop: '4px' }}
                 onClick={stopGeneration}
               >
-                Stop Smriti
+                Stop Care Agent
               </button>
             )}
           </div>
@@ -541,7 +541,7 @@ const AICompanion = () => {
         <div className="ai-chat-panel">
           <div className="ai-chat-header">
             <div className="ai-chat-header-left">
-              <h3>Chat with Smriti</h3>
+              <h3>Chat with Care Agent</h3>
               <span className="ai-chat-mode-badge">{mode === 'voice' ? 'Voice' : 'Text'}</span>
             </div>
             <div className="ai-chat-header-actions">
@@ -671,7 +671,7 @@ const AICompanion = () => {
               </div>
             </div>
             <p className="ai-input-hint">
-              Smriti can make mistakes. Verify important information independently.
+              Care Agent can make mistakes. Verify important information independently.
             </p>
           </div>
         </div>

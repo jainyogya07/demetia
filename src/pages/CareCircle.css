@@ -1,0 +1,658 @@
+.care-circle-page {
+  width: 100%;
+  min-height: 100%;
+  padding: 32px 36px 50px;
+  box-sizing: border-box;
+  background: #f8faf9;
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.care-circle-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 26px;
+}
+
+.care-circle-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #718078;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+}
+
+.care-circle-header h1 {
+  margin: 7px 0 5px;
+  color: #25362f;
+  font-size: 32px;
+}
+
+.care-circle-header p {
+  margin: 0;
+  color: #7b8580;
+  font-size: 15px;
+}
+
+.add-member-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 12px;
+  background: #2f7660;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+/* =========================
+   OVERVIEW
+========================= */
+
+.care-overview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.care-overview-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 19px 20px;
+  border: 1px solid #e5ebe7;
+  border-radius: 16px;
+  background: white;
+  box-shadow: 0 4px 14px rgba(30, 60, 45, 0.04);
+}
+
+.care-overview-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  flex-shrink: 0;
+  border-radius: 13px;
+  background: #e6f3ed;
+  color: #2f7660;
+}
+
+.care-overview-icon.online {
+  background: #e7f4e8;
+  color: #4b8d5a;
+}
+
+.care-overview-icon.purple {
+  background: #eee9fb;
+  color: #7862aa;
+}
+
+.care-overview-card p {
+  margin: 0 0 4px;
+  color: #7c8781;
+  font-size: 12px;
+}
+
+.care-overview-card h2 {
+  margin: 0 0 4px;
+  color: #293a32;
+  font-size: 18px;
+}
+
+.care-overview-card span {
+  color: #8c9691;
+  font-size: 10px;
+}
+
+
+/* =========================
+   MAIN GRID
+========================= */
+
+.care-circle-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(290px, 0.8fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.care-main-column,
+.care-side-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+/* =========================
+   COMMON CARD
+========================= */
+
+.care-card {
+  border: 1px solid #e5ebe7;
+  border-radius: 20px;
+  background: white;
+  box-shadow: 0 5px 18px rgba(30, 60, 45, 0.04);
+}
+
+.care-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.care-card-heading h2 {
+  margin: 0 0 5px;
+  color: #293a32;
+  font-size: 19px;
+}
+
+.care-card-heading p {
+  margin: 0;
+  color: #89938e;
+  font-size: 12px;
+}
+
+.heading-more-btn {
+  border: none;
+  background: transparent;
+  color: #7c8781;
+  cursor: pointer;
+}
+
+
+/* =========================
+   MEMBERS
+========================= */
+
+.members-card {
+  padding: 24px;
+}
+
+.members-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.member-row {
+  display: grid;
+  grid-template-columns: 50px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0;
+  border-top: 1px solid #edf1ee;
+}
+
+.member-row:first-child {
+  border-top: none;
+}
+
+.member-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: #e6f3ed;
+  color: #347b63;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.member-avatar.family {
+  background: #fff3df;
+  color: #b97826;
+}
+
+.member-avatar.health {
+  background: #eee9fb;
+  color: #7560a8;
+}
+
+.member-name-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.member-information h3 {
+  margin: 0 0 3px;
+  color: #35433c;
+  font-size: 14px;
+}
+
+.member-information p {
+  margin: 0 0 5px;
+  color: #7f8b84;
+  font-size: 11px;
+}
+
+.member-location {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #9aa39e;
+  font-size: 10px;
+}
+
+.primary-badge {
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: #e8f4ed;
+  color: #347b63;
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.member-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #4f665b;
+  font-size: 10px;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4f9b69;
+}
+
+.member-actions {
+  display: flex;
+  gap: 7px;
+}
+
+.member-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #dce7e1;
+  border-radius: 9px;
+  background: #f8fbf9;
+  color: #3d6958;
+  cursor: pointer;
+}
+
+
+/* =========================
+   UPDATES
+========================= */
+
+.updates-card {
+  padding: 24px;
+}
+
+.updates-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.update-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 0;
+  border-top: 1px solid #edf1ee;
+}
+
+.update-row:first-child {
+  border-top: none;
+}
+
+.update-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  border-radius: 11px;
+  background: #e8f4ed;
+  color: #347b63;
+}
+
+.update-information {
+  flex: 1;
+}
+
+.update-information h3 {
+  margin: 0 0 4px;
+  color: #405047;
+  font-size: 12px;
+}
+
+.update-information p {
+  margin: 0;
+  color: #8b958f;
+  font-size: 10px;
+}
+
+.update-time {
+  color: #9aa39e;
+  font-size: 10px;
+}
+
+
+/* =========================
+   PRIMARY CAREGIVER
+========================= */
+
+.primary-care-card {
+  padding: 24px;
+  border-radius: 20px;
+  color: white;
+  background: linear-gradient(135deg, #286851, #4a9275);
+  box-shadow: 0 10px 25px rgba(47, 118, 96, 0.17);
+}
+
+.primary-care-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.primary-care-top span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  opacity: 0.82;
+}
+
+.primary-care-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.primary-care-card h2 {
+  margin: 20px 0 5px;
+  font-size: 21px;
+}
+
+.primary-care-card > p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+}
+
+.primary-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 14px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 11px;
+}
+
+.primary-status span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #b8e4c4;
+}
+
+.primary-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 19px;
+}
+
+.primary-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border: none;
+  border-radius: 9px;
+  background: white;
+  color: #286851;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+/* =========================
+   HEALTH SUPPORT
+========================= */
+
+.health-support-card {
+  padding: 22px;
+}
+
+.health-contact {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 14px 0;
+  border-top: 1px solid #edf1ee;
+}
+
+.health-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #eee9fb;
+  color: #7661a9;
+}
+
+.health-contact h3 {
+  margin: 0 0 4px;
+  color: #3c4b43;
+  font-size: 13px;
+}
+
+.health-contact p {
+  margin: 0;
+  color: #8b958f;
+  font-size: 10px;
+}
+
+.health-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  color: #87928c;
+  font-size: 10px;
+}
+
+.contact-health-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #dce7e1;
+  border-radius: 9px;
+  background: #f6faf7;
+  color: #3b6655;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+
+/* =========================
+   SHARING
+========================= */
+
+.shared-card {
+  padding: 22px;
+  border-radius: 19px;
+  background: #eef5f0;
+  border: 1px solid #d9e7de;
+}
+
+.shared-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 43px;
+  height: 43px;
+  margin-bottom: 14px;
+  border-radius: 12px;
+  background: #dcebe2;
+  color: #347b63;
+}
+
+.shared-label {
+  margin: 0 0 6px;
+  color: #668074;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+}
+
+.shared-card h2 {
+  margin: 0 0 8px;
+  color: #30453b;
+  font-size: 17px;
+}
+
+.shared-text {
+  margin: 0;
+  color: #71847a;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.sharing-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 15px;
+  color: #347b63;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+
+/* =========================
+   EMERGENCY
+========================= */
+
+.care-emergency-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 17px;
+  border: 1px solid #f1d8d6;
+  border-radius: 16px;
+  background: #fff7f6;
+}
+
+.emergency-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: #fdeceb;
+  color: #c45a52;
+}
+
+.care-emergency-card h3 {
+  margin: 1px 0 4px;
+  color: #704541;
+  font-size: 12px;
+}
+
+.care-emergency-card p {
+  margin: 0;
+  color: #9a7773;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 1050px) {
+  .care-circle-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 800px) {
+  .care-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .member-row {
+    grid-template-columns: 50px 1fr auto;
+  }
+
+  .member-status {
+    grid-column: 2;
+  }
+
+  .member-actions {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .care-circle-page {
+    padding: 22px 16px 40px;
+  }
+
+  .care-circle-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .care-circle-header h1 {
+    font-size: 27px;
+  }
+
+  .member-row {
+    grid-template-columns: 45px 1fr;
+  }
+
+  .member-status,
+  .member-actions {
+    grid-column: 2;
+  }
+
+  .member-actions {
+    grid-row: auto;
+  }
+
+  .primary-actions {
+    grid-template-columns: 1fr;
+  }
+}

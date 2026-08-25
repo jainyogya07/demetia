@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #f8faf9;
+}
+
+button,
+input,
+select {
+  font-family: inherit;
+}
+

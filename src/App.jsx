@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, Component } from 'react';
 import { Routes, Route, Link } from 'react-router-dom';
 import {
   Home, MessageSquare, Puzzle, CalendarDays, HeartPulse, LineChart,
@@ -37,6 +37,30 @@ import { notifyCompanionOpen } from './lib/voiceBus';
 import { useI18n } from './I18nContext';
 import { usePrefs } from './PrefsContext';
 import { EMERGENCY_LINES } from './i18n';
+
+class TabErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="ss-module-page">
+          <p className="section-label">Could not open</p>
+          <h2>This screen failed to load</h2>
+          <p className="granth-page-lead">{this.state.error.message || 'Unknown error'}</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const SmritiPlaceholder = ({ title, description }) => (
   <div className="ss-module-page">
@@ -321,24 +345,21 @@ function UserWorkspace() {
         <div className="tab-contents-wrapper">
           {tabs.map((tab) => {
             const Component = tab.component;
+            const isActive = activeTabId === tab.instanceId;
             return (
               <div
                 key={tab.instanceId}
-                className={`dashboard-scroll ${tab.id === 'ai' ? 'dashboard-scroll-fill' : ''}`}
-                style={{
-                  display: activeTabId === tab.instanceId
-                    ? (tab.id === 'ai' ? 'flex' : 'block')
-                    : 'none',
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  width: '100%',
-                  overflowX: 'hidden',
-                }}
+                className={[
+                  'dashboard-scroll',
+                  'ss-tab-pane',
+                  tab.id === 'ai' ? 'dashboard-scroll-fill' : '',
+                  isActive ? 'is-active' : 'is-hidden',
+                ].filter(Boolean).join(' ')}
+                hidden={!isActive}
               >
-                <Component />
+                <TabErrorBoundary>
+                  <Component />
+                </TabErrorBoundary>
               </div>
             );
           })}

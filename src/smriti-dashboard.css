@@ -77,6 +77,11 @@
 
 .ss-theme .main-content,
 .ss-theme .main-content {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background:
     radial-gradient(900px 420px at 12% -10%, rgba(91, 124, 107, 0.16), transparent 55%),
     radial-gradient(700px 380px at 100% 0%, rgba(47, 92, 99, 0.1), transparent 50%),
@@ -187,6 +192,11 @@
 }
 .ss-theme .tab-contents-wrapper {
   background: transparent;
+  flex: 1;
+  min-height: 0;
+}
+.ss-theme .ss-tab-pane.is-active {
+  min-height: 0;
 }
 
 .ss-glass {

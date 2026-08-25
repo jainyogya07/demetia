@@ -177,13 +177,16 @@ const AICompanion = () => {
     if (!aiIntent?.ts || handledAiIntentRef.current === aiIntent.ts) return;
     handledAiIntentRef.current = aiIntent.ts;
     notifyCompanionOpen();
-    if (aiIntent.startVoice) {
-      setMode('voice');
-      setTypedTurnActive(false);
-      lastAiTranscriptRef.current = '';
+    if (!aiIntent.startVoice) return;
+    setMode('voice');
+    setTypedTurnActive(false);
+    lastAiTranscriptRef.current = '';
+    try {
       connect({ startMic: true, mode: 'voice', languageName: language.englishName, voiceName });
+    } catch (err) {
+      console.error('Care Agent voice connect failed', err);
     }
-  }, [aiIntent, connect, language.englishName, voiceName]);
+  }, [aiIntent]);
 
   useEffect(() => {
     const onGameStart = () => {

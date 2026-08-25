@@ -221,6 +221,7 @@ html, body, #root {
 /* --- MAIN CONTENT --- */
 .main-content {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -445,9 +446,28 @@ html, body, #root {
 
 .tab-contents-wrapper {
   flex: 1;
+  min-height: 0;
   overflow: hidden;
   position: relative;
-  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ss-tab-pane.is-hidden,
+.ss-tab-pane[hidden] {
+  display: none !important;
+}
+.ss-tab-pane.is-active {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+.ss-tab-pane.dashboard-scroll-fill.is-active {
+  display: flex;
+  flex-direction: column;
 }
 
 

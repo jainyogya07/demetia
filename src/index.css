@@ -1,15 +1,17 @@
 :root {
-  --primary-sage: #5B7C6B;
-  --dark-sage: #2F5C63;
-  --light-sage: #F4F7F5;
-  --background: #F4F7F5;
-  --card-bg: rgba(255, 255, 255, 0.58);
-  --text-main: #2F5C63;
-  --text-secondary: #5B7C6B;
-  --alert-amber: #2F5C63;
-  --alert-red: #2F5C63;
-  --alert-green: #5B7C6B;
-  --border-color: rgba(91, 124, 107, 0.22);
+  --primary-sage: #176b58;
+  --dark-sage: #214d42;
+  --light-sage: #eef6f2;
+  --background: #f8faf9;
+  --card-bg: #ffffff;
+  --text-main: #214d42;
+  --text-secondary: #60716b;
+  --alert-amber: #c18429;
+  --alert-red: #d94b4b;
+  --alert-green: #176b58;
+  --border-color: #d8e5df;
+  --accent-gold: #c18429;
+  --accent-peach: #f4e4d9;
 }
 
 * {

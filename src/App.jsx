@@ -9,13 +9,20 @@ import SafetyLocation from './pages/SafetyLocation';
 import BrainGames from './games/BrainGames';
 import './App.css';
 import './granth-pages.css';
+import './granth-dashboard.css';
+import './granth-home-extras.css';
 import './smriti-dashboard.css';
+import './editorial-theme.css';
+import './patient-mobile.css';
 import ServicesCredits from './ServicesCredits';
 import MyDocuments from './MyDocuments';
 import AICompanion from './AICompanion';
 import SettingsPage from './pages/Settings';
 import SupportCreditsPage from './pages/SupportCreditsPage';
 import UserDashboard from './pages/UserDashboard';
+import DailyRoutinePage from './pages/DailyRoutine';
+import MemoryProgressPage from './pages/MemoryProgress';
+import CareCirclePage from './pages/CareCircle';
 import HomeLanding from './pages/HomeLanding';
 import CaregiverLayout from './pages/caregiver/CaregiverLayout';
 import {
@@ -28,6 +35,9 @@ import {
   DoctorTasks, DoctorCalendar, DoctorProfile,
 } from './pages/doctor/DoctorPages';
 import BrandLogo from './components/BrandLogo';
+import MemoryBookPage from './pages/MemoryBookPage';
+import AuthFlow from './pages/AuthFlow';
+import { useAuth } from './context/AuthContext';
 import VoiceToggle from './components/VoiceToggle';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import { user } from './data/user';
@@ -76,32 +86,12 @@ const MODULES = [
   { id: 'home', icon: Home, component: UserDashboard, closable: false },
   { id: 'games', icon: Puzzle, component: BrainGames, closable: true },
   { id: 'ai', icon: MessageSquare, component: AICompanion, closable: true },
-  { id: 'routine', icon: CalendarDays, component: () => (
-    <SmritiPlaceholder
-      title="My Daily Routine"
-      description="Full-day medicine, meals, water, and appointment reminders — spoken in the patient’s language."
-    />
-  ), closable: true },
+  { id: 'routine', icon: CalendarDays, component: DailyRoutinePage, closable: true },
   { id: 'medicine', icon: HeartPulse, component: ServicesCredits, closable: true },
-  { id: 'progress', icon: LineChart, component: () => (
-    <SmritiPlaceholder
-      title="Memory Progress"
-      description="Week-by-week memory, attention, and engagement trends — support and monitoring, not a diagnosis."
-    />
-  ), closable: true },
-  { id: 'care-circle', icon: Users, component: () => (
-    <SmritiPlaceholder
-      title="My Care Circle"
-      description="Family, ASHA workers, and emergency contacts. The full caregiver dashboard is a separate route."
-    />
-  ), closable: true },
+  { id: 'progress', icon: LineChart, component: MemoryProgressPage, closable: true },
+  { id: 'care-circle', icon: Users, component: CareCirclePage, closable: true },
   { id: 'safety', icon: MapPin, component: SafetyLocation, closable: true },
-  { id: 'memory-book', icon: BookOpen, component: () => (
-    <SmritiPlaceholder
-      title="Memory Book"
-      description="Family photos, familiar places, songs, and personal stories for reminiscence."
-    />
-  ), closable: true },
+  { id: 'memory-book', icon: BookOpen, component: MemoryBookPage, closable: true },
   { id: 'language', icon: Languages, component: () => (
     <SmritiPlaceholder
       title="Language & Accessibility"
@@ -172,13 +162,15 @@ function EmergencyPanel({ onClose }) {
 function UserWorkspace() {
   const { t } = useI18n();
   const { prefs } = usePrefs();
-  const displayName = prefs.profile.name || user.name;
+  const { session, signOut, openAuth } = useAuth();
+  const displayName = session?.name || prefs.profile.name || user.name;
   const [tabs, setTabs] = useState([{ ...MODULES[0], instanceId: 'home-main' }]);
   const [activeTabId, setActiveTabId] = useState('home-main');
   const [serviceFocus, setServiceFocus] = useState(null);
   const [aiIntent, setAiIntent] = useState(null);
   const [gameIntent, setGameIntent] = useState(null);
   const [showEmergency, setShowEmergency] = useState(false);
+  const [showMoreNav, setShowMoreNav] = useState(false);
   const openEmergency = useCallback(() => setShowEmergency(true), []);
   const greeting = greetingForHour();
 
@@ -254,7 +246,7 @@ function UserWorkspace() {
 
   return (
     <AppNavContext.Provider value={{ openModule, serviceFocus, aiIntent, gameIntent, openEmergency }}>
-    <div className="app-container ss-theme">
+    <div className="app-container ss-theme ss-patient-shell">
       <aside className="sidebar">
         <div className="sidebar-header">
           <Link to="/" className="ss-brand-link">
@@ -297,6 +289,18 @@ function UserWorkspace() {
             <p>A quiet day. Medicine, a little game, a little talk.</p>
           </div>
           <div className="top-bar-right">
+            <button type="button" className="ss-mobile-more-btn" onClick={() => setShowMoreNav(true)}>
+              All screens
+            </button>
+            {session?.verified ? (
+              <button type="button" className="ss-home-ghost" onClick={signOut}>
+                Sign out
+              </button>
+            ) : (
+              <button type="button" className="ss-home-ghost" onClick={() => openAuth('login')}>
+                Sign in
+              </button>
+            )}
             <VoiceToggle />
             <LanguageSwitcher />
             <div className="ss-offline-chip">
@@ -365,16 +369,86 @@ function UserWorkspace() {
           })}
         </div>
       </main>
+
+      {showMoreNav && (
+        <div className="ss-more-sheet" role="dialog" aria-label="More screens">
+          <button type="button" className="ss-more-backdrop" onClick={() => setShowMoreNav(false)} aria-label="Close" />
+          <div className="ss-more-panel">
+            <p className="ss-more-kicker">Everything</p>
+            <h2>Open a screen</h2>
+            <div className="ss-more-grid">
+              {MODULES.filter((mod) => !SIDEBAR_HIDDEN.has(mod.id) && !mod.isSpecial).map((mod) => (
+                <button
+                  key={mod.id}
+                  type="button"
+                  className="ss-more-tile"
+                  onClick={() => {
+                    handleOpenModule(mod);
+                    setShowMoreNav(false);
+                  }}
+                >
+                  <mod.icon size={22} />
+                  {moduleTitle(mod.id)}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <nav className="ss-mobile-dock" aria-label="Quick actions">
+        <button type="button" className={tabs.find((tab) => tab.id === 'home' && tab.instanceId === activeTabId) ? 'is-on' : ''} onClick={() => handleOpenModule(MODULES[0])}>
+          <Home size={22} />
+          Home
+        </button>
+        <button type="button" className={tabs.find((tab) => tab.id === 'ai' && tab.instanceId === activeTabId) ? 'is-on' : ''} onClick={() => handleOpenModule(MODULES.find((m) => m.id === 'ai'))}>
+          <MessageSquare size={22} />
+          Speak
+        </button>
+        <button type="button" className={tabs.find((tab) => tab.id === 'games' && tab.instanceId === activeTabId) ? 'is-on' : ''} onClick={() => handleOpenModule(MODULES.find((m) => m.id === 'games'))}>
+          <Puzzle size={22} />
+          Games
+        </button>
+        <button type="button" className={tabs.find((tab) => tab.id === 'routine' && tab.instanceId === activeTabId) ? 'is-on' : ''} onClick={() => handleOpenModule(MODULES.find((m) => m.id === 'routine'))}>
+          <CalendarDays size={22} />
+          Routine
+        </button>
+        <button type="button" className="dock-emergency" onClick={openEmergency}>
+          <ShieldAlert size={22} />
+          Help
+        </button>
+      </nav>
     </div>
     </AppNavContext.Provider>
   );
 }
 
+function SignInPage() {
+  return (
+    <div className="ss-theme" style={{ minHeight: '100vh' }}>
+      <AuthFlow variant="page" />
+    </div>
+  );
+}
+
+function AuthModal() {
+  const { authOpen, closeAuth } = useAuth();
+  if (!authOpen) return null;
+  return (
+    <div className="af-overlay" role="dialog" aria-label="Account">
+      <button type="button" className="af-overlay-bg" onClick={closeAuth} aria-label="Close" />
+      <AuthFlow variant="modal" onSkip={closeAuth} />
+    </div>
+  );
+}
+
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomeLanding />} />
-      <Route path="/user" element={<UserWorkspace />} />
+    <>
+      <Routes>
+        <Route path="/" element={<HomeLanding />} />
+        <Route path="/signin" element={<SignInPage />} />
+        <Route path="/user" element={<UserWorkspace />} />
       <Route path="/caregiver" element={<CaregiverLayout />}>
         <Route index element={<CgOverview />} />
         <Route path="routine" element={<CgRoutine />} />
@@ -397,6 +471,8 @@ function App() {
         <Route path="patients/:patientId" element={<DoctorPatient />} />
       </Route>
     </Routes>
+      <AuthModal />
+    </>
   );
 }
 

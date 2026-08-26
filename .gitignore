@@ -5,3 +5,5 @@ dist
 .env.local
 .env.*.local
 *.log
+_from-amongus-auth/
+backend/.env

@@ -1,28 +1,28 @@
 /* App.css */
 :root {
-  /* Three colours: sage, paper, teal. */
-  --primary-sage: #5B7C6B;
-  --primary-sage-hover: #4E6C5C;
-  --light-sage: #F4F7F5;
-  --dark-sage: #2F5C63;
+  /* Granth palette: emerald, paper, sand, gold. */
+  --primary-sage: #176b58;
+  --primary-sage-hover: #125747;
+  --light-sage: #eef6f2;
+  --dark-sage: #214d42;
 
-  --primary-peach: #2F5C63;
-  --primary-peach-hover: #274C52;
-  --light-peach: #F4F7F5;
+  --primary-peach: #c18429;
+  --primary-peach-hover: #a56f22;
+  --light-peach: #f4e4d9;
 
-  --background: #F4F7F5;
-  --card-bg: rgba(255, 255, 255, 0.58);
-  --text-main: #2F5C63;
-  --text-secondary: #5B7C6B;
-  --border-color: rgba(91, 124, 107, 0.22);
+  --background: #f8faf9;
+  --card-bg: #ffffff;
+  --text-main: #214d42;
+  --text-secondary: #60716b;
+  --border-color: #d8e5df;
 
-  --alert-red-bg: rgba(47, 92, 99, 0.1);
-  --alert-red-text: #2F5C63;
+  --alert-red-bg: #fff1f1;
+  --alert-red-text: #9f2929;
 
-  --step-1-bg: #F4F7F5;
-  --step-1-text: #2F5C63;
-  --step-2-bg: #F4F7F5;
-  --step-2-text: #5B7C6B;
+  --step-1-bg: #eef6f2;
+  --step-1-text: #214d42;
+  --step-2-bg: #f4e4d9;
+  --step-2-text: #c18429;
   --step-3-bg: var(--light-sage);
   --step-3-text: var(--primary-sage);
 }
@@ -114,7 +114,7 @@ html, body, #root {
 }
 
 .nav-item.active {
-  background-color: #F7E9E6;
+  background-color: #f4e4d9;
   color: var(--dark-sage);
   font-weight: 500;
 }

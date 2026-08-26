@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import BrandLogo from '../components/BrandLogo';
+import heroPortrait from '../assets/hero.png';
 
 const ROLES = [
   {
@@ -27,7 +28,10 @@ function HomeLanding() {
     <div className="ss-home">
       <header className="ss-home-nav">
         <BrandLogo />
-        <a className="ss-home-ghost" href="#care">How it helps</a>
+        <div className="ss-home-nav-actions">
+          <Link className="ss-home-ghost" to="/signin">Sign in</Link>
+          <a className="ss-home-ghost" href="#care">How it helps</a>
+        </div>
       </header>
 
       <section className="ss-home-hero">
@@ -35,22 +39,12 @@ function HomeLanding() {
           <p className="ss-home-eyebrow">Memory companion · North-East India</p>
           <h1>A calm voice, in the language of home.</h1>
           <p className="ss-home-lede">
-            Caresahaay is a professional companion for elders and the people who care for them —
+            Smriti Saathi is a professional companion for elders and the people who care for them —
             spoken reminders, gentle games, and a quiet view for family and clinic.
           </p>
         </div>
-        <div className="ss-home-stage" id="voice" aria-hidden="true">
-          <div className="ss-aura a1" />
-          <div className="ss-aura a2" />
-          <div className="ss-home-mark">
-            <svg viewBox="0 0 40 40" width="88" height="88">
-              <circle cx="20" cy="20" r="18" fill="#5B7C6B" />
-              <path d="M20 8c-2 4-7 7-7 13 0 4 3 8 7 8s7-4 7-8c0-6-5-9-7-13z" fill="#F4F7F5" />
-              <path d="M13 22c2 1 4 1 7 0 3 1 5 1 7 0" fill="none" stroke="#2F5C63" strokeWidth="1.6" strokeLinecap="round" />
-              <circle cx="16.5" cy="18" r="1.3" fill="#2F5C63" />
-              <circle cx="23.5" cy="18" r="1.3" fill="#2F5C63" />
-            </svg>
-          </div>
+        <div className="ss-home-stage" id="voice">
+          <img className="ss-home-hero-img" src={heroPortrait} alt="" />
         </div>
       </section>
 

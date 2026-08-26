@@ -1,36 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   MapPin, ShieldCheck, Phone, Navigation, AlertTriangle,
-  Home, Clock, RefreshCw, CheckCircle2, Users,
+  Clock, RefreshCw, CheckCircle2, Users,
 } from 'lucide-react';
 import { useAppNav } from '../AppNavContext';
 import { CARE_CIRCLE, SAFETY } from '../data/patientDashboard';
+import SafetyMap from '../components/SafetyMap';
+import { CHECKIN_KEY, formatWhen, loadCheckIns, pingLive } from '../lib/liveState';
 
 const HOME = { lat: 26.1445, lng: 91.7362, label: 'Home — Zoo Road, Guwahati' };
-const STORAGE_KEY = 'smriti-safety-checkins';
-
-function loadCheckIns() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-    return Array.isArray(parsed) ? parsed : [];
-  } catch {
-    return [];
-  }
-}
-
-function formatWhen(iso) {
-  try {
-    return new Date(iso).toLocaleString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-  } catch {
-    return iso;
-  }
-}
 
 function distanceM(a, b) {
   const toRad = (n) => (n * Math.PI) / 180;
@@ -94,14 +72,14 @@ export default function SafetyLocation() {
       id: `${Date.now()}`,
       at: new Date().toISOString(),
       place: inside ? 'Home — Safe Zone' : locLabel,
+      lat: coords.lat,
+      lng: coords.lng,
     };
     const next = [row, ...checkIns].slice(0, 8);
     setCheckIns(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    localStorage.setItem(CHECKIN_KEY, JSON.stringify(next));
+    pingLive();
   };
-
-  const pinX = 42 + Math.max(-12, Math.min(12, (coords.lng - HOME.lng) * 400));
-  const pinY = 48 + Math.max(-12, Math.min(12, (HOME.lat - coords.lat) * 400));
 
   return (
     <div className="ss-safety-page">
@@ -122,19 +100,12 @@ export default function SafetyLocation() {
               <RefreshCw size={14} /> {busy ? 'Checking…' : 'Refresh'}
             </button>
           </header>
-          <div className="ss-map" role="img" aria-label="Map of Home safe zone in Guwahati">
-            <div className="ss-map-grid" />
-            <div className="ss-map-river" />
-            <div className="ss-map-zone" />
-            <div className="ss-map-home">
-              <Home size={14} />
-              <span>Home</span>
-            </div>
-            <div className="ss-map-pin" style={{ left: `${pinX}%`, top: `${pinY}%` }}>
-              <span />
-            </div>
-            <p className="ss-map-caption">{HOME.label}</p>
-          </div>
+          <SafetyMap home={HOME} current={coords} checkIns={checkIns} />
+          <p className="ss-map-legend">
+            <span>Green — Home (Zoo Road)</span>
+            <span>Gold — current pin</span>
+            <span>Dark — check-ins</span>
+          </p>
           {notice && <p className="ss-safety-note">{notice}</p>}
         </section>
 

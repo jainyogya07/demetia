@@ -9,6 +9,7 @@ import { useI18n } from '../I18nContext';
 import { usePrefs } from '../PrefsContext';
 import { LANG_STORAGE_KEY } from '../i18n';
 import { useAppNav } from '../AppNavContext';
+import { useAuth } from '../context/AuthContext';
 
 function Toggle({ checked, onChange, label }) {
   return (
@@ -29,6 +30,7 @@ function Settings() {
   const { t, lang, languages, setLang } = useI18n();
   const { prefs, updatePrefs, resetPrefs } = usePrefs();
   const { openEmergency } = useAppNav();
+  const { session, signOut, openAuth } = useAuth();
   const [profileDraft, setProfileDraft] = useState(prefs.profile);
   const [dataNote, setDataNote] = useState('');
   const photoInputRef = useRef(null);
@@ -99,6 +101,29 @@ function Settings() {
       <h2>{t('settingsPage.title')}</h2>
       <p className="granth-page-lead">{t('settingsPage.lead')}</p>
       <p className="settings-saved-hint">{t('settingsPage.savedDevice')}</p>
+
+      <section className="settings-section">
+        <div className="settings-section-head">
+          <Lock size={18} />
+          <div>
+            <h3>Account</h3>
+            <p>Optional. Sign in with name and mobile, then a 6-digit code. You can keep using the app as a guest.</p>
+          </div>
+        </div>
+        <div className="granth-page-card settings-card">
+          <div className="settings-row">
+            <div>
+              <h4>{session?.verified ? session.name : 'Not signed in'}</h4>
+              <p>{session?.verified ? `${session.phone}${session.email ? ` · ${session.email}` : ''}` : 'Create an account only if you want the profile saved.'}</p>
+            </div>
+            {session?.verified ? (
+              <button type="button" className="ss-text-btn" onClick={signOut}>Sign out</button>
+            ) : (
+              <button type="button" className="ss-text-btn" onClick={() => openAuth('signup')}>Sign in</button>
+            )}
+          </div>
+        </div>
+      </section>
 
       <section className="settings-section">
         <div className="settings-section-head">

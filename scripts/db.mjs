@@ -6,8 +6,11 @@
  *   DATABASE_URL=postgres://USER:PASS@localhost:5432/saheli node scripts/db.mjs
  */
 import { readFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { join } from 'node:path';
+import { loadEnv, repoRootFrom } from './loadEnv.mjs';
+
+const root = repoRootFrom(import.meta.url);
+loadEnv(root);
 
 const url = process.env.DATABASE_URL?.trim();
 if (!url) {
@@ -28,7 +31,6 @@ try {
 
 const { Client } = pg;
 const client = new Client({ connectionString: url });
-const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const action = process.argv[2] || 'ping';
 
 try {
@@ -42,8 +44,10 @@ try {
   } else if (action === 'seed') {
     await client.query(readFileSync(join(root, 'scripts/schema.sql'), 'utf8'));
     await client.query(readFileSync(join(root, 'scripts/seed_schemes.sql'), 'utf8'));
-    const { rows } = await client.query('SELECT COUNT(*)::int AS n FROM schemes');
-    console.log('Seeded schemes:', rows[0].n);
+    await client.query(readFileSync(join(root, 'scripts/seed_memories.sql'), 'utf8'));
+    const schemes = await client.query('SELECT COUNT(*)::int AS n FROM schemes');
+    const memories = await client.query('SELECT COUNT(*)::int AS n FROM memories');
+    console.log('Seeded schemes:', schemes.rows[0].n, 'memories:', memories.rows[0].n);
   } else {
     console.error('Unknown action. Use: ping | migrate | seed');
     process.exit(1);

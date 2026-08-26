@@ -10,6 +10,15 @@ import StorySolver from './StorySolver';
 import { useAppNav } from '../AppNavContext';
 import './BrainGames.css';
 
+/* ── Game-specific AI-generated illustrations ─────────────── */
+import imgPastStories from '../assets/game-past-stories.jpg';
+import imgMatchPairs from '../assets/game-match-pairs.jpg';
+import imgSpotDiff from '../assets/game-spot-difference.jpg';
+import imgBalloonPop from '../assets/game-balloon-pop.jpg';
+import imgSequence from '../assets/game-sequence-recall.jpg';
+import imgFaces from '../assets/game-familiar-faces.jpg';
+import imgFindObject from '../assets/game-find-object.jpg';
+
 const GAME_LIST = [
   {
     id: 'story-solver',
@@ -18,6 +27,7 @@ const GAME_LIST = [
     description: 'Care Agent tells a full memory, asks from that scene, then continues the same story.',
     difficulty: 'Featured · 8–10 min',
     icon: BookOpen,
+    photo: imgPastStories,
   },
   {
     id: 'match-pairs',
@@ -25,6 +35,7 @@ const GAME_LIST = [
     description: 'Flip cards to find matching objects — tea, gamosa, dhol, pitha.',
     difficulty: 'Easy · 5 min',
     icon: Puzzle,
+    photo: imgMatchPairs,
   },
   {
     id: 'spot-diff',
@@ -32,6 +43,7 @@ const GAME_LIST = [
     description: 'Find what changed between two familiar scenes.',
     difficulty: 'Easy · 5 min',
     icon: Eye,
+    photo: imgSpotDiff,
   },
   {
     id: 'balloon-pop',
@@ -39,6 +51,7 @@ const GAME_LIST = [
     description: 'Tap the floating balloons. Gentle, no wrong answers.',
     difficulty: 'Easy · 3 min',
     icon: Wind,
+    photo: imgBalloonPop,
   },
   {
     id: 'sequence',
@@ -46,6 +59,7 @@ const GAME_LIST = [
     description: 'Watch a short order of familiar objects, then tap them in the same sequence.',
     difficulty: 'Easy · 4 min',
     icon: ListOrdered,
+    photo: imgSequence,
   },
   {
     id: 'faces',
@@ -53,6 +67,7 @@ const GAME_LIST = [
     description: 'Match a person to their name — family, neighbour, ASHA, doctor.',
     difficulty: 'Easy · 4 min',
     icon: Users,
+    photo: imgFaces,
   },
   {
     id: 'object-find',
@@ -60,6 +75,7 @@ const GAME_LIST = [
     description: 'Pick the named household thing from a quiet table of daily objects.',
     difficulty: 'Easy · 4 min',
     icon: Search,
+    photo: imgFindObject,
   },
 ];
 
@@ -122,7 +138,9 @@ export default function BrainGames() {
               className={`bg-game-tile ${game.featured ? 'featured' : ''}`}
               onClick={() => setActiveGame(game.id)}
             >
-              <div className="bg-tile-emoji"><Icon size={22} /></div>
+              <div className="bg-tile-emoji">
+                {game.photo ? <img src={game.photo} alt="" /> : <Icon size={22} />}
+              </div>
               <h3>{game.title}</h3>
               <p>{game.description}</p>
               <div className="bg-tile-meta">

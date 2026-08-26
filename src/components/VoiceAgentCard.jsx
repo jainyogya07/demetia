@@ -1,46 +1,54 @@
 import { Mic, MessageSquare } from 'lucide-react';
 import { useAppNav } from '../AppNavContext';
-import SmritiAvatar from '../assets/smriti-avatar.svg';
+import heroPortrait from '../assets/hero.png';
 
 function VoiceAgentCard() {
   const { openModule } = useAppNav();
 
   return (
-    <div className="voice-agent-card ss-voice-card">
-      <div className="ss-voice-hero">
-        <div className="ss-voice-orb" aria-hidden="true">
-          <img src={SmritiAvatar} alt="" />
+    <section className="voice-companion-card">
+      <div className="voice-top">
+        <div className="smriti-avatar">
+          <img src={heroPortrait} alt="" />
         </div>
-        <div>
-          <h3 className="voice-agent-title">Care Agent</h3>
-          <p className="voice-agent-description">Voice companion. Speak when you want.</p>
+        <div className="voice-text">
+          <h2>Care Agent</h2>
+          <p>I can talk, listen and help you with your day.</p>
+          <p>Speak in your language.</p>
         </div>
       </div>
-      <div className="ss-wave" aria-hidden="true">
-        <span /><span /><span /><span /><span /><span /><span />
-      </div>
-      <div className="voice-agent-actions">
-        <button
-          type="button"
-          className="voice-button"
-          onClick={() => openModule('ai', { startVoice: true })}
-        >
-          <Mic size={16} />
-          <span>Speak</span>
-        </button>
-        <button
-          type="button"
-          className="message-button"
-          onClick={() => openModule('ai')}
-        >
-          <MessageSquare size={16} />
-          <span>Type</span>
+
+      <button
+        type="button"
+        className="speak-button"
+        onClick={() => openModule('ai', { startVoice: true })}
+      >
+        <Mic size={24} />
+        Speak
+      </button>
+
+      <div className="message-box">
+        <button type="button" className="type-companion-btn" onClick={() => openModule('ai')}>
+          <MessageSquare size={18} />
+          Type a message
         </button>
       </div>
-      <div className="voice-agent-language">
-        Assamese · Khasi · Mizo · Manipuri · Bodo · Hindi · English
+
+      <div className="voice-languages">
+        <span>I speak in:</span>
+        <button type="button">অসমীয়া</button>
+        <button type="button">Khasi</button>
+        <button type="button">Mizo</button>
+        <button type="button">Manipuri</button>
+        <button type="button">Bodo</button>
       </div>
-    </div>
+
+      <div className="voice-note">
+        <span>
+          Care Agent supports Assamese, Khasi, Mizo, Manipuri, Bodo, Hindi and English.
+        </span>
+      </div>
+    </section>
   );
 }
 

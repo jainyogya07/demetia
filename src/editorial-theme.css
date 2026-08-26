@@ -1,0 +1,146 @@
+/* Editorial / clinical type — keep emerald+sand, drop AI-landing scale. */
+
+.ss-theme,
+.ss-home,
+.granth-home,
+.daily-routine-page,
+.memory-progress-page,
+.care-circle-page,
+.ss-safety-page,
+.memory-book-page,
+.granth-page,
+.settings-page,
+.bg-hub {
+  font-size: 15px;
+  color: #214d42;
+}
+
+.ss-home h1 {
+  font-size: 26px !important;
+  letter-spacing: -0.02em;
+  max-width: 22ch !important;
+  font-weight: 650;
+}
+
+.ss-home-lede,
+.granth-page-lead {
+  font-size: 15px !important;
+  line-height: 1.55;
+  color: #4a5f58;
+}
+
+.daily-routine-page,
+.memory-progress-page,
+.care-circle-page {
+  background: #f4f7f5;
+}
+
+.routine-header h1,
+.memory-progress-header h1,
+.care-circle-header h1 {
+  font-size: 22px !important;
+  font-weight: 650;
+}
+
+.routine-header p,
+.memory-progress-header p,
+.care-circle-header p {
+  font-size: 14px !important;
+}
+
+.routine-stat h3,
+.overview-card h2,
+.care-overview-card h2 {
+  font-size: 20px !important;
+}
+
+.schedule-card,
+.progress-card,
+.care-card,
+.overview-card,
+.routine-stat,
+.care-overview-card,
+.insight-card,
+.primary-care-card,
+.shared-card,
+.streak-card,
+.goal-card,
+.up-next-card,
+.reminders-card,
+.wellness-card {
+  background: #ffffff !important;
+  border: 1px solid #d8e5df !important;
+  box-shadow: 0 1px 0 rgba(33, 77, 66, 0.04);
+}
+
+.insight-card,
+.primary-care-card,
+.shared-card,
+.up-next-card,
+.wellness-card,
+.streak-card {
+  color: #214d42;
+}
+
+.insight-card h2,
+.primary-care-card h2,
+.shared-card h2,
+.up-next-card h2,
+.streak-card h2,
+.goal-card h2 {
+  font-size: 16px !important;
+  font-weight: 650;
+}
+
+.insight-text,
+.shared-text {
+  font-size: 14px !important;
+  color: #4a5f58 !important;
+}
+
+.ss-theme .main-content {
+  background:
+    linear-gradient(180deg, #f4f7f5 0%, #f8faf9 40%, #f8faf9 100%) !important;
+}
+
+.ss-theme .sidebar {
+  background: #ffffff !important;
+}
+
+.granth-home .smriti-avatar {
+  width: 88px !important;
+  height: 88px !important;
+  font-size: 0 !important;
+}
+
+.granth-home .smriti-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.granth-home .voice-text h2 {
+  font-size: 18px !important;
+  font-weight: 700;
+}
+
+.granth-home .insight-brain {
+  font-size: 28px !important;
+  opacity: 0.35;
+}
+
+.ss-brand-name {
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.ss-full-btn,
+.ss-mini-btn {
+  font-size: 14px;
+}
+
+.member-avatar {
+  overflow: hidden;
+}

@@ -34,7 +34,7 @@ function Sidebar({ openTabs, setOpenTabs }) {
       icon: Brain,
     },
     {
-      name: t("Talk to Smriti"),
+      name: t("talkToSmriti"),
       path: "/talk-to-smriti",
       icon: Mic,
     },
@@ -69,7 +69,7 @@ function Sidebar({ openTabs, setOpenTabs }) {
       icon: BookOpen,
     },
     {
-      name: "Language",
+      name: t("language"),
       path: "/language",
       icon: Globe,
     },
@@ -113,7 +113,7 @@ function Sidebar({ openTabs, setOpenTabs }) {
         </div>
 
         <div>
-          <h1>Smriti Saathi</h1>
+          <h1>{t("appName")}</h1>
         </div>
       </div>
 
@@ -145,8 +145,8 @@ function Sidebar({ openTabs, setOpenTabs }) {
         </div>
 
         <div className="emergency-content">
-          <h3>Emergency Help</h3>
-          <p>Tap to call for help</p>
+          <h3>{t("Emergency Help")}</h3>
+          <p>{t("Tap to call for help")}</p>
           <strong>Helpline: 112 / 102 / 108</strong>
           <span>(Works offline)</span>
         </div>

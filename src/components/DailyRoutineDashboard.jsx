@@ -1,6 +1,8 @@
 import { CalendarDays, Volume2, CheckCircle2, Circle } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 function DailyRoutine() {
+  const {t} = useLanguage();
   const routine = [
     {
       time: "7:30 AM",
@@ -63,7 +65,7 @@ function DailyRoutine() {
         <div className="routine-title">
           <CalendarDays size={25} />
 
-          <h2>Today's Routine</h2>
+          <h2>{t("todaysRoutine")}</h2>
         </div>
 
         <button
@@ -71,7 +73,7 @@ function DailyRoutine() {
           onClick={tellNext}
         >
           <Volume2 size={17} />
-          Tell me what's next
+          {t("tellMeNext")}
         </button>
 
       </div>
@@ -134,7 +136,7 @@ function DailyRoutine() {
       </div>
 
       <button className="view-routine-button">
-        View Full Routine →
+        {t("viewFullRoutine")}
       </button>
 
     </section>

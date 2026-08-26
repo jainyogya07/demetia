@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom"; 
 import { Mic, Volume2, Send } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 function VoiceCompanion() {
 
-    const navigate = useNavigate(); 
+  const navigate = useNavigate(); 
   const [listening, setListening] = useState(false);
   const [message, setMessage] = useState("");
+  const {t} = useLanguage();
 
   const languages = [
     "অসমীয়া",
@@ -37,10 +39,10 @@ function VoiceCompanion() {
         </div>
 
         <div className="voice-text">
-          <h2>Smriti – Your Voice Companion</h2>
+          <h2>{t("smritiVoiceCompanion")}</h2>
 
-          <p>I can talk, listen and help you with your day.</p>
-          <p>Speak in your language.</p>
+          <p>{t("voiceDescription")}</p>
+          <p>{t("speakLang")}</p>
         </div>
 
       </div>
@@ -51,14 +53,14 @@ function VoiceCompanion() {
       >
         <Mic size={24} />
 
-        {listening ? "Listening..." : "Tap to Speak"}
+        {listening ? t("listening...") : t("tapToSpeak")}
       </button>
 
       <div className="message-box">
 
         <input
           type="text"
-          placeholder="Type a message"
+          placeholder={t("typeMessage")}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={(e) => {
@@ -90,8 +92,7 @@ function VoiceCompanion() {
         <Volume2 size={17} />
 
         <span>
-          Smriti supports Assamese, Khasi, Mizo, Manipuri, Bodo
-          and 10+ regional languages.
+          {t("availableLanguages")}
         </span>
       </div>
 

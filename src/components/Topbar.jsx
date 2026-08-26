@@ -13,7 +13,6 @@ function Topbar() {
   const languages = [
     {code:"en", name:"English"},
     {code:"as", name:"অসমীয়া"},
-    {code:"kh", name:"Khasi"},
     {code:"hi", name:"हिंदी"},
 
   ]
@@ -35,26 +34,22 @@ function Topbar() {
       </button>
 
       <div className="greeting-section">
-        <h2>{greeting}, Demo User 👋</h2>
-        <p>Aji apunar din tu bhal hok. Aai ami xate achu.</p>
+        <h2>{t(greeting)}, Demo User 👋</h2>
         <span>Let's make your day meaningful.</span>
       </div>
 
       <div className="topbar-right">
 
         <div className="language-selector">
-          <Globe2 size={20} />
+          <Globe2 size={18} />
 
           <select
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
           >
-            <option value="অসমীয়া">অসমীয়া</option>
-            <option value="Khasi">Khasi</option>
-            <option value="Mizo">Mizo</option>
-            <option value="Manipuri">Manipuri</option>
-            <option value="Bodo">Bodo</option>
-            <option value="English">English</option>
+            <option value="as">অসমীয়া</option>
+            <option value="hi">हिंदी</option>
+            <option value="en">English</option>
           </select>
         </div>
 
@@ -62,15 +57,15 @@ function Topbar() {
           <WifiOff size={23} />
 
           <div>
-            <strong>You are Offline</strong>
-            <span>Data will sync when internet is available</span>
+            <strong>{t("You are Offline")}</strong>
+            <span>{t("Data will sync when internet is available")}</span>
           </div>
         </div>
 
         <button className="notification-button">
           <Bell size={23} />
           <span className="notification-badge">3</span>
-          <small>Alerts</small>
+          <small>{t("Alerts")}</small>
         </button>
 
         <div className="profile-section">
@@ -80,7 +75,7 @@ function Topbar() {
 
           <div className="profile-info">
             <strong>Demo User</strong>
-            <span>Patient</span>
+            <span>{t("Patient")}</span>
           </div>
 
           <ChevronDown size={18} />

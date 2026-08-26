@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 
+import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import Tabs from "./components/Tabs";
+
 import PagePlaceholder from "./components/PagePlaceholder";
-import DailyRoutineDashboard from "./components/DailyRoutineDashboard"
+import DailyRoutineDashboard from "./components/DailyRoutineDashboard";
 import MemoryProgress from "./pages/MemoryProgress";
 
 import VoiceCompanion from "./components/VoiceCompanion";
@@ -65,66 +67,69 @@ function App() {
           setOpenTabs={setOpenTabs}
         />
 
-        <Routes>
-          {/* HOME */}
-          <Route path="/" element={<Dashboard />} />
+        {/* NEW: CONTENT + FOOTER */}
+        <div className="page-scroll-area">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
 
-          {/* SIDEBAR PAGES */}
-          <Route
-            path="/brain-games"
-            element={<PagePlaceholder title="Brain Games" />}
-          />
+            <Route
+              path="/brain-games"
+              element={<PagePlaceholder title="Brain Games" />}
+            />
 
-          <Route
-            path="/talk-to-smriti"
-            element={<PagePlaceholder title="Talk to Smriti" />}
-          />
+            <Route
+              path="/talk-to-smriti"
+              element={<PagePlaceholder title="Talk to Smriti" />}
+            />
 
-          <Route
-            path="/daily-routine"
-            element={<DailyRoutine/>}
-          />
+            <Route
+              path="/daily-routine"
+              element={<DailyRoutine />}
+            />
 
-          <Route
-            path="/medicine-health"
-            element={<PagePlaceholder title="Medicine & Health" />}
-          />
+            <Route
+              path="/medicine-health"
+              element={<PagePlaceholder title="Medicine & Health" />}
+            />
 
-          <Route
-            path="/memory-progress"
-            element={<MemoryProgress/>}
-          />
+            <Route
+              path="/memory-progress"
+              element={<MemoryProgress />}
+            />
 
-          <Route
-            path="/care-circle"
-            element={<PagePlaceholder title="My Care Circle" />}
-          />
+            <Route
+              path="/care-circle"
+              element={<PagePlaceholder title="My Care Circle" />}
+            />
 
-          <Route
-            path="/safety-location"
-            element={<PagePlaceholder title="Safety & Location" />}
-          />
+            <Route
+              path="/safety-location"
+              element={<PagePlaceholder title="Safety & Location" />}
+            />
 
-          <Route
-            path="/memory-book"
-            element={<PagePlaceholder title="Memory Book" />}
-          />
+            <Route
+              path="/memory-book"
+              element={<PagePlaceholder title="Memory Book" />}
+            />
 
-          <Route
-            path="/language"
-            element={<PagePlaceholder title="Language" />}
-          />
+            <Route
+              path="/language"
+              element={<PagePlaceholder title="Language" />}
+            />
 
-          <Route
-            path="/help-support"
-            element={<PagePlaceholder title="Help & Support" />}
-          />
+            <Route
+              path="/help-support"
+              element={<PagePlaceholder title="Help & Support" />}
+            />
 
-          <Route
-            path="/settings"
-            element={<PagePlaceholder title="Settings" />}
-          />
-        </Routes>
+            <Route
+              path="/settings"
+              element={<PagePlaceholder title="Settings" />}
+            />
+          </Routes>
+
+          <Footer />
+        </div>
       </main>
     </div>
   );

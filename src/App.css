@@ -5,8 +5,10 @@
 }
 
 .app {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
+  overflow: hidden;
+
   background: #f8faf9;
   font-family: Arial, sans-serif;
 }
@@ -14,8 +16,17 @@
 .main-content {
   flex: 1;
   min-width: 0;
+
+  height: 100vh;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
   margin-left: 0;
   background: #ffffff;
+
+  overflow: hidden;
 }
 
 .dashboard {
@@ -2494,4 +2505,15 @@
   .next-content button {
     margin-left: 0;
   }
+}
+
+.page-scroll-area {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: #f8faf9;
 }

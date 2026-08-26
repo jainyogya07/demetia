@@ -42,13 +42,13 @@ function BrainActivity() {
           </div>
 
           <div>
-            <h2>{t("brainActivity")}</h2>
+            <h2>Brain Activity</h2>
             <p>Simple activities for a healthy mind</p>
           </div>
         </div>
 
         <span className="recommended-badge">
-          {t("recommended")}
+          {t("recommendedForYou")}
         </span>
       </div>
 

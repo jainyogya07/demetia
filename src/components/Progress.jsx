@@ -1,6 +1,8 @@
 import { BarChart3, Lightbulb } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 function Progress() {
+  const {t} = useLanguage();
   const stats = [
     {
       label: "Activities Completed",
@@ -26,7 +28,7 @@ function Progress() {
       <div className="progress-header">
         <div className="progress-title">
           <BarChart3 size={25} />
-          <h2>This Week's Progress</h2>
+          <h2>{t("yourProgress")}</h2>
         </div>
       </div>
 

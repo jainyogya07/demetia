@@ -1,20 +1,64 @@
 /* Extra Granth-home chrome that was not in the extracted widget CSS */
 
+.ss-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ss-brand.compact .ss-brand-text {
+  display: none;
+}
+
+.ss-brand.is-rail .ss-brand-mark {
+  width: 28px;
+  height: 28px;
+}
+
+.ss-brand.is-rail .ss-brand-name {
+  font-size: 14px;
+  font-weight: 650;
+}
+
 .ss-brand-mark {
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
   overflow: hidden;
-  background: #fff;
-  border: 1px solid #d8e5df;
+  background: #0b0b0b;
+  border: 1px solid rgba(28, 36, 32, 0.16);
   flex-shrink: 0;
 }
 
 .ss-brand-mark img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
+}
+
+.ss-brand.compact .ss-brand-mark {
+  width: 36px;
+  height: 36px;
+}
+
+.ss-home-nav .ss-brand-mark {
+  width: 56px;
+  height: 56px;
+}
+
+.af-card .ss-brand-mark {
+  width: 72px;
+  height: 72px;
+}
+
+.sidebar-brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #0b0b0b;
 }
 
 .ss-home-hero-img {

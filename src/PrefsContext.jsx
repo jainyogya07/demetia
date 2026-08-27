@@ -14,6 +14,8 @@ export const DEFAULT_PREFS = {
   accessibility: {
     fontSize: 'medium',
     highContrast: false,
+    uiScale: 100,
+    simpleMode: false,
   },
   notifications: {
     schemes: true,
@@ -27,6 +29,7 @@ export const DEFAULT_PREFS = {
   },
   voice: {
     gender: 'female',
+    rate: 'normal',
   },
 };
 
@@ -50,7 +53,9 @@ function readPrefs() {
 function applyAccessibility(accessibility) {
   const root = document.documentElement;
   root.dataset.uiFont = accessibility.fontSize || 'medium';
+  root.dataset.uiScale = String(accessibility.uiScale || 100);
   root.classList.toggle('ui-contrast', !!accessibility.highContrast);
+  root.classList.toggle('ui-simple', !!accessibility.simpleMode);
 }
 
 const PrefsContext = createContext({

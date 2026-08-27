@@ -116,8 +116,8 @@ export const EMERGENCY_LINES = [
 ];
 
 const en = {
-  brand: 'स्मृति साथी',
-  brandSub: 'Smriti Saathi',
+  brand: 'स्मृति सारथी',
+  brandSub: 'Smriti Saarthi',
   modules: {
     home: 'Home',
     games: 'My Brain Games',

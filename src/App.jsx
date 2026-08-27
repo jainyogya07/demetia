@@ -1,9 +1,9 @@
-import React, { useState, useCallback, Component } from 'react';
-import { Routes, Route, Link } from 'react-router-dom';
+import React, { useState, useCallback, useEffect, useRef, Component } from 'react';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import {
   Home, MessageSquare, Puzzle, CalendarDays, HeartPulse, LineChart,
   Users, MapPin, BookOpen, Languages, Settings, Bell, User,
-  ShieldAlert, X, Plus, CloudOff, FileText,
+  ShieldAlert, X, Plus, CloudOff, FileText, PanelLeft, PanelLeftClose, Menu, SquarePen,
 } from 'lucide-react';
 import SafetyLocation from './pages/SafetyLocation';
 import BrainGames from './games/BrainGames';
@@ -35,11 +35,14 @@ import {
   DoctorTasks, DoctorCalendar, DoctorProfile,
 } from './pages/doctor/DoctorPages';
 import BrandLogo from './components/BrandLogo';
+import Footer from './components/Footer';
 import MemoryBookPage from './pages/MemoryBookPage';
 import AuthFlow from './pages/AuthFlow';
 import { useAuth } from './context/AuthContext';
 import VoiceToggle from './components/VoiceToggle';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import SarthiAssistRuntime from './components/SarthiAssistModal';
+import './components/SarthiAssistModal.css';
 import { user } from './data/user';
 import { greetingForHour } from './data/patientDashboard';
 import { AppNavContext } from './AppNavContext';
@@ -159,10 +162,12 @@ function EmergencyPanel({ onClose }) {
   );
 }
 
-function UserWorkspace() {
+function UserWorkspace({ boot }) {
   const { t } = useI18n();
   const { prefs } = usePrefs();
   const { session, signOut, openAuth } = useAuth();
+  const location = useLocation();
+  const bootRef = useRef(false);
   const displayName = session?.name || prefs.profile.name || user.name;
   const [tabs, setTabs] = useState([{ ...MODULES[0], instanceId: 'home-main' }]);
   const [activeTabId, setActiveTabId] = useState('home-main');
@@ -171,38 +176,38 @@ function UserWorkspace() {
   const [gameIntent, setGameIntent] = useState(null);
   const [showEmergency, setShowEmergency] = useState(false);
   const [showMoreNav, setShowMoreNav] = useState(false);
+  const [railCollapsed, setRailCollapsed] = useState(false);
+  const [railOpen, setRailOpen] = useState(false);
+  const [showAssist, setShowAssist] = useState(false);
+  const [assistMuted, setAssistMuted] = useState(false);
+  const [, setAssistLive] = useState(false);
+  const [activeGameId, setActiveGameId] = useState(null);
+  const tabsRef = useRef([{ ...MODULES[0], instanceId: 'home-main' }]);
+  tabsRef.current = tabs;
   const openEmergency = useCallback(() => setShowEmergency(true), []);
+  const currentModuleId = tabs.find((tab) => tab.instanceId === activeTabId)?.id || 'home';
   const greeting = greetingForHour();
 
   const moduleTitle = (id) => t(`modules.${id}`);
   const showTabs = tabs.length > 1;
-
-  const handleOpenModule = (moduleItem) => {
-    if (moduleItem.id === 'ai') notifyCompanionOpen();
-    const existingTab = tabs.find((tTab) => tTab.id === moduleItem.id);
-    if (existingTab) {
-      setActiveTabId(existingTab.instanceId);
-    } else {
-      const newInstanceId = `${moduleItem.id}-${Date.now()}`;
-      setTabs([...tabs, { ...moduleItem, instanceId: newInstanceId }]);
-      setActiveTabId(newInstanceId);
-    }
-  };
+  const navModules = MODULES.filter((mod) => !SIDEBAR_HIDDEN.has(mod.id) && !mod.isSpecial);
+  const todayModules = navModules.slice(0, 6);
+  const moreModules = navModules.slice(6);
 
   const openModule = useCallback((moduleId, options = {}) => {
     const moduleItem = MODULES.find((mod) => mod.id === moduleId);
     if (!moduleItem) return;
 
-    setTabs((prev) => {
-      const existingTab = prev.find((tab) => tab.id === moduleItem.id);
-      if (existingTab) {
-        setActiveTabId(existingTab.instanceId);
-        return prev;
-      }
+    const existingTab = tabsRef.current.find((tab) => tab.id === moduleItem.id);
+    if (existingTab) {
+      setActiveTabId(existingTab.instanceId);
+    } else {
       const newInstanceId = `${moduleItem.id}-${Date.now()}`;
+      const next = [...tabsRef.current, { ...moduleItem, instanceId: newInstanceId }];
+      tabsRef.current = next;
+      setTabs(next);
       setActiveTabId(newInstanceId);
-      return [...prev, { ...moduleItem, instanceId: newInstanceId }];
-    });
+    }
 
     if (moduleId === 'services') {
       setServiceFocus({
@@ -212,6 +217,7 @@ function UserWorkspace() {
     }
 
     if (moduleId === 'ai') {
+      setShowAssist(false);
       notifyCompanionOpen();
       setAiIntent({
         startVoice: !!options.startVoice,
@@ -227,6 +233,62 @@ function UserWorkspace() {
     }
   }, []);
 
+  const handleOpenModule = (moduleItem) => {
+    openModule(moduleItem.id, moduleItem.id === 'ai' ? { startVoice: true } : {});
+  };
+
+  const renderNavItem = (mod) => {
+    const isActive = tabs.find((tab) => tab.id === mod.id && tab.instanceId === activeTabId);
+    return (
+      <a
+        key={mod.id}
+        href="#"
+        className={`nav-item ${isActive ? 'active' : ''}`}
+        title={moduleTitle(mod.id)}
+        onClick={(e) => {
+          e.preventDefault();
+          handleOpenModule(mod);
+          setRailOpen(false);
+        }}
+      >
+        <mod.icon size={18} />
+        <span className="ss-rail-copy">
+          <span className="ss-rail-label">{moduleTitle(mod.id)}</span>
+        </span>
+      </a>
+    );
+  };
+
+  const assistPaused = currentModuleId === 'ai' || (currentModuleId === 'games' && activeGameId === 'story-solver');
+  const assistReady = Boolean(session?.verified);
+
+  const openAssist = useCallback(() => {
+    if (assistPaused) return;
+    setShowAssist(true);
+  }, [assistPaused]);
+
+  useEffect(() => {
+    if (location.state?.moduleId) {
+      openModule(location.state.moduleId, location.state.options || {});
+    }
+  }, [location.state, openModule]);
+
+  useEffect(() => {
+    if (bootRef.current) return;
+    if (boot === 'talk') {
+      bootRef.current = true;
+      openModule('ai', { startVoice: true });
+    }
+    if (boot === 'stories') {
+      bootRef.current = true;
+      openModule('games', { gameId: 'story-solver' });
+    }
+    if (boot === 'assist') {
+      bootRef.current = true;
+      setShowAssist(true);
+    }
+  }, [boot, openModule]);
+
   const handleCloseTab = (e, instanceId) => {
     e.stopPropagation();
 
@@ -234,6 +296,7 @@ function UserWorkspace() {
     if (!tabToClose || !tabToClose.closable) return;
 
     const newTabs = tabs.filter((tab) => tab.instanceId !== instanceId);
+    tabsRef.current = newTabs;
 
     if (activeTabId === instanceId) {
       const closingIndex = tabs.findIndex((tab) => tab.instanceId === instanceId);
@@ -245,34 +308,88 @@ function UserWorkspace() {
   };
 
   return (
-    <AppNavContext.Provider value={{ openModule, serviceFocus, aiIntent, gameIntent, openEmergency }}>
-    <div className="app-container ss-theme ss-patient-shell">
-      <aside className="sidebar">
+    <AppNavContext.Provider value={{ openModule, serviceFocus, aiIntent, gameIntent, openEmergency, currentModuleId, openAssist, setActiveGameId, activeGameId }}>
+    <div className={`app-container ss-theme ss-patient-shell${railCollapsed ? ' is-rail-collapsed' : ''}${railOpen ? ' is-rail-open' : ''}`}>
+      {railOpen && (
+        <button type="button" className="ss-rail-backdrop" aria-label="Close menu" onClick={() => setRailOpen(false)} />
+      )}
+      <aside className={`sidebar${railCollapsed ? ' is-collapsed' : ''}`}>
         <div className="sidebar-header">
-          <Link to="/" className="ss-brand-link">
-            <BrandLogo />
-          </Link>
+          {railCollapsed ? (
+            <button
+              type="button"
+              className="ss-rail-toggle"
+              aria-label="Expand sidebar"
+              onClick={() => setRailCollapsed(false)}
+            >
+              <PanelLeft size={18} />
+            </button>
+          ) : (
+            <>
+              <Link to="/" className="ss-brand-link" title="Smriti Saarthi">
+                <BrandLogo rail compact={false} />
+              </Link>
+              <button
+                type="button"
+                className="ss-rail-toggle"
+                aria-label="Collapse sidebar"
+                onClick={() => {
+                  if (window.matchMedia('(max-width: 860px)').matches) setRailOpen(false);
+                  else setRailCollapsed(true);
+                }}
+              >
+                <PanelLeftClose size={18} />
+              </button>
+            </>
+          )}
         </div>
 
-        <nav className="sidebar-nav">
-          {MODULES.filter((mod) => !SIDEBAR_HIDDEN.has(mod.id) && !mod.isSpecial).map((mod) => {
-            const isActive = tabs.find((tab) => tab.id === mod.id && tab.instanceId === activeTabId);
-            return (
+        <button
+          type="button"
+          className="ss-gpt-new"
+          onClick={() => {
+            handleOpenModule(MODULES[0]);
+            setRailOpen(false);
+          }}
+        >
+          <SquarePen size={16} />
+          <span className="ss-rail-label">New day</span>
+        </button>
+
+        <div className="ss-gpt-scroll">
+          <p className="ss-rail-kicker">Today</p>
+          <nav className="sidebar-nav">
+            {todayModules.map(renderNavItem)}
+          </nav>
+          <p className="ss-rail-kicker">More</p>
+          <nav className="sidebar-nav">
+            {moreModules.map(renderNavItem)}
+          </nav>
+          <p className="ss-rail-kicker">Open now</p>
+          <nav className="sidebar-nav ss-gpt-recents">
+            {tabs.map((tab) => (
               <a
-                key={mod.id}
+                key={tab.instanceId}
                 href="#"
-                className={`nav-item ${isActive ? 'active' : ''}`}
-                onClick={(e) => { e.preventDefault(); handleOpenModule(mod); }}
+                className={`nav-item ${tab.instanceId === activeTabId ? 'active' : ''}`}
+                title={moduleTitle(tab.id)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setActiveTabId(tab.instanceId);
+                  setRailOpen(false);
+                }}
               >
-                <mod.icon size={18} />
-                {moduleTitle(mod.id)}
+                <tab.icon size={16} />
+                <span className="ss-rail-copy">
+                  <span className="ss-rail-label">{moduleTitle(tab.id)}</span>
+                </span>
               </a>
-            );
-          })}
-        </nav>
+            ))}
+          </nav>
+        </div>
 
         <div className="sidebar-footer">
-          <button type="button" className="ss-emergency-nav" onClick={openEmergency}>
+          <button type="button" className="ss-emergency-nav" onClick={() => { openEmergency(); setRailOpen(false); }}>
             <ShieldAlert size={18} />
             <div className="help-now-content">
               <span className="help-now-title">Emergency Help</span>
@@ -289,15 +406,16 @@ function UserWorkspace() {
             <p>A quiet day. Medicine, a little game, a little talk.</p>
           </div>
           <div className="top-bar-right">
-            <button type="button" className="ss-mobile-more-btn" onClick={() => setShowMoreNav(true)}>
-              All screens
+            <button type="button" className="ss-mobile-more-btn" onClick={() => setRailOpen(true)}>
+              <Menu size={18} />
+              Menu
             </button>
             {session?.verified ? (
               <button type="button" className="ss-home-ghost" onClick={signOut}>
                 Sign out
               </button>
             ) : (
-              <button type="button" className="ss-home-ghost" onClick={() => openAuth('login')}>
+              <button type="button" className="ss-home-ghost" onClick={() => openAuth('signup')}>
                 Sign in
               </button>
             )}
@@ -322,6 +440,16 @@ function UserWorkspace() {
           </div>
         </header>
         {showEmergency && <EmergencyPanel onClose={() => setShowEmergency(false)} />}
+        <SarthiAssistRuntime
+          panelOpen={showAssist}
+          onPanelOpen={() => setShowAssist(true)}
+          onPanelClose={() => setShowAssist(false)}
+          paused={assistPaused}
+          muted={assistMuted}
+          onMutedChange={setAssistMuted}
+          onLiveChange={setAssistLive}
+          authenticated={assistReady}
+        />
 
         {showTabs && (
           <div className="tab-system">
@@ -350,20 +478,30 @@ function UserWorkspace() {
           {tabs.map((tab) => {
             const Component = tab.component;
             const isActive = activeTabId === tab.instanceId;
+            const fill = tab.id === 'ai';
             return (
               <div
                 key={tab.instanceId}
                 className={[
                   'dashboard-scroll',
                   'ss-tab-pane',
-                  tab.id === 'ai' ? 'dashboard-scroll-fill' : '',
+                  fill ? 'dashboard-scroll-fill' : '',
                   isActive ? 'is-active' : 'is-hidden',
                 ].filter(Boolean).join(' ')}
                 hidden={!isActive}
               >
-                <TabErrorBoundary>
-                  <Component />
-                </TabErrorBoundary>
+                {fill ? (
+                  <TabErrorBoundary>
+                    <Component />
+                  </TabErrorBoundary>
+                ) : (
+                  <div className="ss-page-stack">
+                    <TabErrorBoundary>
+                      <Component />
+                    </TabErrorBoundary>
+                    <Footer />
+                  </div>
+                )}
               </div>
             );
           })}
@@ -449,6 +587,9 @@ function App() {
         <Route path="/" element={<HomeLanding />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/user" element={<UserWorkspace />} />
+        <Route path="/talk" element={<UserWorkspace boot="talk" />} />
+        <Route path="/assist" element={<UserWorkspace boot="assist" />} />
+        <Route path="/stories" element={<UserWorkspace boot="stories" />} />
       <Route path="/caregiver" element={<CaregiverLayout />}>
         <Route index element={<CgOverview />} />
         <Route path="routine" element={<CgRoutine />} />

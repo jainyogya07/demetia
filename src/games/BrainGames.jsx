@@ -90,14 +90,23 @@ const GAME_COMPONENTS = {
 };
 
 export default function BrainGames() {
-  const { gameIntent } = useAppNav();
+  const { gameIntent, setActiveGameId } = useAppNav();
   const [activeGame, setActiveGame] = useState(null);
 
   useEffect(() => {
-    if (gameIntent?.gameId && GAME_COMPONENTS[gameIntent.gameId]) {
+    if (!gameIntent?.ts) return;
+    if (gameIntent.gameId && GAME_COMPONENTS[gameIntent.gameId]) {
       setActiveGame(gameIntent.gameId);
+    } else {
+      setActiveGame(null);
     }
   }, [gameIntent]);
+
+  useEffect(() => {
+    setActiveGameId?.(activeGame);
+  }, [activeGame, setActiveGameId]);
+
+  useEffect(() => () => setActiveGameId?.(null), [setActiveGameId]);
 
   if (activeGame) {
     const GameComponent = GAME_COMPONENTS[activeGame];

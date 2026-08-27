@@ -103,7 +103,7 @@ const SaheliCallStage = ({
 };
 
 const AICompanion = () => {
-  const { openModule, aiIntent } = useAppNav();
+  const { openModule, aiIntent, currentModuleId } = useAppNav();
   const { language } = useI18n();
   const { prefs } = usePrefs();
   const voiceName = voiceNameForGender(prefs.voice?.gender);
@@ -129,6 +129,7 @@ const AICompanion = () => {
   } = useGeminiLive({
     uiLanguageName: language.englishName,
     voiceName,
+    persona: 'companion',
     gender: prefs.voice?.gender === 'male' ? 'male' : 'female',
   });
 
@@ -189,20 +190,35 @@ const AICompanion = () => {
   }, [aiIntent]);
 
   useEffect(() => {
-    const onGameStart = () => {
+    if (currentModuleId === 'ai') return undefined;
+    stopGeneration();
+    disconnect();
+    setMode('text');
+    return undefined;
+  }, [currentModuleId, disconnect, stopGeneration]);
+
+  useEffect(() => {
+    const dropLive = () => {
       stopGeneration();
       disconnect();
+      setMode('text');
+    };
+    const onGameStart = () => dropLive();
+    const onClaim = (event) => {
+      if (event.detail?.owner && event.detail.owner !== 'companion') dropLive();
     };
     const onGameStop = () => {
       setPlaybackMuted?.(false);
     };
     const offStart = onVoice(VOICE_EVENTS.GAME_START, onGameStart);
     const offStop = onVoice(VOICE_EVENTS.GAME_STOP, onGameStop);
+    const offClaim = onVoice(VOICE_EVENTS.VOICE_CLAIM, onClaim);
     return () => {
       offStart();
       offStop();
+      offClaim();
     };
-  }, [disconnect, stopGeneration]);
+  }, [disconnect, stopGeneration, setPlaybackMuted]);
 
   useEffect(() => {
     const el = captionsBodyRef.current;

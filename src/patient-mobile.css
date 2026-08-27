@@ -14,7 +14,36 @@
   }
 
   .ss-patient-shell .sidebar {
-    display: none;
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 60;
+    width: min(280px, 88vw);
+    transform: translateX(-105%);
+    transition: transform 0.22s ease;
+    box-shadow: 8px 0 32px rgba(18, 40, 34, 0.12);
+  }
+
+  .ss-patient-shell.is-rail-open .sidebar {
+    transform: translateX(0);
+  }
+
+  .ss-patient-shell .sidebar.is-collapsed {
+    width: min(280px, 88vw);
+  }
+
+  .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-rail-label,
+  .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-brand-text,
+  .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-rail-kicker,
+  .ss-patient-shell.is-rail-open .sidebar.is-collapsed .help-now-content {
+    display: block;
+  }
+
+  .ss-patient-shell.is-rail-open .sidebar.is-collapsed .nav-item {
+    justify-content: flex-start;
+    padding: 10px 16px;
   }
 
   .ss-mobile-more-btn {
@@ -62,6 +91,7 @@
   }
 
   .ss-patient-shell .tab-system {
+    display: flex;
     padding: 0 10px;
     gap: 6px;
   }
@@ -208,6 +238,11 @@
   .granth-home .bottom-grid {
     grid-template-columns: 1fr;
     gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .granth-home .dashboard {
+    padding: 2px 0 8px;
   }
 
   .granth-home .voice-companion-card,

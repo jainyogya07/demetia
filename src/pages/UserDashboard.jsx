@@ -6,6 +6,7 @@ import SafetyStatus from '../components/SafetyStatus';
 import CareCircleWidget from '../components/CareCircle';
 import MemoryBook from '../components/MemoryBook';
 import BottomStatus from '../components/BottomStatus';
+import HomeChat from '../components/HomeChat';
 
 function UserDashboard() {
   return (
@@ -28,6 +29,7 @@ function UserDashboard() {
         </div>
 
         <BottomStatus />
+        <HomeChat />
       </div>
     </div>
   );

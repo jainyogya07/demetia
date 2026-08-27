@@ -78,6 +78,14 @@
   grid-template-columns: 1fr 1fr;
   gap: 10px;
 }
+.af-row > * {
+  min-width: 0;
+}
+.af-form input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
 
 .af-form label {
   display: flex;
@@ -171,9 +179,12 @@
   background: #fbfaf7;
 }
 
-.af-hint {
-  margin: 12px 0 0;
-  font-size: 12px;
+.af-otp-show {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 750;
+  letter-spacing: 0.28em;
+  text-align: center;
   color: #176b58;
 }
 

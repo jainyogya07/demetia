@@ -13,11 +13,13 @@
     "db:migrate": "node scripts/db.mjs migrate",
     "db:seed": "node scripts/db.mjs seed",
     "api": "node server/api.mjs",
+    "mailpit": "mailpit",
     "auth": "uvicorn main:app --reload --app-dir backend --port 8000"
   },
   "dependencies": {
     "leaflet": "^1.9.4",
     "lucide-react": "^1.31.0",
+    "nodemailer": "^9.0.5",
     "pg": "^8.23.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

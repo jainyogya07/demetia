@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { voiceNameForGender } from '../data/liveVoices';
-import { notifyGameVoiceStart, notifyGameVoiceStop } from '../lib/voiceBus';
+import { claimVoice, releaseVoice, VOICE_EVENTS, onVoice } from '../lib/voiceBus';
 import { useGeminiLive } from './useGeminiLive';
 import { useGameSpeech } from './useGameSpeech';
 
@@ -38,6 +38,8 @@ export function useStoryVoice({ lang = 'en', gender = 'female', languageName = '
   sendTextRef.current = sendText;
   const connectRef = useRef(connect);
   connectRef.current = connect;
+  const disconnectRef = useRef(disconnect);
+  disconnectRef.current = disconnect;
   const isSpeakingRef = useRef(isSpeaking);
   isSpeakingRef.current = isSpeaking;
 
@@ -130,11 +132,11 @@ export function useStoryVoice({ lang = 'en', gender = 'female', languageName = '
     heardSpeechRef.current = false;
     stopGeneration();
     browser.stop();
-    notifyGameVoiceStop();
+    releaseVoice('stories');
   }, [stopGeneration, browser]);
 
   const prepare = useCallback(() => {
-    notifyGameVoiceStart();
+    claimVoice('stories');
     liveFailedRef.current = false;
     connectRef.current({ startMic: false, mode: 'text' });
   }, []);
@@ -145,7 +147,7 @@ export function useStoryVoice({ lang = 'en', gender = 'female', languageName = '
       onEnd?.();
       return;
     }
-    notifyGameVoiceStart();
+    claimVoice('stories');
     browser.stop();
     clearTimers();
     minMsRef.current = minMs;
@@ -176,11 +178,24 @@ export function useStoryVoice({ lang = 'en', gender = 'female', languageName = '
     window.setTimeout(run, pauseMs || 0);
   }, [browser, isConnected, speakBrowser, sendStory]);
 
+  useEffect(() => {
+    const dropIfNotOwner = (event) => {
+      if (event.detail?.owner === 'stories') return;
+      clearTimers();
+      pendingRef.current = null;
+      waitingSpeechRef.current = false;
+      stopGeneration();
+      browser.stop();
+      disconnectRef.current();
+    };
+    return onVoice(VOICE_EVENTS.VOICE_CLAIM, dropIfNotOwner);
+  }, [browser, stopGeneration]);
+
   useEffect(() => () => {
     clearTimers();
     stopGeneration();
     disconnect();
-    notifyGameVoiceStop();
+    releaseVoice('stories');
   }, [disconnect, stopGeneration]);
 
   return {

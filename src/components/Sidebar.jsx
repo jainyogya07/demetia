@@ -108,12 +108,9 @@ function Sidebar({ openTabs, setOpenTabs }) {
 
       {/* LOGO / BRAND */}
       <div className="sidebar-brand">
-        <div className="brand-icon">
-          🧠
-        </div>
-
+        <img className="sidebar-brand-logo" src="/smriti-saarthi-logo.png" alt="" />
         <div>
-          <h1>समवेती सारथी</h1>
+          <h1>स्मृति सारथी</h1>
         </div>
       </div>
 

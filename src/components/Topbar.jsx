@@ -68,8 +68,10 @@ function Topbar() {
         </div>
 
         <button className="notification-button">
-          <Bell size={23} />
-          <span className="notification-badge">3</span>
+          <div className="notification-icon-wrapper">
+            <Bell size={23} />
+            <span className="notification-badge">3</span>
+          </div>
           <small>Alerts</small>
         </button>
 

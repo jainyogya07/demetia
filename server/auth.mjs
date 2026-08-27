@@ -1,7 +1,8 @@
 /** Phone OTP + Postgres users. Email send is optional (FastAPI). */
 
-const AUTH_URL = process.env.AUTH_INTERNAL_URL || 'http://127.0.0.1:8000';
-const DEV_MODE = ['1', 'true', 'yes'].includes(String(process.env.AUTH_DEV_MODE || '').toLowerCase());
+import { sendAppMail, isSmtpConfigured, mailPreviewUrl } from './mail.mjs';
+const AUTH_DEV_MODE = String(process.env.AUTH_DEV_MODE || 'true').toLowerCase();
+const DEV_MODE = AUTH_DEV_MODE !== 'false' && AUTH_DEV_MODE !== '0' && AUTH_DEV_MODE !== 'no';
 
 const memUsers = new Map();
 const memOtps = new Map();
@@ -39,17 +40,15 @@ function publicUser(row) {
   };
 }
 
-async function emailOtp(email, otp) {
-  if (!email) return;
-  try {
-    await fetch(`${AUTH_URL}/send-email-otp`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, otp }),
-    });
-  } catch {
-    /* SMTP optional — phone OTP still stored */
-  }
+async function deliverOtp({ email, otp }) {
+  if (!email) return { emailSent: false, reason: 'no-email' };
+  if (!isSmtpConfigured()) return { emailSent: false, reason: 'no-smtp' };
+  const mail = await sendAppMail({
+    to: email,
+    subject: 'स्मृति सारथी — your sign-in code',
+    text: `Your Smriti Saarthi code is ${otp}. It expires in 5 minutes.\n\nIf you did not ask for this, ignore the mail.`,
+  });
+  return { emailSent: Boolean(mail.ok), reason: mail.reason || null, previewUrl: mail.previewUrl || mailPreviewUrl() };
 }
 
 export function createAuthHandlers({ withDb, json, readBody }) {
@@ -150,8 +149,8 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     if (phone.length !== 10) return { status: 400, body: { error: 'Enter a 10-digit mobile number.' } };
     if (!firstName || !lastName) return { status: 400, body: { error: 'First and last name are required.' } };
     if (!birthDate) return { status: 400, body: { error: 'Choose your date of birth.' } };
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return { status: 400, body: { error: 'Email looks off — leave it blank or fix it.' } };
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return { status: 400, body: { error: 'Enter a working email. The code is sent there, not by SMS.' } };
     }
     const existing = await getUserByPhone(phone);
     if (existing?.verified) {
@@ -160,15 +159,46 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     const code = newCode();
     const pending = { firstName, lastName, birthDate, email, phone, role: 'user' };
     const store = await saveOtp(phone, code, 'signup', pending);
-    await emailOtp(email, code);
+    const delivered = await deliverOtp({ email, otp: code });
+    const preview = delivered.previewUrl || '';
+    const mailNote = preview
+      ? `Code sent. Open ${preview} (Mailpit) to read the OTP.`
+      : `Code mailed to ${email}. Check inbox and spam.`;
+    if (!delivered.emailSent) {
+      const hint = delivered.reason === 'mailpit-not-running'
+        ? 'Start Mailpit: npm run mailpit (or brew install mailpit). Then try again.'
+        : `Could not send mail (${delivered.reason || 'smtp'}).`;
+      if (!DEV_MODE) return { status: 502, body: { error: hint } };
+      return {
+        status: 200,
+        body: {
+          ok: true,
+          source: store,
+          smsSent: false,
+          emailSent: false,
+          channel: 'screen',
+          phone,
+          otp: code,
+          devOtp: code,
+          previewUrl: preview,
+          message: hint,
+        },
+      };
+    }
     const payload = {
       ok: true,
       source: store,
-      channel: email ? 'email' : 'phone',
+      smsSent: false,
+      emailSent: true,
+      channel: preview ? 'mailpit' : 'email',
       phone,
-      message: email ? 'We sent a 6-digit code to your email.' : 'Enter the 6-digit code to confirm this number.',
+      previewUrl: preview,
+      message: mailNote,
     };
-    if (DEV_MODE || store === 'memory') payload.devOtp = code;
+    if (DEV_MODE) {
+      payload.otp = code;
+      payload.devOtp = code;
+    }
     return { status: 200, body: payload };
   }
 
@@ -182,22 +212,56 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     if (!namesMatch(name, user)) {
       return { status: 403, body: { error: 'Name does not match this number.' } };
     }
+    const mailTo = String(body.email || user.email || '').trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailTo)) {
+      return { status: 400, body: { error: 'This account needs an email. Enter the email to receive the code.' } };
+    }
     const code = newCode();
     const store = await saveOtp(phone, code, 'login', {
       firstName: user.first_name,
       lastName: user.last_name,
-      email: user.email,
+      email: mailTo,
       phone,
     });
-    await emailOtp(user.email, code);
-    const payload = {
+    const delivered = await deliverOtp({ email: mailTo, otp: code });
+    const preview = delivered.previewUrl || '';
+    const mailNote = preview
+      ? `Code sent. Open ${preview} (Mailpit) to read the OTP.`
+      : `Code mailed to ${mailTo}. Check inbox and spam.`;
+    if (!delivered.emailSent) {
+      const hint = delivered.reason === 'mailpit-not-running'
+        ? 'Start Mailpit: npm run mailpit (or brew install mailpit). Then try again.'
+        : `Could not send mail (${delivered.reason || 'smtp'}).`;
+      if (!DEV_MODE) return { status: 502, body: { error: hint } };
+      return {
+        status: 200,
+        body: {
+          ok: true,
+          source: store,
+          smsSent: false,
+          emailSent: false,
+          phone,
+          otp: code,
+          devOtp: code,
+          previewUrl: preview,
+          message: hint,
+        },
+      };
+    }
+    const bodyOut = {
       ok: true,
       source: store,
+      smsSent: false,
+      emailSent: true,
       phone,
-      message: user.email ? 'We sent a code to the email on this account.' : 'Enter the 6-digit code.',
+      previewUrl: preview,
+      message: mailNote,
     };
-    if (DEV_MODE || store === 'memory') payload.devOtp = code;
-    return { status: 200, body: payload };
+    if (DEV_MODE) {
+      bodyOut.otp = code;
+      bodyOut.devOtp = code;
+    }
+    return { status: 200, body: bodyOut };
   }
 
   async function verify(body) {
@@ -228,6 +292,8 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     };
   }
 
+  const AUTH_POST = new Set(['/api/auth/signup', '/api/auth/login', '/api/auth/verify']);
+
   return {
     async handle(req, res, path) {
       if (req.method === 'GET' && path === '/api/auth/health') {
@@ -235,10 +301,11 @@ export function createAuthHandlers({ withDb, json, readBody }) {
           ok: true,
           database: Boolean(process.env.DATABASE_URL?.trim()),
           devMode: DEV_MODE,
+          smtp: isSmtpConfigured(),
         });
         return true;
       }
-      if (req.method !== 'POST') return false;
+      if (req.method !== 'POST' || !AUTH_POST.has(path)) return false;
       let body;
       try {
         body = await readBody(req);
@@ -249,8 +316,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       let out;
       if (path === '/api/auth/signup') out = await startSignup(body);
       else if (path === '/api/auth/login') out = await startLogin(body);
-      else if (path === '/api/auth/verify') out = await verify(body);
-      else return false;
+      else out = await verify(body);
       json(res, out.status, out.body);
       return true;
     },

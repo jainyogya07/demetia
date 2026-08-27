@@ -426,6 +426,7 @@
   margin-top: 19px;
 }
 
+.primary-actions a,
 .primary-actions button {
   display: flex;
   align-items: center;
@@ -436,6 +437,113 @@
   border-radius: 9px;
   background: white;
   color: #286851;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.family-chat-card {
+  padding: 0;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.family-chat-card.is-open {
+  min-height: 320px;
+}
+
+.family-chat-thread {
+  flex: 1;
+  min-height: 160px;
+  padding: 16px 16px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f8faf9;
+}
+
+.family-chat-bubble {
+  margin: 0;
+  max-width: 88%;
+  padding: 9px 12px;
+  border-radius: 14px 14px 14px 4px;
+  background: #fff;
+  border: 1px solid #e5ebe7;
+  color: #2d4039;
+  font-size: 13px;
+}
+
+.family-chat-bubble.is-me {
+  align-self: flex-end;
+  border-radius: 14px 14px 4px 14px;
+  background: #176b58;
+  border-color: #176b58;
+  color: #fff;
+}
+
+.family-chat-compose {
+  display: flex;
+  gap: 8px;
+  padding: 8px 14px 10px;
+  background: #f8faf9;
+}
+
+.family-chat-compose input {
+  flex: 1;
+  border: 1px solid #dce7e1;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.family-chat-compose button {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  background: #176b58;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.family-chat-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  padding: 12px 14px 14px;
+  border-top: 1px solid #edf1ee;
+  background: #fff;
+}
+
+.family-chat-actions a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 9px;
+  background: #eef6fb;
+  color: #1d6aa5;
+  font-size: 11px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.family-chat-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border: none;
+  border-radius: 9px;
+  background: #eef6f2;
+  color: #176b58;
   font-size: 11px;
   font-weight: 700;
   cursor: pointer;

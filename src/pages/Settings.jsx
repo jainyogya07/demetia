@@ -1,4 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { cancelFieldIds, enqueueFieldType, focusField, whenTypeQueueIdle } from '../lib/fieldTypeQueue';
+import { pickSpokenField } from '../lib/sarthiAssist';
 import {
   User, Accessibility, Bell, ShieldCheck, Lock, Globe, Phone, Database,
   Download, Trash2, ShieldAlert, Camera,
@@ -35,9 +37,80 @@ function Settings() {
   const [dataNote, setDataNote] = useState('');
   const photoInputRef = useRef(null);
 
+  const [assistFill, setAssistFill] = useState(false);
+  const profileDraftRef = useRef(profileDraft);
+  profileDraftRef.current = profileDraft;
+
   const saveProfile = () => {
     updatePrefs({ profile: profileDraft });
   };
+
+  const applySettingsFields = (fields = {}, ask) => {
+    const keys = ['name', 'phone', 'state', 'district'];
+    setAssistFill(true);
+    let queued = 0;
+    keys.forEach((key) => {
+      const raw = fields[key];
+      if (!raw || raw === '—') return;
+      const value = pickSpokenField(raw, key);
+      if (!value) return;
+      if (String(profileDraftRef.current[key] || '') === String(value)) return;
+      queued += 1;
+      enqueueFieldType(`settings-${key}`, String(value), {
+        onTick: (slice) => {
+          setProfileDraft((prev) => ({ ...prev, [key]: slice }));
+        },
+      });
+    });
+    const focusId = `settings-${ask || fields._ask || 'name'}`;
+    window.setTimeout(() => {
+      document.getElementById('settings-profile')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (!queued) focusField(focusId);
+    }, 80);
+    if (queued) whenTypeQueueIdle(() => focusField(focusId));
+  };
+
+  useEffect(() => () => cancelFieldIds(['settings-name', 'settings-phone', 'settings-state', 'settings-district']), []);
+
+  useEffect(() => {
+    const onControl = (event) => {
+      const action = event.detail?.action;
+      const fields = event.detail?.fields || event.detail?.profile || {};
+      if (action === 'fill-profile' || action === 'fill' || action === 'start') {
+        const clearKeys = event.detail?.clear || [];
+        if (clearKeys.length) {
+          cancelFieldIds(clearKeys.map((key) => `settings-${key}`));
+          setProfileDraft((prev) => {
+            const next = { ...prev };
+            clearKeys.forEach((key) => {
+              if (key === 'photo' || key === 'photoDataUrl') next.photoDataUrl = '';
+              else next[key] = '';
+            });
+            return next;
+          });
+        }
+        applySettingsFields(fields, event.detail?.ask);
+        if (action === 'fill-profile') updatePrefs({ profile: fields });
+        return;
+      }
+      if (action === 'save') {
+        applySettingsFields(fields);
+        whenTypeQueueIdle(() => {
+          updatePrefs({
+            profile: {
+              name: fields.name === '—' ? '' : (fields.name || ''),
+              phone: fields.phone === '—' ? '' : (fields.phone || ''),
+              state: fields.state === '—' ? '' : (fields.state || ''),
+              district: fields.district === '—' ? '' : (fields.district || ''),
+            },
+          });
+          setAssistFill(false);
+        });
+      }
+    };
+    window.addEventListener('sarthi:settings-control', onControl);
+    return () => window.removeEventListener('sarthi:settings-control', onControl);
+  }, [updatePrefs]);
 
   const onPickPhoto = (event) => {
     const file = event.target.files?.[0];
@@ -133,14 +206,11 @@ function Settings() {
             <p>{t('settingsPage.profileLead')}</p>
           </div>
         </div>
-        <div className="granth-page-card settings-card">
+        <div id="settings-profile" className={`granth-page-card settings-card${assistFill ? ' is-assist-fill' : ''}`}>
+          {assistFill && <p className="mb-assist-hint">Sarthi Assist is filling this. Say name, phone, state, district.</p>}
           <div className="settings-photo-row">
-            <div className="settings-photo-preview" aria-hidden={!profileDraft.photoDataUrl}>
-              {profileDraft.photoDataUrl ? (
-                <img src={profileDraft.photoDataUrl} alt="" />
-              ) : (
-                <User size={28} />
-              )}
+            <div className="settings-photo-preview" aria-hidden="true">
+              <img src={profileDraft.photoDataUrl || '/photos/default-avatar.png'} alt="" />
             </div>
             <div className="settings-photo-actions">
               <input
@@ -172,9 +242,11 @@ function Settings() {
               <p className="settings-photo-hint">{t('settingsPage.photoHint')}</p>
             </div>
           </div>
+          <div className="settings-profile-grid">
           <label className="settings-field">
             <span>{t('settingsPage.name')}</span>
             <input
+              id="settings-name"
               value={profileDraft.name}
               onChange={(e) => setProfileDraft({ ...profileDraft, name: e.target.value })}
             />
@@ -182,26 +254,28 @@ function Settings() {
           <label className="settings-field">
             <span>{t('settingsPage.phone')}</span>
             <input
+              id="settings-phone"
               value={profileDraft.phone}
               onChange={(e) => setProfileDraft({ ...profileDraft, phone: e.target.value })}
               inputMode="tel"
             />
           </label>
-          <div className="settings-field-row">
-            <label className="settings-field">
-              <span>{t('settingsPage.state')}</span>
-              <input
-                value={profileDraft.state}
-                onChange={(e) => setProfileDraft({ ...profileDraft, state: e.target.value })}
-              />
-            </label>
-            <label className="settings-field">
-              <span>{t('settingsPage.district')}</span>
-              <input
-                value={profileDraft.district}
-                onChange={(e) => setProfileDraft({ ...profileDraft, district: e.target.value })}
-              />
-            </label>
+          <label className="settings-field">
+            <span>{t('settingsPage.state')}</span>
+            <input
+              id="settings-state"
+              value={profileDraft.state}
+              onChange={(e) => setProfileDraft({ ...profileDraft, state: e.target.value })}
+            />
+          </label>
+          <label className="settings-field">
+            <span>{t('settingsPage.district')}</span>
+            <input
+              id="settings-district"
+              value={profileDraft.district}
+              onChange={(e) => setProfileDraft({ ...profileDraft, district: e.target.value })}
+            />
+          </label>
           </div>
           <div className="settings-row">
             <div>
@@ -261,7 +335,7 @@ function Settings() {
           <Globe size={18} />
           <div>
             <h3>Care Agent voice</h3>
-            <p>Female (Kore) or male (Charon). Switch reconnects the live call.</p>
+            <p>Female or male. Switch reconnects the live call.</p>
           </div>
         </div>
         <div className="granth-page-card settings-card">

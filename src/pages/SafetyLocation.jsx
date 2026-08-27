@@ -6,7 +6,7 @@ import {
 import { useAppNav } from '../AppNavContext';
 import { CARE_CIRCLE, SAFETY } from '../data/patientDashboard';
 import SafetyMap from '../components/SafetyMap';
-import { CHECKIN_KEY, formatWhen, loadCheckIns, pingLive } from '../lib/liveState';
+import { formatWhen, loadCheckIns, recordCheckIn, subscribeLive } from '../lib/liveState';
 
 const HOME = { lat: 26.1445, lng: 91.7362, label: 'Home — Zoo Road, Guwahati' };
 
@@ -68,18 +68,24 @@ export default function SafetyLocation() {
   }, [refreshLocation]);
 
   const checkIn = () => {
-    const row = {
-      id: `${Date.now()}`,
-      at: new Date().toISOString(),
-      place: inside ? 'Home — Safe Zone' : locLabel,
+    recordCheckIn({
       lat: coords.lat,
       lng: coords.lng,
-    };
-    const next = [row, ...checkIns].slice(0, 8);
-    setCheckIns(next);
-    localStorage.setItem(CHECKIN_KEY, JSON.stringify(next));
-    pingLive();
+      place: inside ? 'Home — Safe Zone' : locLabel,
+    });
+    setCheckIns(loadCheckIns());
   };
+
+  useEffect(() => subscribeLive(() => setCheckIns(loadCheckIns())), []);
+
+  useEffect(() => {
+    const onControl = (event) => {
+      if (event.detail?.action === 'refresh') refreshLocation();
+      if (event.detail?.action === 'check-in') checkIn();
+    };
+    window.addEventListener('sarthi:safety-control', onControl);
+    return () => window.removeEventListener('sarthi:safety-control', onControl);
+  }, [refreshLocation, coords, inside, locLabel]);
 
   return (
     <div className="ss-safety-page">

@@ -1,11 +1,13 @@
-import { BookOpen, ChevronRight, Music } from "lucide-react";
+import { BookOpen, ChevronRight, Music, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAppNav } from "../AppNavContext";
 import { MEMORIES_FALLBACK } from "../data/memoriesFallback";
+import { hideAlbum, hiddenAlbums, MEMORY_ALBUMS } from "../lib/memoryAlbums";
 
 function MemoryBook() {
   const { openModule } = useAppNav();
   const [rows, setRows] = useState(MEMORIES_FALLBACK);
+  const [hidden, setHidden] = useState(() => hiddenAlbums());
 
   useEffect(() => {
     fetch("/api/memories")
@@ -17,12 +19,17 @@ function MemoryBook() {
       .catch(() => setRows(MEMORIES_FALLBACK));
   }, []);
 
-  const albums = [
-    { title: "My Family", album: "My Family" },
-    { title: "My Home & Village", album: "My Home & Village" },
-    { title: "Special Moments", album: "Special Moments" },
-    { title: "Favorite Sounds", album: "Favorite Sounds", type: "sound" },
-  ].map((slot) => {
+  useEffect(() => {
+    const onAlbum = (event) => {
+      if (event.detail?.action === 'remove' && event.detail.album) {
+        setHidden(hiddenAlbums());
+      }
+    };
+    window.addEventListener('sarthi:memory-album', onAlbum);
+    return () => window.removeEventListener('sarthi:memory-album', onAlbum);
+  }, []);
+
+  const albums = MEMORY_ALBUMS.filter((slot) => !hidden.includes(slot.album)).map((slot) => {
     const matches = rows.filter((m) => m.album === slot.album);
     return {
       ...slot,
@@ -44,30 +51,46 @@ function MemoryBook() {
 
       <div className="memory-list">
         {albums.map((memory) => (
-          <button
-            type="button"
-            className="memory-item"
-            key={memory.title}
-            onClick={() => openModule("memory-book")}
-          >
-            {memory.type === "sound" ? (
-              <div className="memory-sound-icon">
-                <Music size={24} />
+          <div className="memory-item-wrap" key={memory.title}>
+            <button
+              type="button"
+              className="memory-item"
+              onClick={() => openModule("memory-book")}
+            >
+              {memory.type === "sound" ? (
+                <div className="memory-sound-icon">
+                  <Music size={24} />
+                </div>
+              ) : (
+                <img
+                  src={memory.image}
+                  alt=""
+                  className="memory-thumbnail"
+                />
+              )}
+              <div className="memory-item-content">
+                <strong>{memory.title}</strong>
+                <span>{memory.subtitle}</span>
               </div>
-            ) : (
-              <img
-                src={memory.image}
-                alt={memory.title}
-                className="memory-thumbnail"
-              />
-            )}
-            <div className="memory-item-content">
-              <strong>{memory.title}</strong>
-              <span>{memory.subtitle}</span>
-            </div>
-            <ChevronRight className="memory-arrow" size={18} />
-          </button>
+              <ChevronRight className="memory-arrow" size={18} />
+            </button>
+            <button
+              type="button"
+              className="memory-item-remove"
+              aria-label={`Remove ${memory.title}`}
+              onClick={(event) => {
+                event.stopPropagation();
+                hideAlbum(memory.album);
+                setHidden(hiddenAlbums());
+              }}
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
         ))}
+        {!albums.length && (
+          <p className="memory-empty">No memory books on the home card right now.</p>
+        )}
       </div>
 
       <button

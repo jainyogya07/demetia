@@ -93,6 +93,15 @@ export function markRoutineDone(id, now = new Date()) {
   return getRoutineItems(now);
 }
 
+export function unmarkRoutineDone(id, now = new Date()) {
+  const all = readJson(ROUTINE_KEY, {});
+  const day = todayKey(now);
+  const row = { ...(all[day] || {}) };
+  delete row[id];
+  writeJson(ROUTINE_KEY, { ...all, [day]: row });
+  return getRoutineItems(now);
+}
+
 export function recordGamePlay({ gameId, title, score, category = 'Memory' }) {
   const log = readJson(GAME_LOG_KEY, []);
   const next = [
@@ -161,6 +170,20 @@ export function getProgressSnapshot(now = new Date()) {
     recent: log.slice(0, 6),
     next: routine.find((r) => !r.completed) || routine[routine.length - 1],
   };
+}
+
+export function recordCheckIn({ lat, lng, place }) {
+  const row = {
+    id: `${Date.now()}`,
+    at: new Date().toISOString(),
+    place: place || 'Home',
+    lat,
+    lng,
+  };
+  const next = [row, ...loadCheckIns()].slice(0, 8);
+  writeJson(CHECKIN_KEY, next);
+  pingLive();
+  return row;
 }
 
 export function getCircleStatus(now = new Date()) {

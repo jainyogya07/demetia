@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import {
   CalendarDays,
   CheckCircle2,
@@ -11,7 +11,7 @@ import {
   Clock3,
   Check,
 } from 'lucide-react';
-import { getRoutineItems, markRoutineDone, pingLive } from '../lib/liveState';
+import { getRoutineItems, markRoutineDone, pingLive, subscribeLive } from '../lib/liveState';
 import './DailyRoutine.css';
 
 const ICONS = {
@@ -34,6 +34,17 @@ const DailyRoutine = () => {
     pingLive();
     setTick((n) => n + 1);
   };
+
+  useEffect(() => subscribeLive(() => setTick((n) => n + 1)), []);
+
+  useEffect(() => {
+    const onControl = (event) => {
+      const itemId = event.detail?.itemId;
+      if (itemId) complete(itemId);
+    };
+    window.addEventListener('sarthi:routine-control', onControl);
+    return () => window.removeEventListener('sarthi:routine-control', onControl);
+  }, []);
 
   return (
     <div className="daily-routine-page">

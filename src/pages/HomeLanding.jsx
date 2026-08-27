@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import { Heart, Brain, Shield, Users, Mic, Gamepad2, ArrowRight, Globe } from 'lucide-react';
+import { Heart, Brain, Shield, Users, Mic, Gamepad2, ArrowRight, Globe, Pause, Play } from 'lucide-react';
 import logoMark from '../assets/smriti-saarthi-logo.png';
+import heroStill from '../assets/hero-landing.jpg';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useI18n } from '../I18nContext';
 import './HomeLanding.css';
@@ -121,6 +122,63 @@ const ROLE_META = [
   { path: '/caregiver', emoji: '👨‍👩‍👧', gradient: 'linear-gradient(135deg, #6b8fa3 0%, #82b1c6 100%)' },
   { path: '/doctor', emoji: '🩺', gradient: 'linear-gradient(135deg, #8b6fa3 0%, #a78bc4 100%)' },
 ];
+const CALM_TRACKS = [
+  { title: 'Prelude for Piano', artist: 'Quiet piano', query: 'Clair de Lune Debussy', id: '4iV5W9uYEdYUVa79Axb7Rh' },
+  { title: 'Sweater Weather', artist: 'The Neighbourhood', id: '2QjOHCTQ1Jl3zawyYOpxh6' },
+  { title: 'Something Just Like This', artist: 'The Chainsmokers · Coldplay', id: '6RUKPb4LETWmmr3iAEQktW' },
+  { title: 'Perfect', artist: 'Ed Sheeran', id: '0tgVpDi06FyKpA1z0VMD4v' },
+  { title: 'Die For You', artist: 'The Weeknd', id: '2LBqCSwhJGcFQeTHMVGwy3' },
+];
+const DEVO_TRACKS = [
+  { title: 'Hanuman Chalisa', artist: 'Shreya Ghoshal', id: '2VnnAlfJ1M2w1G2vwPc4jf' },
+  { title: 'Ram Siya Ram', artist: 'Sachet–Parampara', id: '7i7iHu4wAZ3PBiVJgyYhLG' },
+  { title: 'Shree Hanuman Chalisa', artist: 'Hariharan', id: '6H7fLdt0AeWpuxUKXuXWrx' },
+  { title: 'Om Namah Shivaya', artist: 'Anup Jalota', id: '3ghynhAJ8OOsYf8KpSra4l' },
+  { title: 'Hare Krishna Hare Rama', artist: 'Anup Jalota', id: '6CFKYTz3xLv9tJRQcl5s0t' },
+];
+const FOCUS_TRACKS = [
+  { title: 'Something Just Like This', artist: 'The Chainsmokers · Coldplay', id: '6RUKPb4LETWmmr3iAEQktW' },
+  { title: 'Believer', artist: 'Imagine Dragons', id: '0pqnGHJpmpxLKifKRmU6WP' },
+  { title: 'Eyes Closed', artist: 'Imagine Dragons', id: '4o120XeV8els1S5bu7mzBX' },
+  { title: 'Thunder', artist: 'Imagine Dragons', id: '1zB4vmk8tFRmM9UULNzbLB' },
+  { title: 'Closer', artist: 'The Chainsmokers · Halsey', id: '7BKLCZ1jbUBVqRi2FVlTVw' },
+];
+const MUSIC_TABS = [
+  { id: 'calm', label: 'Calm' },
+  { id: 'devo', label: 'Devotional' },
+  { id: 'focus', label: 'Energy' },
+];
+function tracksFor(tab) {
+  if (tab === 'calm') return CALM_TRACKS;
+  if (tab === 'focus') return FOCUS_TRACKS;
+  return DEVO_TRACKS;
+}
+
+const previewCache = new Map();
+
+async function songPreview(track) {
+  const q = track.query || `${track.title} ${track.artist}`;
+  if (previewCache.has(q)) return previewCache.get(q);
+  const urls = [
+    `/api/music-preview?q=${encodeURIComponent(q)}`,
+    `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=1&country=IN`,
+  ];
+  for (const url of urls) {
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const preview = data.previewUrl || data.results?.[0]?.previewUrl || '';
+      if (preview) {
+        previewCache.set(q, preview);
+        return preview;
+      }
+    } catch {
+      /* try next */
+    }
+  }
+  previewCache.set(q, '');
+  return '';
+}
 
 /* ─── floating particle ─── */
 function Particle({ style }) {
@@ -129,10 +187,19 @@ function Particle({ style }) {
 
 function HomeLanding() {
   const heroRef = useRef(null);
+  const audioRef = useRef(null);
+  const wantPlay = useRef(true);
   const [visible, setVisible] = useState({});
+  const [trackIndex, setTrackIndex] = useState(0);
+  const [musicTab, setMusicTab] = useState('devo');
+  const [musicOn, setMusicOn] = useState(false);
+  const [showFlow, setShowFlow] = useState(false);
+  const [narrow, setNarrow] = useState(false);
   const { lang } = useI18n();
   const copy = COPY[lang] || COPY.en;
   const flowLang = lang === 'hi' ? 'hi' : 'en';
+  const musicTracks = tracksFor(musicTab);
+  const currentTrack = musicTracks[Math.min(trackIndex, musicTracks.length - 1)];
 
   /* intersection observer for scroll-reveal */
   useEffect(() => {
@@ -150,9 +217,109 @@ function HomeLanding() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const media = window.matchMedia('(max-width: 860px)');
+    const sync = () => setNarrow(media.matches);
+    sync();
+    media.addEventListener('change', sync);
+    return () => media.removeEventListener('change', sync);
+  }, []);
+
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el || narrow) return undefined;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setShowFlow(true);
+    }, { rootMargin: '120px' });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [narrow]);
+
+  useEffect(() => {
+    const audio = new Audio();
+    audio.preload = 'auto';
+    audio.playsInline = true;
+    audio.autoplay = true;
+    audio.volume = 0.85;
+    audioRef.current = audio;
+    const unlock = (event) => {
+      if (!wantPlay.current) return;
+      if (event?.target?.closest?.('.hl-now-btn, .hl-track-picker, .hl-music-tabs')) return;
+      audio.play().then(() => setMusicOn(true)).catch(() => {});
+    };
+    window.addEventListener('pointerdown', unlock, true);
+    window.addEventListener('keydown', unlock, true);
+    window.addEventListener('touchstart', unlock, true);
+    return () => {
+      window.removeEventListener('pointerdown', unlock, true);
+      window.removeEventListener('keydown', unlock, true);
+      window.removeEventListener('touchstart', unlock, true);
+      audio.pause();
+      audio.src = '';
+    };
+  }, []);
+
+  useEffect(() => {
+    musicTracks.forEach((track) => {
+      songPreview(track);
+    });
+  }, [musicTracks]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return undefined;
+    let cancelled = false;
+    const onEnded = () => {
+      setTrackIndex((current) => (current + 1) % tracksFor(musicTab).length);
+    };
+    audio.addEventListener('ended', onEnded);
+    (async () => {
+      const src = await songPreview(currentTrack);
+      if (cancelled || !src) return;
+      audio.src = src;
+      if (!wantPlay.current) return;
+      try {
+        await audio.play();
+        setMusicOn(true);
+      } catch {
+        setMusicOn(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+      audio.removeEventListener('ended', onEnded);
+    };
+  }, [currentTrack, musicTab]);
+
+  const playTrack = (index, tab = musicTab) => {
+    wantPlay.current = true;
+    setMusicTab(tab);
+    setTrackIndex(index);
+    const track = tracksFor(tab)[index];
+    const audio = audioRef.current;
+    const q = track?.query || `${track?.title || ''} ${track?.artist || ''}`;
+    const src = previewCache.get(q);
+    if (!audio || !src) return;
+    audio.src = src;
+    audio.play().then(() => setMusicOn(true)).catch(() => {});
+  };
+
+  const toggleMusic = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (musicOn) {
+      wantPlay.current = false;
+      audio.pause();
+      setMusicOn(false);
+      return;
+    }
+    wantPlay.current = true;
+    audio.play().then(() => setMusicOn(true)).catch(() => {});
+  };
+
   /* generate random particles */
   const particles = useRef(
-    Array.from({ length: 18 }, (_, i) => ({
+    Array.from({ length: 8 }, (_, i) => ({
       key: i,
       style: {
         left: `${Math.random() * 100}%`,
@@ -168,9 +335,8 @@ function HomeLanding() {
 
   return (
     <div className="hl">
-      {/* ─── floating particles background ─── */}
       <div className="hl-particles-bg" aria-hidden>
-        {particles.map((p) => (
+        {!narrow && particles.map((p) => (
           <Particle key={p.key} style={p.style} />
         ))}
       </div>
@@ -180,8 +346,8 @@ function HomeLanding() {
         <div className="hl-nav-brand">
           <img src={logoMark} alt="" className="hl-nav-logo" />
           <div className="hl-nav-text">
-            <span className="hl-nav-name">स्मृति साथी</span>
-            <span className="hl-nav-sub">Smriti Saathi</span>
+            <span className="hl-nav-name">Smriti Saarthi</span>
+            <span className="hl-nav-sub">स्मृति सारथी</span>
           </div>
         </div>
         <div className="hl-nav-actions">
@@ -218,14 +384,59 @@ function HomeLanding() {
               <span key={item} className="hl-lang-chip">{item}</span>
             ))}
           </div>
+          <div className="hl-music">
+            <div className="hl-music-tabs" role="tablist">
+              {MUSIC_TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={musicTab === tab.id}
+                  className={musicTab === tab.id ? 'is-active' : ''}
+                  onClick={() => playTrack(0, tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="hl-track-picker" role="list">
+              {musicTracks.map((track, index) => (
+                <button
+                  key={track.id}
+                  type="button"
+                  className={index === trackIndex ? 'is-active' : ''}
+                  onClick={() => playTrack(index)}
+                >
+                  <span>{track.title}</span>
+                  <small>{track.artist}</small>
+                </button>
+              ))}
+            </div>
+            <div className="hl-now-playing">
+              <button type="button" className="hl-now-btn" onClick={toggleMusic} aria-label={musicOn ? 'Pause music' : 'Play music'}>
+                {musicOn ? <Pause size={16} /> : <Play size={16} />}
+              </button>
+              <div>
+                <strong>{currentTrack.title}</strong>
+                <small>{currentTrack.artist}{musicOn ? ' · playing' : ' · tap anywhere to start'}</small>
+              </div>
+            </div>
+          </div>
         </div>
         <div className="hl-hero-visual">
-          <iframe
-            key={flowLang}
-            className="hl-hero-flow"
-            src={`/hero-flow.html?lang=${flowLang}`}
-            title="Smriti Saathi app flow"
-          />
+          {narrow ? (
+            <img className="hl-hero-flow hl-hero-still" src={heroStill} alt="Smriti Saathi reminders on a phone" />
+          ) : showFlow ? (
+            <iframe
+              key={flowLang}
+              className="hl-hero-flow"
+              src={`/hero-flow.html?lang=${flowLang}`}
+              title="Smriti Saathi app flow"
+              loading="lazy"
+            />
+          ) : (
+            <div className="hl-hero-flow hl-hero-flow-slot" aria-hidden />
+          )}
         </div>
       </section>
 
@@ -286,8 +497,8 @@ function HomeLanding() {
         <div className="hl-footer-brand">
           <img src={logoMark} alt="" className="hl-footer-logo" />
           <div>
-            <div className="hl-footer-name">स्मृति साथी</div>
-            <div className="hl-footer-sub">Smriti Saathi</div>
+            <div className="hl-footer-name">Smriti Saarthi</div>
+            <div className="hl-footer-sub">स्मृति सारथी</div>
           </div>
         </div>
         <p className="hl-footer-copy">

@@ -6,7 +6,7 @@
 .hl {
   position: relative;
   min-height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   color: #1a3d34;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   background:
@@ -15,6 +15,16 @@
     radial-gradient(ellipse 600px 600px at 50% 100%, rgba(23, 107, 88, 0.06), transparent 50%),
     linear-gradient(180deg, #f8faf9 0%, #f2f7f4 50%, #edf3f0 100%);
 }
+
+.hl-prarthana { position: relative; z-index: 1; max-width: 1180px; margin: 26px auto 0; padding: 20px 32px; border: 1px solid rgba(23,107,88,.13); border-radius: 22px; background: rgba(255,255,255,.52); }
+.hl-prarthana h2 { margin: 4px 0; font-size: clamp(22px, 3vw, 32px); color: #214d42; }
+.hl-prarthana > div > p:last-child { margin: 0; color: #50615c; }
+.hl-prarthana-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+.hl-prarthana details { overflow: hidden; border-radius: 14px; background: #fff; border: 1px solid rgba(23,107,88,.12); }
+.hl-prarthana summary { padding: 12px 14px; color: #176b58; font-weight: 800; cursor: pointer; }
+.hl-prarthana ol { columns: 2; margin: 0; padding: 0 20px 12px 30px; color: #50615c; font-size: 11px; line-height: 1.7; }
+.hl-prarthana iframe { display: block; border: 0; }
+@media (max-width: 720px) { .hl-prarthana { margin: 14px 14px 0; padding: 16px; } .hl-prarthana-grid { grid-template-columns: 1fr; } }
 
 /* ── Floating particles ── */
 .hl-particles-bg {
@@ -319,6 +329,109 @@
   letter-spacing: 0.01em;
 }
 
+/* Optional, user-started audio: browsers correctly block automatic sound. */
+.hl-calm-music {
+  width: min(100%, 440px);
+  margin-top: 18px;
+  border: 1px solid rgba(23, 107, 88, .18);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, .58);
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(23, 107, 88, .08);
+}
+.hl-calm-music summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  color: #176b58;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+  list-style: none;
+}
+.hl-calm-music summary::-webkit-details-marker { display: none; }
+.hl-calm-music p { margin: 0; padding: 0 14px 10px; color: #50615c; font-size: 12px; line-height: 1.4; }
+.hl-music {
+  margin-top: 8px;
+  padding: 12px;
+  border: 1px solid rgba(23, 107, 88, 0.14);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.72);
+}
+.hl-music-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.hl-music-tabs button {
+  border: 1px solid rgba(23, 107, 88, 0.14);
+  background: #fff;
+  color: #28584d;
+  border-radius: 999px;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.hl-music-tabs button.is-active {
+  background: #176b58;
+  border-color: #176b58;
+  color: #fff;
+}
+.hl-music iframe {
+  display: none;
+}
+
+.hl-now-playing {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.78);
+  border: 1px solid rgba(23, 107, 88, 0.14);
+}
+
+.hl-now-btn {
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: #176b58;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.hl-now-playing strong,
+.hl-now-playing small {
+  display: block;
+}
+
+.hl-now-playing strong {
+  font-size: 13px;
+  color: #214d42;
+}
+
+.hl-now-playing small {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #60716b;
+}
+.hl-focus-music { margin-top: 10px; }
+.hl-track-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 10px 10px; }
+.hl-track-picker button { border: 1px solid rgba(23,107,88,.12); background: rgba(255,255,255,.7); border-radius: 8px; padding: 7px 8px; color: #28584d; text-align: left; cursor: pointer; font: inherit; }
+.hl-track-picker button:hover, .hl-track-picker button.is-active { background: #176b58; color: #fff; }
+.hl-track-picker span, .hl-track-picker small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hl-track-picker span { font-size: 11px; font-weight: 750; }
+.hl-track-picker small { margin-top: 2px; font-size: 10px; opacity: .74; }
+
 /* ── Animated Mockup (replaces video) ── */
 .hl-mockup {
   position: relative;
@@ -479,6 +592,13 @@
   box-shadow:
     0 24px 48px rgba(23, 107, 88, 0.18),
     0 0 0 1px rgba(23, 107, 88, 0.08);
+}
+.hl-hero-still {
+  object-fit: cover;
+  object-position: center top;
+}
+.hl-hero-flow-slot {
+  min-height: 240px;
 }
 @keyframes hl-floating {
   0%, 100% { transform: translateY(0); }
@@ -741,6 +861,19 @@
 }
 
 /* ── Responsive ── */
+@media (max-width: 860px) {
+  .hl-particles-bg {
+    display: none;
+  }
+  .hl-calm-music iframe {
+    min-height: 200px;
+    height: 200px;
+  }
+  .hl-track-picker {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .hl-hero-visual {
     padding-top: 8px;
@@ -748,8 +881,8 @@
   }
   .hl-hero {
     grid-template-columns: 1fr;
-    padding: 24px 20px 28px;
-    gap: 20px;
+    padding: 20px 16px 24px;
+    gap: 18px;
   }
   .hl-title {
     font-size: 32px;
@@ -761,18 +894,29 @@
   }
   .hl-hero-actions {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
   .hl-hero-flow {
     width: min(380px, 100%);
-    height: min(520px, 64vh);
+    height: min(480px, 58vh);
     margin: 0 auto;
   }
   .hl-nav {
-    padding: 12px 16px;
+    padding: 10px 14px;
+    gap: 10px;
   }
   .hl-nav-link {
     display: none;
+  }
+  .hl-nav-logo {
+    width: 36px;
+    height: 36px;
+  }
+  .hl-lang-ribbon {
+    flex-wrap: wrap;
+  }
+  .hl-footer {
+    padding: 24px 16px 32px;
   }
 }
 
@@ -780,12 +924,15 @@
   .hl-title {
     font-size: 26px;
   }
+  .hl-lede {
+    font-size: 15px;
+  }
   .hl-section-title {
     font-size: 22px;
   }
   .hl-features,
   .hl-dashboards {
-    padding: 32px 16px;
+    padding: 28px 14px;
   }
   .hl-nav-cta {
     padding: 8px 14px;
@@ -804,7 +951,7 @@
   .hl-hero-flow {
     width: 100%;
     max-width: 360px;
-    height: min(480px, 62vh);
+    height: min(420px, 52vh);
   }
   .hl-hero-actions {
     width: 100%;
@@ -813,6 +960,11 @@
   .hl-btn-ghost {
     justify-content: center;
     width: 100%;
+    min-height: 48px;
+  }
+  .hl-role-card,
+  .hl-feature-card {
+    min-height: 0;
   }
 }
 

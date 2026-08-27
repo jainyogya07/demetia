@@ -25,6 +25,11 @@ const PHOTO = {
 
 const CareCircle = () => {
   const [, setTick] = useState(0);
+  const [familyOpen, setFamilyOpen] = useState(true);
+  const [familyDraft, setFamilyDraft] = useState('');
+  const [familyMsgs, setFamilyMsgs] = useState([
+    { id: 'hi', from: 'them', text: 'Main yahin hoon. Call ya message, jo aasan lage.' },
+  ]);
   useEffect(() => subscribeLive(() => setTick((n) => n + 1)), []);
   const members = getCircleStatus();
   const lastCheck = loadCheckIns()[0];
@@ -252,42 +257,47 @@ const CareCircle = () => {
         {/* RIGHT */}
         <div className="care-side-column">
 
-          {/* PRIMARY CAREGIVER */}
-          <div className="primary-care-card">
-
-            <div className="primary-care-top">
-              <div className="primary-care-icon">
-                <Heart size={22} />
+          <div className={`care-card family-chat-card${familyOpen ? ' is-open' : ''}`}>
+            {familyOpen && (
+              <div className="family-chat-thread">
+                {familyMsgs.map((row) => (
+                  <p key={row.id} className={`family-chat-bubble is-${row.from}`}>{row.text}</p>
+                ))}
               </div>
-
-              <span>PRIMARY CAREGIVER</span>
-            </div>
-
-            <h2>{primary.name}</h2>
-
-            <p>
-              {primary.relation} · Your main support contact
-            </p>
-
-            <div className="primary-status">
-              <span></span>
-              {primary.status}
-            </div>
-
-            <div className="primary-actions">
-
+            )}
+            {familyOpen && (
+              <form
+                className="family-chat-compose"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  const text = familyDraft.trim();
+                  if (!text) return;
+                  setFamilyMsgs((prev) => [
+                    ...prev,
+                    { id: `me-${Date.now()}`, from: 'me', text },
+                    { id: `them-${Date.now()}`, from: 'them', text: `${primary.name} ko message chala. Call bhi kar sakte ho.` },
+                  ]);
+                  setFamilyDraft('');
+                }}
+              >
+                <input
+                  value={familyDraft}
+                  onChange={(event) => setFamilyDraft(event.target.value)}
+                  placeholder={`Message ${primary.name}…`}
+                />
+                <button type="submit">Send</button>
+              </form>
+            )}
+            <div className="family-chat-actions">
               <a href={`tel:${primary.phone}`}>
                 <Phone size={16} />
                 Call
               </a>
-
-              <button>
+              <button type="button" onClick={() => setFamilyOpen((on) => !on)}>
                 <MessageCircle size={16} />
                 Message
               </button>
-
             </div>
-
           </div>
 
 

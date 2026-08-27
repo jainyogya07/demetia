@@ -1,6 +1,6 @@
 import { Mic, MessageSquare } from 'lucide-react';
 import { useAppNav } from '../AppNavContext';
-import heroPortrait from '../assets/hero.png';
+import companionPortrait from '../assets/infinity_pfp.jpg';
 
 function VoiceAgentCard() {
   const { openModule } = useAppNav();
@@ -9,7 +9,7 @@ function VoiceAgentCard() {
     <section className="voice-companion-card">
       <div className="voice-top">
         <div className="smriti-avatar">
-          <img src={heroPortrait} alt="" />
+          <img src={companionPortrait} alt="Care Agent" />
         </div>
         <div className="voice-text">
           <h2>Care Agent</h2>

@@ -7,7 +7,7 @@ const MODEL_NAME = 'gemini-3.1-flash-live-preview';
 const PLAYBACK_RATE = 24000;
 const MIC_TARGET_RATE = 16000;
 
-const DEFAULT_VOICE = 'Kore';
+const DEFAULT_VOICE = 'Aoede';
 
 const genderInstruction = (gender) => {
   if (gender === 'male') {
@@ -21,6 +21,60 @@ const genderInstruction = (gender) => {
 - Hindi/Hinglish: main karti hoon, thi, rahi, gayi, bolti. Not karta/tha/raha as your own gender.`;
 };
 
+const assistGenderInstruction = (gender) => {
+  if (gender === 'male') {
+    return `GENDER — you are Guide, a man. Product: Caresahaay. Never call yourself Care Agent, Smriti, or Smriti Saathi.
+Hindi verbs: main karta hoon, tha, raha. English: speak as a man.`;
+  }
+  return `GENDER — you are Guide, a woman. Product: Caresahaay. Never call yourself Care Agent, Smriti, or Smriti Saathi.
+Hindi verbs: main karti hoon, thi, rahi.`;
+};
+
+const ASSIST_PROMPT = (uiLanguageName, gender = 'female', extra = '') => `You are Sarthi Assist, the visual action agent on Caresahaay. ASK → FIND → DO. You are not Care Agent. No chat, jokes, or long stories.
+${assistGenderInstruction(gender)}
+Speak ${uiLanguageName} unless they use another language — then mirror them.
+
+You can SEE the app with the patient. After a screen opens they look at it (Assist may be minimized). Be a visual guide:
+- If they ask how this tab/page works (“ye kaise kaam karta”, “isko samjhao”, “ye kya hai”), explain the CURRENT SCREEN: what it is, what to tap, what happens next. Do not reopen it.
+- If they name another tab, OPEN it, then in 1–2 short sentences tell them what they are looking at and one thing to tap.
+- “Ye screen padh ke sunao” → read only the important visible facts, not every button.
+- “Simple karke batao” → shorter, same screen.
+
+Do the task. Short spoken confirm, then tags if you navigate. Several things (aur / and / phir) → several tags in order.
+<<OPEN:medicine>>
+Ids: home, games, stories, routine, medicine, progress, care-circle, safety, memory-book, language, documents, settings, help
+Games: <<OPEN:story-solver>> <<OPEN:match-pairs>> <<OPEN:spot-diff>> <<OPEN:balloon-pop>> <<OPEN:sequence>> <<OPEN:faces>> <<OPEN:object-find>>
+Call: <<CALL:rina>> <<CALL:doom>> <<CALL:mina>>
+Never <<OPEN:ai>>.
+
+BANNED: "Speak dabaiye", "Speak dabaaiye", "Speak button dabao", sending them to Speak for any normal task.
+dawa / medicine / scheme → <<OPEN:medicine>>
+khel / game / brain games → <<OPEN:games>>
+photo / album / memory book / tasveer → <<OPEN:memory-book>>
+Do NOT open Memory Book for “yaad nahi”, reminders, or generic “yaad”.
+routine / dincharya → <<OPEN:routine>>
+documents / kaagaz / papers → <<OPEN:documents>>
+If they already opened a screen and later ask for it again, OPEN it again. Going back is allowed.
+Never reopen a different screen unless they asked for it.
+DO (after a short confirm): mark routine/medicine done → <<COMPLETE:next>> or <<COMPLETE:med-am>> (ids: med-am, water, brain, lunch, walk, med-pm). “maine dawa le li” / “walk ho gayi” / “mark complete” = COMPLETE, not only OPEN routine.
+New memory: <<MEMORY:new>> once, then ASK title → what happened → person → place. Never invent. Do not dump commands into fields. “hatao / remove / photo hatao” = clear that field or revert to the default PFP, not write the sentence into Title. Do not emit <<OPEN:memory-book>> on each answer. <<MEMORY:save>> when title and what happened are given.
+Remove a Memory Book album (not a form field): “special moments hatao / family book remove / ye album hatao” → <<MEMORY:remove-special>> <<MEMORY:remove-family>> <<MEMORY:remove-village>> <<MEMORY:remove-sounds>>. Do this even if Assist is minimized. Do not change your UI.
+Settings / profile: <<SETTINGS:edit>> once, then ASK name → phone → state → district. “hatao / remove” clears that profile field. <<SETTINGS:save>> when done.
+Language (“hindi mein chahiye”, “english mein bolo”, “phir se hindi”) is NOT a field value — switch language and ask the same field again. Never type that sentence into Name, Title, or any box.
+Safety check-in: <<CHECKIN:now>>
+family / parivar → <<OPEN:care-circle>>
+map / kahan → <<OPEN:safety>>
+kahani / past stories → <<OPEN:story-solver>>
+Unclear → "Kya kholna hai — dawa, khel, photos?" and wait. Still never "Speak dabaiye."
+
+ONLY if they clearly ask to talk with Care Agent (gupshup, mujhse baat, companion, Care Agent): say "Care Agent khol rahi hoon." then <<OPEN:companion>>
+
+Stay on the live call in the background while they look at tabs. Do not tell them the session ended because a tab opened.
+
+STT is messy. Guess the screen. Do not ask them to repeat unless nothing matches.
+
+${extra}`;
+
 const STORYTELLER_PROMPT = (uiLanguageName, gender = 'female') => `You are Care Agent, the voice of Caresahaay, telling one lived memory to an older listener in ${uiLanguageName}.
 Never introduce yourself as Smriti.
 ${genderInstruction(gender)}
@@ -30,7 +84,8 @@ You MUST actually speak the words aloud (audio). Do not stay silent. Do not trea
 If the message ends with a question, finish the memory first, pause, then ask that one question.
 Match the language of the text. Stop when the text ends.`;
 
-const buildSystemPrompt = (uiLanguageName, persona = 'companion', gender = 'female') => {
+const buildSystemPrompt = (uiLanguageName, persona = 'companion', gender = 'female', extra = '') => {
+  if (persona === 'assist') return ASSIST_PROMPT(uiLanguageName, gender, extra);
   if (persona === 'storyteller') return STORYTELLER_PROMPT(uiLanguageName, gender);
   const samples = pickPhoneticJokeExamples(8);
   const jokeBlock = samples
@@ -52,7 +107,7 @@ HOW TO ADDRESS THEM:
 
 HOW TO SPEAK:
 - React to their words. If they asked for “three schemes”, acknowledge once in passing (“teen cheezein”) then give substance — never “Achha, schemes?” as if surprised.
-- Sound like a friend who already knows this person’s life (medicine time, water, family visits, village home). Specific, lived-in, from memory — not a catalog, Wikipedia, or IVR menu.
+- Sound like a real person sitting with them: warm, unhurried, adult — never high, nasal, cartoon, IVR, or call-centre. You already know this person’s life (medicine time, water, family visits, village home). Specific, lived-in, from memory — not a catalog, Wikipedia, or form letter. You already know this person’s life (medicine time, water, family visits, village home). Specific, lived-in, from memory — not a catalog, Wikipedia, or call-centre script.
 - 1–3 short spoken sentences, or one tight spoken paragraph. Then stop. Vary shape. Fillers only sparingly: “hmm”, “achha”, “theek hai”.
 - Small talk: if they ask how you are, one short human line, then stop. Vary it (“Theek hoon — aaj thoda halka sa din hai.” / “Haan, theek.”). Do not always ask back. Never the canned stack “thank you / aap kaisi hain / sab kushal mangal”.
 - If they ask for N schemes, name that many in conversation, not a numbered list. Weave each official name once with a concrete why (Old Age Pension for monthly kharch, Ayushman Bharat for the hospital bill, NPHCE for the geriatric / memory clinic, Rashtriya Vayoshri for a hearing aid). No “ek hai / dusra / teesra”. If they did not ask for several, stay with one.
@@ -154,7 +209,7 @@ const decodeWsPayload = async (data) => {
   return String(data);
 };
 
-export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_VOICE, persona = 'companion', gender = 'female' } = {}) => {
+export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_VOICE, persona = 'companion', gender = 'female', promptContext = '' } = {}) => {
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
@@ -199,6 +254,8 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
   personaRef.current = persona;
   const genderRef = useRef(gender === 'male' ? 'male' : 'female');
   genderRef.current = gender === 'male' ? 'male' : 'female';
+  const promptContextRef = useRef(promptContext);
+  promptContextRef.current = promptContext;
   const prevGenderRef = useRef(genderRef.current);
   const voiceRef = useRef(voiceName || DEFAULT_VOICE);
   voiceRef.current = voiceName || DEFAULT_VOICE;
@@ -532,7 +589,7 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
       if (micCtx.state === 'suspended') await micCtx.resume();
 
       const source = micCtx.createMediaStreamSource(stream);
-      const processor = micCtx.createScriptProcessor(4096, 1, 1);
+      const processor = micCtx.createScriptProcessor(personaRef.current === 'assist' ? 2048 : 4096, 1, 1);
       const silentGain = micCtx.createGain();
       silentGain.gain.value = 0;
 
@@ -540,7 +597,16 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
         const ws = wsRef.current;
         if (!ws || ws.readyState !== WebSocket.OPEN || !setupReadyRef.current) return;
         const input = event.inputBuffer.getChannelData(0);
-        const downsampled = downsampleBuffer(input, micCtx.sampleRate, MIC_TARGET_RATE);
+        const boost = personaRef.current === 'assist' ? 1.85 : 1;
+        let samples = input;
+        if (boost !== 1) {
+          samples = new Float32Array(input.length);
+          for (let i = 0; i < input.length; i += 1) {
+            const s = input[i] * boost;
+            samples[i] = s > 1 ? 1 : s < -1 ? -1 : s;
+          }
+        }
+        const downsampled = downsampleBuffer(samples, micCtx.sampleRate, MIC_TARGET_RATE);
         const pcm = float32ToPcm16(downsampled);
         ws.send(
           JSON.stringify({
@@ -640,7 +706,7 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
         setup: {
           model: `models/${MODEL_NAME}`,
           generationConfig: {
-            temperature: 0.95,
+            temperature: personaRef.current === 'assist' ? 0.12 : 0.95,
             responseModalities: ['AUDIO'],
             speechConfig: {
               voiceConfig: {
@@ -651,7 +717,7 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
             },
           },
           systemInstruction: {
-            parts: [{ text: buildSystemPrompt(languageRef.current, personaRef.current, genderRef.current) }],
+            parts: [{ text: buildSystemPrompt(languageRef.current, personaRef.current, genderRef.current, promptContextRef.current) }],
           },
           inputAudioTranscription: {},
           outputAudioTranscription: {},

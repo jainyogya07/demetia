@@ -2,17 +2,39 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BrandLogo from '../components/BrandLogo';
 import { useAuth } from '../context/AuthContext';
+import { runLocalAuth, shouldUseLocalAuth } from '../lib/localAuth';
 import './AuthFlow.css';
 
 async function postJson(path, body) {
-  const res = await fetch(path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || data.detail || `Request failed (${res.status})`);
-  return data;
+  try {
+    const res = await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const text = await res.text();
+    if (shouldUseLocalAuth(res, text)) {
+      return runLocalAuth(path, body);
+    }
+    const data = (() => {
+      try {
+        return text ? JSON.parse(text) : {};
+      } catch {
+        return null;
+      }
+    })();
+    if (!data) return runLocalAuth(path, body);
+    if (!res.ok) {
+      const detail = Array.isArray(data.detail) ? data.detail.map((d) => d.msg || d).join(', ') : data.detail;
+      throw new Error(data.error || detail || `Request failed (${res.status})`);
+    }
+    return data;
+  } catch (err) {
+    if (err instanceof TypeError || /Failed to fetch|NetworkError|Load failed/i.test(err.message || '')) {
+      return runLocalAuth(path, body);
+    }
+    throw err;
+  }
 }
 
 function OtpBoxes({ value, onChange }) {
@@ -66,6 +88,7 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [hint, setHint] = useState('');
+  const [mailPreview, setMailPreview] = useState('');
   const [otpPhone, setOtpPhone] = useState('');
   const [otp, setOtp] = useState('');
   const [otpBack, setOtpBack] = useState('signup');
@@ -96,11 +119,17 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
       const data = await postJson('/api/auth/signup', {
         firstName, lastName, birthDate, email, phone,
       });
+      const shown = data.otp || data.devOtp || '';
       setOtpPhone(data.phone);
-      setOtp('');
+      setOtp(shown);
       setOtpBack('signup');
       setPane('otp');
-      setHint(data.devOtp ? `Local code: ${data.devOtp}` : data.message);
+      setHint(data.emailSent
+        ? (data.previewUrl
+          ? `${data.message || 'Code sent.'}`
+          : (data.message || 'Check your email for the 6-digit code.'))
+        : (data.message || (shown ? `Email did not send. Use this code: ${shown}` : 'Enter the 6-digit code.')));
+      setMailPreview(data.previewUrl || '');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -114,14 +143,29 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
     setError('');
     setHint('');
     try {
-      const data = await postJson('/api/auth/login', { name: loginName, phone: loginPhone });
+      const data = await postJson('/api/auth/login', { name: loginName, phone: loginPhone, email });
+      const shown = data.otp || data.devOtp || '';
       setOtpPhone(data.phone);
-      setOtp('');
+      setOtp(shown);
       setOtpBack('login');
       setPane('otp');
-      setHint(data.devOtp ? `Local code: ${data.devOtp}` : data.message);
+      setHint(data.emailSent
+        ? (data.previewUrl
+          ? `${data.message || 'Code sent.'}`
+          : (data.message || 'Check your email for the 6-digit code.'))
+        : (data.message || (shown ? `Email did not send. Use this code: ${shown}` : 'Enter the 6-digit code.')));
+      setMailPreview(data.previewUrl || '');
     } catch (err) {
-      setError(err.message);
+      if (/No account/i.test(err.message || '')) {
+        const parts = loginName.trim().split(/\s+/);
+        setFirstName(parts[0] || '');
+        setLastName(parts.slice(1).join(' ') || parts[0] || '');
+        setPhone(loginPhone);
+        setPane('signup');
+        setError('No account yet — add your birthday and tap Sign up.');
+      } else {
+        setError(err.message);
+      }
     } finally {
       setBusy(false);
     }
@@ -151,8 +195,8 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
             <h1>{pane === 'login' ? 'Log in' : 'Create account'}</h1>
             <p className="af-lead">
               {pane === 'login'
-                ? 'Name and mobile, then a one-time code. Nothing else on this step.'
-                : 'Like a simple profile: your name, birthday, and phone. Email is optional.'}
+                ? 'Name and mobile, then a code on your email. No SMS.'
+                : 'Name, birthday, phone for the account. The one-time code goes to email, not the phone.'}
             </p>
           </>
         )}
@@ -178,8 +222,8 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
               <input type="tel" inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="10-digit number" autoComplete="tel" />
             </label>
             <label>
-              Email <span>optional</span>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="If you want the code by mail" autoComplete="email" />
+              Email
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Code will be mailed here" autoComplete="email" />
             </label>
             <button type="submit" className="af-primary" disabled={busy}>{busy ? 'Please wait…' : 'Sign up'}</button>
             <button type="button" className="af-text" onClick={() => { setPane('login'); setError(''); }}>
@@ -198,6 +242,10 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
               Mobile
               <input type="tel" inputMode="numeric" value={loginPhone} onChange={(e) => setLoginPhone(e.target.value)} required placeholder="10-digit number" autoComplete="tel" />
             </label>
+            <label>
+              Email
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Where we mailed your last code" autoComplete="email" />
+            </label>
             <button type="submit" className="af-primary" disabled={busy}>{busy ? 'Please wait…' : 'Log in'}</button>
             <button type="button" className="af-text" onClick={() => { setPane('signup'); setError(''); }}>
               New here? Create account
@@ -208,9 +256,24 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
         {pane === 'otp' && (
           <form className="af-form" onSubmit={verify}>
             <p className="af-kicker">Enter code</p>
-            <h1>Check your messages</h1>
-            <p className="af-lead">A 6-digit code was sent for ····{String(otpPhone).slice(-4)}. It expires in five minutes.</p>
+            <h1>{otp.length === 6 ? 'Your code' : 'Enter the code'}</h1>
+            <p className="af-lead">
+              The code is sent to your email, not SMS.
+              {otp.length === 6 ? ' If mail failed, the digits are also shown here.' : ' Open the mail and type the six digits.'}
+            </p>
+            {otp.length === 6 && <p className="af-otp-show" aria-live="polite">{otp}</p>}
             <OtpBoxes value={otp} onChange={setOtp} />
+            <label>
+              Or type all 6 digits
+              <input
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                value={otp}
+                maxLength={6}
+                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                placeholder="000000"
+              />
+            </label>
             <button type="submit" className="af-primary" disabled={busy || otp.length !== 6}>
               {busy ? 'Checking…' : 'Confirm'}
             </button>
@@ -225,6 +288,12 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
         )}
 
         {hint && pane === 'otp' && <p className="af-hint">{hint}</p>}
+        {mailPreview && pane === 'otp' && (
+          <p className="af-hint">
+            <a href={mailPreview} target="_blank" rel="noreferrer">Open Mailpit inbox</a>
+            {' '}— open-source mail, code is there.
+          </p>
+        )}
         {error && <p className="af-error">{error}</p>}
 
         <button type="button" className="af-guest" onClick={skip}>

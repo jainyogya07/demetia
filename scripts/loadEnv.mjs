@@ -7,7 +7,7 @@ export function repoRootFrom(metaUrl) {
 }
 
 export function loadEnv(root) {
-  for (const name of ['.env', '.env.local']) {
+  for (const name of ['.env', '.env.local', 'backend/.env']) {
     const file = join(root, name);
     if (!existsSync(file)) continue;
     for (const raw of readFileSync(file, 'utf8').split('\n')) {

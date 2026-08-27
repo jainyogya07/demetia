@@ -1,6 +1,6 @@
-/** Gemini Live voices. Kore = female (stable on this model). Charon = male. */
+/** Gemini Live voices. Aoede = warm natural female. Charon = male. */
 export const LIVE_VOICES = {
-  female: { gender: 'female', voiceName: 'Kore', label: 'Female' },
+  female: { gender: 'female', voiceName: 'Aoede', label: 'Female' },
   male: { gender: 'male', voiceName: 'Charon', label: 'Male' },
 };
 

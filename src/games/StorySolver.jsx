@@ -198,7 +198,7 @@ export default function StorySolver() {
 
   const status = useMemo(() => {
     if (!voiceOn) return t({ en: 'Reading', hi: 'पढ़ रहे हैं', as: 'পঢ়ি আছোঁ' });
-    if (isSpeaking) return t({ en: 'Care Agent is speaking', hi: 'केयर एजेंट बोल रहे हैं', as: 'কেয়াৰ এজেণ্ট কৈ আছে' });
+    if (isSpeaking) return t({ en: 'The story is being read aloud', hi: 'कहानी आवाज़ में चल रही है', as: 'কাহিনী উচ্চস্বৰে পঢ়া হৈছে' });
     if (phase === 'quiz') return t({ en: 'Your question', hi: 'आपका प्रश्न', as: 'আপোনাৰ প্ৰশ্ন' });
     return t({ en: 'Listening', hi: 'सुन रहे हैं', as: 'শুনি আছোঁ' });
   }, [voiceOn, isSpeaking, phase, t]);
@@ -216,7 +216,7 @@ export default function StorySolver() {
           </p>
           <StoryLangChips value={storyLangCode} onChange={setStoryLangCode} />
           <p className="game-soft-lead">
-            Story language is separate from the header. Listen uses Care Agent.
+            Story language is separate from Talk (Care Agent) and Assist. Listen uses this page’s story voice.
           </p>
           <div className="story-start-row">
             <button type="button" className="game-btn-primary story-tap" onClick={() => begin(false)}>

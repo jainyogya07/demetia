@@ -6,6 +6,10 @@ export const AppNavContext = createContext({
   aiIntent: null,
   gameIntent: null,
   openEmergency: () => {},
+  currentModuleId: 'home',
+  openAssist: () => {},
+  setActiveGameId: () => {},
+  activeGameId: null,
 });
 
 export const useAppNav = () => useContext(AppNavContext);

@@ -1,6 +1,7 @@
 /** Phone + email OTP via Postgres. Codes are emailed (Mailpit locally, or SMTP). */
 
 import { sendAppMail, isSmtpConfigured, mailPreviewUrl } from './mail.mjs';
+import { sendWhatsAppOtp, isWhatsAppConfigured } from './whatsapp.mjs';
 const AUTH_DEV_MODE = String(process.env.AUTH_DEV_MODE || 'false').toLowerCase();
 const DEV_MODE = AUTH_DEV_MODE !== 'false' && AUTH_DEV_MODE !== '0' && AUTH_DEV_MODE !== 'no';
 
@@ -118,12 +119,12 @@ export function createAuthHandlers({ withDb, json, readBody }) {
            first_name = EXCLUDED.first_name,
            last_name = EXCLUDED.last_name,
            display_name = EXCLUDED.display_name,
-           email = COALESCE(EXCLUDED.email, app_users.email),
+           email = COALESCE(NULLIF(EXCLUDED.email, ''), app_users.email),
            birth_date = COALESCE(EXCLUDED.birth_date, app_users.birth_date),
            verified = EXCLUDED.verified,
            last_login_at = CASE WHEN EXCLUDED.verified THEN NOW() ELSE app_users.last_login_at END
          RETURNING *`,
-        [row.id, row.first_name, row.last_name, row.display_name, row.phone, row.email, row.birth_date, row.role, row.verified],
+        [row.id, row.first_name, row.last_name, row.display_name, row.phone, row.email || null, row.birth_date, row.role, row.verified],
       );
       const { rows } = await client.query('SELECT * FROM app_users WHERE phone = $1', [row.phone]);
       return rows[0];
@@ -142,8 +143,8 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     if (phone.length !== 10) return { status: 400, body: { error: 'Enter a 10-digit mobile number.' } };
     if (!firstName || !lastName) return { status: 400, body: { error: 'First and last name are required.' } };
     if (!birthDate) return { status: 400, body: { error: 'Choose your date of birth.' } };
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return { status: 400, body: { error: 'Enter a working email. The code is sent there, not by SMS.' } };
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return { status: 400, body: { error: 'Enter a valid email address.' } };
     }
     const existing = await getUserByPhone(phone);
     if (!existing.ok) return { status: 503, body: { error: dbHint(existing.error) } };
@@ -154,43 +155,39 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     const pending = { firstName, lastName, birthDate, email, phone, role: 'user' };
     const store = await saveOtp(phone, code, 'signup', pending);
     if (!store.ok) return { status: 503, body: { error: dbHint(store.error) } };
+    const wa = await sendWhatsAppOtp({ phone, otp: code });
     const delivered = await deliverOtp({ email, otp: code });
+    const waSent = Boolean(wa.ok);
+    const emailSent = Boolean(delivered.emailSent);
     const preview = delivered.previewUrl || '';
-    const mailNote = preview
-      ? `Code sent. Open ${preview} (Mailpit) to read the OTP.`
-      : `Code mailed to ${email}. Check inbox and spam.`;
-    if (!delivered.emailSent) {
-      const hint = delivered.reason === 'mailpit-not-running'
-        ? 'Start Mailpit: npm run mailpit (or brew install mailpit). Then try again.'
-        : `Could not send mail (${delivered.reason || 'smtp'}).`;
-      if (!DEV_MODE) return { status: 502, body: { error: hint } };
-      return {
-        status: 200,
-        body: {
-          ok: true,
-          source: store.source,
-          smsSent: false,
-          emailSent: false,
-          channel: 'screen',
-          phone,
-          otp: code,
-          devOtp: code,
-          previewUrl: preview,
-          message: hint,
-        },
-      };
+
+    let note = '';
+    if (waSent && emailSent) {
+      note = `Code sent to WhatsApp (+${wa.recipient}) and email.`;
+    } else if (waSent) {
+      note = `Code sent to WhatsApp (+${wa.recipient}). Tap Copy Code in WhatsApp.`;
+    } else if (emailSent) {
+      note = preview ? `Code sent. Open ${preview} (Mailpit) to read the OTP.` : `Code mailed to ${email}.`;
+    } else {
+      note = delivered.reason === 'mailpit-not-running'
+        ? 'Start Mailpit: npm run mailpit. Then try again.'
+        : `Could not send verification message.`;
     }
+
+    if (!waSent && !emailSent && !DEV_MODE) {
+      note = 'Could not send SMS/WhatsApp. Use the on-screen verification code.';
+    }
+
     const payload = {
       ok: true,
       source: store.source,
-      smsSent: false,
-      emailSent: true,
-      channel: preview ? 'mailpit' : 'email',
+      whatsappSent: waSent,
+      emailSent,
       phone,
       previewUrl: preview,
-      message: mailNote,
+      message: note,
     };
-    if (DEV_MODE) {
+    if (DEV_MODE || (!waSent && !emailSent)) {
       payload.otp = code;
       payload.devOtp = code;
     }
@@ -211,52 +208,48 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       return { status: 403, body: { error: 'Name does not match this number.' } };
     }
     const mailTo = String(body.email || user.email || '').trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailTo)) {
-      return { status: 400, body: { error: 'This account needs an email. Enter the email to receive the code.' } };
+    if (mailTo && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(mailTo)) {
+      return { status: 400, body: { error: 'Enter a valid email address.' } };
     }
     const code = newCode();
     const store = await saveOtp(phone, code, 'login', {
       firstName: user.first_name,
       lastName: user.last_name,
-      email: mailTo,
+      email: mailTo || null,
       phone,
     });
     if (!store.ok) return { status: 503, body: { error: dbHint(store.error) } };
-    const delivered = await deliverOtp({ email: mailTo, otp: code });
+    const wa = await sendWhatsAppOtp({ phone, otp: code });
+    const delivered = mailTo ? await deliverOtp({ email: mailTo, otp: code }) : { emailSent: false };
+    const waSent = Boolean(wa.ok);
+    const emailSent = Boolean(delivered.emailSent);
     const preview = delivered.previewUrl || '';
-    const mailNote = preview
-      ? `Code sent. Open ${preview} (Mailpit) to read the OTP.`
-      : `Code mailed to ${mailTo}. Check inbox and spam.`;
-    if (!delivered.emailSent) {
-      const hint = delivered.reason === 'mailpit-not-running'
-        ? 'Start Mailpit: npm run mailpit (or brew install mailpit). Then try again.'
-        : `Could not send mail (${delivered.reason || 'smtp'}).`;
-      if (!DEV_MODE) return { status: 502, body: { error: hint } };
-      return {
-        status: 200,
-        body: {
-          ok: true,
-          source: store.source,
-          smsSent: false,
-          emailSent: false,
-          phone,
-          otp: code,
-          devOtp: code,
-          previewUrl: preview,
-          message: hint,
-        },
-      };
+
+    let note = '';
+    if (waSent && emailSent) {
+      note = `Code sent to WhatsApp (+${wa.recipient}) and email.`;
+    } else if (waSent) {
+      note = `Code sent to WhatsApp (+${wa.recipient}). Tap Copy Code in WhatsApp.`;
+    } else if (emailSent) {
+      note = preview ? `Code sent. Open ${preview} (Mailpit) to read the OTP.` : `Code mailed to ${mailTo}.`;
+    } else {
+      note = 'Could not send SMS/WhatsApp. Use the on-screen verification code.';
     }
+
+    if (!waSent && !emailSent && !DEV_MODE) {
+      note = 'Could not send SMS/WhatsApp. Use the on-screen verification code.';
+    }
+
     const bodyOut = {
       ok: true,
       source: store.source,
-      smsSent: false,
-      emailSent: true,
+      whatsappSent: waSent,
+      emailSent,
       phone,
       previewUrl: preview,
-      message: mailNote,
+      message: note,
     };
-    if (DEV_MODE) {
+    if (DEV_MODE || (!waSent && !emailSent)) {
       bodyOut.otp = code;
       bodyOut.devOtp = code;
     }
@@ -305,6 +298,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
           database: Boolean(process.env.DATABASE_URL?.trim()),
           devMode: DEV_MODE,
           smtp: isSmtpConfigured(),
+          whatsapp: isWhatsAppConfigured(),
         });
         return true;
       }

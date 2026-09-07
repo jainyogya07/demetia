@@ -13,6 +13,8 @@ import secrets
 import smtplib
 import string
 import time
+import urllib.error
+import urllib.request
 from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Any
@@ -68,6 +70,12 @@ SMTP_PORT = int(os.environ.get("SMTP_PORT") or 465)
 MAILPIT_HOST = (os.environ.get("MAILPIT_HOST") or "127.0.0.1").strip()
 MAILPIT_SMTP = int(os.environ.get("MAILPIT_SMTP_PORT") or 1025)
 DEV_MODE = os.environ.get("AUTH_DEV_MODE", "false").lower() in {"1", "true", "yes"}
+
+WHATSAPP_TOKEN = (os.environ.get("WHATSAPP_TOKEN") or "").strip()
+WHATSAPP_PHONE_NUMBER_ID = (os.environ.get("WHATSAPP_PHONE_NUMBER_ID") or "").strip()
+WHATSAPP_TEMPLATE_NAME = (os.environ.get("WHATSAPP_TEMPLATE_NAME") or "auth_otp_code").strip()
+WHATSAPP_TEMPLATE_LANG = (os.environ.get("WHATSAPP_TEMPLATE_LANG") or "en_US").strip()
+WHATSAPP_DEFAULT_COUNTRY_CODE = (os.environ.get("WHATSAPP_DEFAULT_COUNTRY_CODE") or "91").strip()
 
 # In-memory alarm feed keyed by household code (demo sync across dashboards)
 ALARM_EVENTS: dict[str, list[dict[str, Any]]] = {}
@@ -187,6 +195,135 @@ def send_email_otp(receiver_email: str, otp: str) -> dict[str, Any]:
         raise HTTPException(status_code=502, detail=f"Could not send mail ({exc})") from exc
 
 
+def format_whatsapp_phone(raw_phone: str) -> str:
+    """Formats phone to E.164 without leading '+' (required by Meta Cloud API)."""
+    digits = re.sub(r"\D", "", str(raw_phone or ""))
+    if len(digits) == 10:
+        return f"{WHATSAPP_DEFAULT_COUNTRY_CODE}{digits}"
+    if len(digits) == 11 and digits.startswith("0"):
+        return f"{WHATSAPP_DEFAULT_COUNTRY_CODE}{digits[1:]}"
+    return digits
+
+
+def send_whatsapp_otp(phone: str, otp: str) -> dict[str, Any]:
+    """
+    Sends an OTP using Meta's WhatsApp Cloud API Authentication Template.
+    Supports standard Copy Code button templates and falls back to body-only templates.
+    """
+    recipient = format_whatsapp_phone(phone)
+    if not WHATSAPP_TOKEN or not WHATSAPP_PHONE_NUMBER_ID:
+        if DEV_MODE:
+            print(f"[AUTH_DEV_MODE] WhatsApp OTP for +{recipient}: {otp} (WHATSAPP_TOKEN / PHONE_NUMBER_ID not set)")
+            return {"ok": False, "dev": True, "reason": "whatsapp-not-configured", "recipient": recipient}
+        print(f"[WhatsApp] WhatsApp credentials not set. Skipping WhatsApp OTP for +{recipient}.")
+        return {"ok": False, "reason": "whatsapp-not-configured", "recipient": recipient}
+
+    url = f"https://graph.facebook.com/v20.0/{WHATSAPP_PHONE_NUMBER_ID}/messages"
+
+    payload_with_button = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": recipient,
+        "type": "template",
+        "template": {
+            "name": WHATSAPP_TEMPLATE_NAME,
+            "language": {"code": WHATSAPP_TEMPLATE_LANG},
+            "components": [
+                {
+                    "type": "body",
+                    "parameters": [{"type": "text", "text": str(otp)}],
+                },
+                {
+                    "type": "button",
+                    "sub_type": "url",
+                    "index": "0",
+                    "parameters": [{"type": "text", "text": str(otp)}],
+                },
+            ],
+        },
+    }
+
+    def _post(data_dict: dict[str, Any]) -> dict[str, Any]:
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(data_dict).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {WHATSAPP_TOKEN}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            return json.loads(resp.read().decode("utf-8"))
+
+    def _send_text() -> dict[str, Any]:
+        text_payload = {
+            "messaging_product": "whatsapp",
+            "recipient_type": "individual",
+            "to": recipient,
+            "type": "text",
+            "text": {
+                "preview_url": False,
+                "body": f"Your Smriti Saarthi verification code is: {otp}\n\nValid for 5 minutes. If you did not request this, please ignore.",
+            },
+        }
+        data = _post(text_payload)
+        msg_id = data.get("messages", [{}])[0].get("id", "")
+        print(f"[WhatsApp] Direct text OTP sent to +{recipient} (id: {msg_id})")
+        return {"ok": True, "messageId": msg_id, "recipient": recipient}
+
+    # If no template configured, send directly as text message
+    if not WHATSAPP_TEMPLATE_NAME:
+        try:
+            return _send_text()
+        except Exception as exc:  # noqa: BLE001
+            print(f"[WhatsApp Text Send Failed]: {exc}")
+            return {"ok": False, "reason": str(exc), "recipient": recipient}
+
+    try:
+        data = _post(payload_with_button)
+        msg_id = data.get("messages", [{}])[0].get("id", "")
+        print(f"[WhatsApp] OTP successfully sent via template to +{recipient} (id: {msg_id})")
+        return {"ok": True, "messageId": msg_id, "recipient": recipient}
+    except urllib.error.HTTPError as exc:
+        err_body = exc.read().decode("utf-8")
+        if "button" in err_body.lower():
+            # If template has no button component, retry with body-only
+            try:
+                payload_body_only = {
+                    "messaging_product": "whatsapp",
+                    "recipient_type": "individual",
+                    "to": recipient,
+                    "type": "template",
+                    "template": {
+                        "name": WHATSAPP_TEMPLATE_NAME,
+                        "language": {"code": WHATSAPP_TEMPLATE_LANG},
+                        "components": [
+                            {
+                                "type": "body",
+                                "parameters": [{"type": "text", "text": str(otp)}],
+                            }
+                        ],
+                    },
+                }
+                data = _post(payload_body_only)
+                msg_id = data.get("messages", [{}])[0].get("id", "")
+                print(f"[WhatsApp] OTP sent to +{recipient} without button (id: {msg_id})")
+                return {"ok": True, "messageId": msg_id, "recipient": recipient}
+            except Exception as retry_exc:
+                print(f"[WhatsApp Retry Error]: {retry_exc}")
+        # If template failed, fall back to direct text
+        try:
+            print(f"[WhatsApp] Template send failed ({err_body}). Falling back to text message...")
+            return _send_text()
+        except Exception as text_err:
+            print(f"[WhatsApp Fallback Text Error]: {text_err}")
+        return {"ok": False, "reason": err_body, "recipient": recipient}
+    except Exception as exc:  # noqa: BLE001
+        print(f"[WhatsApp Send Failed]: {exc}")
+        return {"ok": False, "reason": str(exc), "recipient": recipient}
+
+
 def public_user(row: dict[str, Any], patient: dict[str, Any] | None = None) -> dict[str, Any]:
     out = {
         "id": row["id"],
@@ -225,7 +362,7 @@ class SignupBody(BaseModel):
     firstName: str = ""
     lastName: str = ""
     birthDate: str = ""
-    email: str
+    email: str = ""
     phone: str
     role: str = "user"
     familyCode: str = ""
@@ -239,7 +376,16 @@ class LoginBody(BaseModel):
 
 class VerifyBody(BaseModel):
     phone: str
-    otp: str
+    otp: str = ""
+    verified: bool = False
+    firebaseUid: str = ""
+    firstName: str = ""
+    lastName: str = ""
+    birthDate: str = ""
+    email: str = ""
+    role: str = "user"
+    householdCode: str = ""
+    familyCode: str = ""
 
 
 class AlarmEventBody(BaseModel):
@@ -258,6 +404,8 @@ def health():
         "ok": True,
         "database": bool(DATABASE_URL),
         "devMode": DEV_MODE,
+        "whatsapp": bool(WHATSAPP_TOKEN and WHATSAPP_PHONE_NUMBER_ID),
+        "whatsappTemplate": WHATSAPP_TEMPLATE_NAME,
         "smtp": bool(EMAIL and APP_PASSWORD),
         "correlate": True,
     }
@@ -278,8 +426,8 @@ def auth_signup(body: SignupBody):
         raise HTTPException(400, "First and last name are required.")
     if role == "user" and not body.birthDate.strip():
         raise HTTPException(400, "Choose your date of birth.")
-    if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email):
-        raise HTTPException(400, "Enter a working email. The code is sent there, not by SMS.")
+    if email and not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", email):
+        raise HTTPException(400, "Enter a valid email address.")
     if role not in ROLES:
         raise HTTPException(400, "Role must be user, caregiver, or doctor.")
     if role != "user" and len(family) < 4:
@@ -326,23 +474,34 @@ def auth_signup(body: SignupBody):
         )
         conn.commit()
 
-    mail = send_email_otp(email, otp)
+    wa_result = send_whatsapp_otp(phone, otp)
+    mail = send_email_otp(email, otp) if email else {"ok": False}
+    wa_sent = bool(wa_result.get("ok"))
+    email_sent = bool(mail.get("ok"))
+
+    if wa_sent and email_sent:
+        msg = f"Code sent to your WhatsApp (+{wa_result.get('recipient')}) and email."
+    elif wa_sent:
+        msg = f"Code sent to your WhatsApp (+{wa_result.get('recipient')}). Tap Copy Code in WhatsApp."
+    elif email_sent:
+        msg = "Code mailed. Check inbox / Mailpit."
+    else:
+        msg = "Could not send verification message. Use the on-screen code."
+
     payload = {
         "ok": True,
         "source": "postgres",
-        "emailSent": bool(mail.get("ok")),
+        "whatsappSent": wa_sent,
+        "emailSent": email_sent,
         "phone": phone,
         "role": role,
         "previewUrl": mail.get("previewUrl") or "",
-        "message": "Code mailed. Check inbox / Mailpit.",
+        "message": msg,
         "householdCode": household_code if role == "user" else "",
     }
-    if DEV_MODE or not mail.get("ok"):
+    if DEV_MODE or (not wa_sent and not email_sent):
         payload["otp"] = otp
         payload["devOtp"] = otp
-        if not mail.get("ok"):
-            payload["emailSent"] = False
-            payload["message"] = f"Could not send mail ({mail.get('reason', 'smtp')}). Use the on-screen code."
     return payload
 
 
@@ -363,14 +522,14 @@ def auth_login(body: LoginBody):
         if not names_match(name, user):
             raise HTTPException(403, "Name does not match this number.")
         mail_to = (body.email or user.get("email") or "").strip()
-        if not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", mail_to):
-            raise HTTPException(400, "This account needs an email. Enter the email to receive the code.")
+        if mail_to and not re.match(r"^[^\s@]+@[^\s@]+\.[^\s@]+$", mail_to):
+            raise HTTPException(400, "Enter a valid email address.")
 
         otp = new_code()
         pending = {
             "firstName": user.get("first_name"),
             "lastName": user.get("last_name"),
-            "email": mail_to,
+            "email": mail_to or None,
             "phone": phone,
             "role": user.get("role") or "user",
             "householdCode": user.get("household_code"),
@@ -389,22 +548,33 @@ def auth_login(body: LoginBody):
         )
         conn.commit()
 
-    mail = send_email_otp(mail_to, otp)
+    wa_result = send_whatsapp_otp(phone, otp)
+    mail = send_email_otp(mail_to, otp) if mail_to else {"ok": False}
+    wa_sent = bool(wa_result.get("ok"))
+    email_sent = bool(mail.get("ok"))
+
+    if wa_sent and email_sent:
+        msg = f"Code sent to your WhatsApp (+{wa_result.get('recipient')}) and email."
+    elif wa_sent:
+        msg = f"Code sent to your WhatsApp (+{wa_result.get('recipient')}). Tap Copy Code in WhatsApp."
+    elif email_sent:
+        msg = "Code mailed. Check inbox / Mailpit."
+    else:
+        msg = "Could not send verification message. Use the on-screen code."
+
     payload = {
         "ok": True,
         "source": "postgres",
-        "emailSent": bool(mail.get("ok")),
+        "whatsappSent": wa_sent,
+        "emailSent": email_sent,
         "phone": phone,
         "role": pending["role"],
         "previewUrl": mail.get("previewUrl") or "",
-        "message": "Code mailed. Check inbox / Mailpit.",
+        "message": msg,
     }
-    if DEV_MODE or not mail.get("ok"):
+    if DEV_MODE or (not wa_sent and not email_sent):
         payload["otp"] = otp
         payload["devOtp"] = otp
-        if not mail.get("ok"):
-            payload["emailSent"] = False
-            payload["message"] = f"Could not send mail ({mail.get('reason', 'smtp')}). Use the on-screen code."
     return payload
 
 
@@ -412,23 +582,45 @@ def auth_login(body: LoginBody):
 def auth_verify(body: VerifyBody):
     phone = digits_phone(body.phone)
     otp = re.sub(r"\D", "", body.otp or "")
-    if len(phone) != 10 or len(otp) != 6:
+    if len(phone) != 10:
+        raise HTTPException(400, "Enter a 10-digit mobile number.")
+    if not body.verified and len(otp) != 6:
         raise HTTPException(400, "Enter the 6-digit code.")
 
     with connect() as conn, conn.cursor() as cur:
         cur.execute("SELECT code, purpose, pending_json, created_at FROM otp_challenges WHERE phone = %s", (phone,))
         row = cur.fetchone()
-        if not row:
+        
+        pending = {}
+        if row:
+            age = time.time() - row["created_at"].timestamp()
+            if not body.verified and age > OTP_TTL:
+                raise HTTPException(400, "Code expired. Request a new one.")
+            if not body.verified and row["code"] != otp:
+                raise HTTPException(400, "That code does not match.")
+            pending = row["pending_json"] or {}
+            if isinstance(pending, str):
+                pending = json.loads(pending)
+        elif body.verified:
+            # Check if user already exists
+            cur.execute("SELECT * FROM app_users WHERE phone = %s", (phone,))
+            existing = cur.fetchone()
+            if existing:
+                cur.execute("UPDATE app_users SET last_login_at = NOW(), verified = TRUE WHERE phone = %s RETURNING *", (phone,))
+                user = cur.fetchone()
+                conn.commit()
+                return {"ok": True, "source": "postgres", "user": public_user(user)}
+            pending = {
+                "firstName": body.firstName,
+                "lastName": body.lastName,
+                "birthDate": body.birthDate,
+                "email": body.email,
+                "role": body.role or "user",
+                "householdCode": body.householdCode,
+                "familyCode": body.familyCode,
+            }
+        else:
             raise HTTPException(400, "No code found. Request a new one.")
-        age = time.time() - row["created_at"].timestamp()
-        if age > OTP_TTL:
-            raise HTTPException(400, "Code expired. Request a new one.")
-        if row["code"] != otp:
-            raise HTTPException(400, "That code does not match.")
-
-        pending = row["pending_json"] or {}
-        if isinstance(pending, str):
-            pending = json.loads(pending)
 
         role = pending.get("role") or "user"
         household_code = pending.get("householdCode") or None
@@ -446,7 +638,7 @@ def auth_verify(body: VerifyBody):
               first_name = EXCLUDED.first_name,
               last_name = EXCLUDED.last_name,
               display_name = EXCLUDED.display_name,
-              email = COALESCE(EXCLUDED.email, app_users.email),
+              email = COALESCE(NULLIF(EXCLUDED.email, ''), app_users.email),
               birth_date = COALESCE(EXCLUDED.birth_date, app_users.birth_date),
               role = EXCLUDED.role,
               verified = TRUE,
@@ -461,7 +653,7 @@ def auth_verify(body: VerifyBody):
                 pending.get("lastName") or "",
                 display,
                 phone,
-                pending.get("email"),
+                pending.get("email") or None,
                 pending.get("birthDate") or None,
                 role,
                 household_code,

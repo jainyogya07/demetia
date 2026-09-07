@@ -7,3 +7,5 @@ dist
 *.log
 _from-amongus-auth/
 backend/.env
+__pycache__/
+*.pyc

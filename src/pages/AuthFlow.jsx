@@ -2,6 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BrandLogo from '../components/BrandLogo';
 import { homeForRole, useAuth } from '../context/AuthContext';
+import {
+  isFirebaseConfigured,
+  createRecaptchaVerifier,
+  sendFirebasePhoneOtp,
+} from '../lib/firebase';
 import './AuthFlow.css';
 
 const ROLES = [
@@ -88,6 +93,8 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
   const [otp, setOtp] = useState('');
   const [otpBack, setOtpBack] = useState('signup');
   const [householdHint, setHouseholdHint] = useState('');
+  const [confirmationResult, setConfirmationResult] = useState(null);
+  const recaptchaVerifierRef = useRef(null);
 
   const [role, setRole] = useState(defaultRole);
   const [familyCode, setFamilyCode] = useState('');
@@ -120,22 +127,44 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
     setHint('');
     setHouseholdHint('');
     try {
-      const data = await postJson('/auth-api/auth/signup', {
-        firstName, lastName, birthDate, email, phone, role, familyCode,
-      });
-      const shown = data.otp || data.devOtp || '';
-      setOtpPhone(data.phone);
-      setOtp(shown);
+      const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+      if (cleanPhone.length !== 10) throw new Error('Enter a 10-digit mobile number.');
+      setOtpPhone(cleanPhone);
       setOtpBack('signup');
-      setPane('otp');
-      setHint(data.emailSent
-        ? (data.message || 'Check your email for the 6-digit code.')
-        : (data.message || (shown ? `Email did not send. Use this code: ${shown}` : 'Enter the 6-digit code.')));
-      setMailPreview(data.previewUrl || '');
-      if (role === 'user') {
-        setHouseholdHint('After you confirm the code, you will get a household code to share with caregiver and doctor.');
+
+      if (isFirebaseConfigured()) {
+        if (!recaptchaVerifierRef.current) {
+          recaptchaVerifierRef.current = createRecaptchaVerifier('recaptcha-container');
+        }
+        const formatted = `+91${cleanPhone}`;
+        const confirmation = await sendFirebasePhoneOtp(formatted, recaptchaVerifierRef.current);
+        setConfirmationResult(confirmation);
+        setPane('otp');
+        setHint(`SMS verification code sent to ${formatted}`);
+        if (role === 'user') {
+          setHouseholdHint('After you confirm the code, you will get a household code to share with caregiver and doctor.');
+        }
+      } else {
+        const data = await postJson('/auth-api/auth/signup', {
+          firstName, lastName, birthDate, email, phone, role, familyCode,
+        });
+        const shown = data.otp || data.devOtp || '';
+        setOtp(shown);
+        setPane('otp');
+        const delivered = Boolean(data.whatsappSent || data.emailSent);
+        setHint(data.message || (delivered
+          ? (data.whatsappSent ? 'Check WhatsApp for the 6-digit code.' : 'Check your email for the 6-digit code.')
+          : (shown ? `Code did not send. Use this code: ${shown}` : 'Enter the 6-digit code.')));
+        setMailPreview(data.previewUrl || '');
+        if (role === 'user') {
+          setHouseholdHint('After you confirm the code, you will get a household code to share with caregiver and doctor.');
+        }
       }
     } catch (err) {
+      if (recaptchaVerifierRef.current) {
+        try { recaptchaVerifierRef.current.clear(); } catch (_) {}
+        recaptchaVerifierRef.current = null;
+      }
       setError(err.message);
     } finally {
       setBusy(false);
@@ -148,17 +177,36 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
     setError('');
     setHint('');
     try {
-      const data = await postJson('/auth-api/auth/login', { name: loginName, phone: loginPhone, email });
-      const shown = data.otp || data.devOtp || '';
-      setOtpPhone(data.phone);
-      setOtp(shown);
+      const cleanPhone = loginPhone.replace(/\D/g, '').slice(-10);
+      if (cleanPhone.length !== 10) throw new Error('Enter a 10-digit mobile number.');
+      setOtpPhone(cleanPhone);
       setOtpBack('login');
-      setPane('otp');
-      setHint(data.emailSent
-        ? (data.message || 'Check your email for the 6-digit code.')
-        : (data.message || (shown ? `Email did not send. Use this code: ${shown}` : 'Enter the 6-digit code.')));
-      setMailPreview(data.previewUrl || '');
+
+      if (isFirebaseConfigured()) {
+        if (!recaptchaVerifierRef.current) {
+          recaptchaVerifierRef.current = createRecaptchaVerifier('recaptcha-container');
+        }
+        const formatted = `+91${cleanPhone}`;
+        const confirmation = await sendFirebasePhoneOtp(formatted, recaptchaVerifierRef.current);
+        setConfirmationResult(confirmation);
+        setPane('otp');
+        setHint(`SMS verification code sent to ${formatted}`);
+      } else {
+        const data = await postJson('/auth-api/auth/login', { name: loginName, phone: loginPhone, email });
+        const shown = data.otp || data.devOtp || '';
+        setOtp(shown);
+        setPane('otp');
+        const delivered = Boolean(data.whatsappSent || data.emailSent);
+        setHint(data.message || (delivered
+          ? (data.whatsappSent ? 'Check WhatsApp for the 6-digit code.' : 'Check your email for the 6-digit code.')
+          : (shown ? `Code did not send. Use this code: ${shown}` : 'Enter the 6-digit code.')));
+        setMailPreview(data.previewUrl || '');
+      }
     } catch (err) {
+      if (recaptchaVerifierRef.current) {
+        try { recaptchaVerifierRef.current.clear(); } catch (_) {}
+        recaptchaVerifierRef.current = null;
+      }
       if (/No account/i.test(err.message || '')) {
         const parts = loginName.trim().split(/\s+/);
         setFirstName(parts[0] || '');
@@ -179,7 +227,28 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
     setBusy(true);
     setError('');
     try {
-      const data = await postJson('/auth-api/auth/verify', { phone: otpPhone, otp });
+      let verifiedByFirebase = false;
+      let firebaseUid = '';
+
+      if (confirmationResult) {
+        const userCredential = await confirmationResult.confirm(otp);
+        verifiedByFirebase = true;
+        firebaseUid = userCredential.user?.uid || '';
+      }
+
+      const data = await postJson('/auth-api/auth/verify', {
+        phone: otpPhone,
+        otp,
+        verified: verifiedByFirebase,
+        firebaseUid,
+        firstName,
+        lastName,
+        birthDate,
+        email,
+        role,
+        familyCode,
+      });
+
       if (data.user?.householdCode && data.user?.role === 'user') {
         setHouseholdHint(`Household code ${data.user.householdCode} — share with caregiver & doctor.`);
       }
@@ -199,7 +268,7 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
           <>
             <h1>{pane === 'login' ? 'Log in' : 'Create account'}</h1>
             <p className="af-lead">
-              One household links patient, caregiver, and doctor. OTP goes to email (Mailpit locally).
+              One household links patient, caregiver, and doctor. Verification code sent via SMS, WhatsApp, or email.
             </p>
           </>
         )}
@@ -256,8 +325,8 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
               <input type="tel" inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="10-digit number" autoComplete="tel" />
             </label>
             <label>
-              Email
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="Code will be mailed here" autoComplete="email" />
+              Email (optional)
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Optional backup email" autoComplete="email" />
             </label>
             <button type="submit" className="af-primary" disabled={busy}>{busy ? 'Please wait…' : 'Sign up'}</button>
             <button type="button" className="af-text" onClick={() => { setPane('login'); setError(''); }}>
@@ -277,8 +346,8 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
               <input type="tel" inputMode="numeric" value={loginPhone} onChange={(e) => setLoginPhone(e.target.value)} required placeholder="10-digit number" autoComplete="tel" />
             </label>
             <label>
-              Email
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Where we mailed your last code" autoComplete="email" />
+              Email (optional)
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Optional" autoComplete="email" />
             </label>
             <button type="submit" className="af-primary" disabled={busy}>{busy ? 'Please wait…' : 'Log in'}</button>
             <button type="button" className="af-text" onClick={() => { setPane('signup'); setError(''); }}>
@@ -292,7 +361,7 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
             <p className="af-kicker">Enter code</p>
             <h1>Enter the code</h1>
             <p className="af-lead">
-              The code is in your email inbox (Mailpit at localhost:8025 when running locally).
+              Check your mobile for the SMS / WhatsApp verification code (or email inbox if provided).
             </p>
             {householdHint && <p className="af-hint">{householdHint}</p>}
             <OtpBoxes value={otp} onChange={setOtp} />
@@ -328,6 +397,7 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
           </p>
         )}
         {error && <p className="af-error">{error}</p>}
+        <div id="recaptcha-container"></div>
 
         {!requireAccount && (
           <button type="button" className="af-guest" onClick={skip}>

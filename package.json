@@ -14,12 +14,13 @@
     "db:seed": "node scripts/db.mjs seed",
     "api": "node server/api.mjs",
     "mailpit": "mailpit",
-    "stack": "docker compose up -d",
+    "stack": "node scripts/stack.mjs",
     "db:setup": "node scripts/db.mjs migrate",
     "auth": "uvicorn main:app --reload --app-dir backend --port 8000",
     "auth:install": "pip install -r backend/requirements.txt"
   },
   "dependencies": {
+    "firebase": "^12.18.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.31.0",
     "nodemailer": "^9.0.5",

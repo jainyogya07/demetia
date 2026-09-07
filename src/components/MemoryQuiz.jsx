@@ -756,30 +756,77 @@ function MemoryQuiz({ onComplete }) {
     setIsListening(false);
   };
 
-  const speakQuestion = () => {
-    if (!question?.text) {
-      return;
-    }
+const speakQuestion = () => {
+  if (!question?.text) return;
 
-    if (!("speechSynthesis" in window)) {
-      return;
-    }
-
-    window.speechSynthesis.cancel();
-
-    const utterance = new SpeechSynthesisUtterance(
-      question.text
+  if (!("speechSynthesis" in window)) {
+    setMicrophoneError(
+      "Speech is not supported in this browser."
     );
+    return;
+  }
 
-    utterance.lang =
-      SPEECH_LANGUAGES[language] || "en-IN";
+  window.speechSynthesis.cancel();
 
-    utterance.rate = 0.85;
-    utterance.pitch = 1;
-    utterance.volume = 1;
+  const utterance = new SpeechSynthesisUtterance(
+    question.text
+  );
 
-    window.speechSynthesis.speak(utterance);
+  utterance.lang =
+    SPEECH_LANGUAGES[language] || "en-IN";
+
+  utterance.rate = 0.82;
+  utterance.pitch = 1;
+  utterance.volume = 1;
+
+  const voices =
+    window.speechSynthesis.getVoices();
+
+  // 1. Try exact language
+  let selectedVoice = voices.find(
+    (voice) =>
+      voice.lang.toLowerCase() ===
+      utterance.lang.toLowerCase()
+  );
+
+  // 2. Try same language family
+  if (!selectedVoice) {
+    const languagePrefix =
+      utterance.lang.split("-")[0].toLowerCase();
+
+    selectedVoice = voices.find(
+      (voice) =>
+        voice.lang
+          .toLowerCase()
+          .startsWith(languagePrefix)
+    );
+  }
+
+  // 3. Use the matching voice if available
+  if (selectedVoice) {
+    utterance.voice = selectedVoice;
+  }
+
+  utterance.onstart = () => {
+    console.log(
+      "Speaking:",
+      question.text,
+      "Language:",
+      utterance.lang,
+      "Voice:",
+      selectedVoice?.name || "Browser default"
+    );
   };
+
+  utterance.onerror = (event) => {
+    console.error(
+      "Speech synthesis error:",
+      event
+    );
+  };
+
+  window.speechSynthesis.speak(utterance);
+};
 
   const startListening = () => {
     setMicrophoneError("");

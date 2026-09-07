@@ -343,6 +343,82 @@
   gap: 15px;
 }
 
+/* ================================
+   LOCATION / LANGUAGE CONTROLS
+================================ */
+
+.detected-region {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 130px;
+  line-height: 1.2;
+}
+
+.detected-region > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detected-region strong {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.detected-region span {
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.use-region-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #b8d8d0;
+  border-radius: 10px;
+
+  background: #f3fbf8;
+  color: #246b5d;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  white-space: nowrap;
+
+  transition: 0.2s ease;
+}
+
+.use-region-button:hover {
+  background: #e5f5ef;
+  transform: translateY(-1px);
+}
+
+/* Keep topbar items separated */
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Language selector */
+.language-selector {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+/* Location loading text */
+.detected-region svg {
+  flex-shrink: 0;
+}
+
 /* Language */
 
 .language-selector {
@@ -2516,4 +2592,45 @@
   overflow-x: hidden;
 
   background: #f8faf9;
+}
+
+/* ================================
+   DEMO LOCATION
+================================ */
+
+.demo-location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 8px 10px;
+
+  border: 1px solid #b8d8d0;
+  border-radius: 10px;
+
+  background: #f3fbf8;
+
+  color: #246b5d;
+
+  white-space: nowrap;
+}
+
+.demo-location svg {
+  flex-shrink: 0;
+}
+
+.demo-location select {
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #246b5d;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  max-width: 145px;
 }

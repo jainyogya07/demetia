@@ -18,13 +18,18 @@ export function AuthProvider({ children }) {
   const [session, setSession] = useState(readSession);
   const [authOpen, setAuthOpen] = useState(false);
   const [authMode, setAuthMode] = useState('signup');
+  const [authGate, setAuthGate] = useState(null);
 
-  const openAuth = useCallback((mode = 'signup') => {
+  const openAuth = useCallback((mode = 'signup', opts = {}) => {
     setAuthMode(mode === 'login' ? 'login' : 'signup');
+    setAuthGate(opts.gate || null);
     setAuthOpen(true);
   }, []);
 
-  const closeAuth = useCallback(() => setAuthOpen(false), []);
+  const closeAuth = useCallback(() => {
+    setAuthOpen(false);
+    setAuthGate(null);
+  }, []);
 
   const signIn = useCallback((next) => {
     const row = {
@@ -46,6 +51,7 @@ export function AuthProvider({ children }) {
     }
     setSession(row);
     setAuthOpen(false);
+    setAuthGate(null);
   }, []);
 
   const signOut = useCallback(() => {
@@ -58,8 +64,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ session, signIn, signOut, authOpen, authMode, openAuth, closeAuth }),
-    [session, signIn, signOut, authOpen, authMode, openAuth, closeAuth],
+    () => ({ session, signIn, signOut, authOpen, authMode, authGate, openAuth, closeAuth }),
+    [session, signIn, signOut, authOpen, authMode, authGate, openAuth, closeAuth],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

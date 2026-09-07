@@ -2,39 +2,26 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BrandLogo from '../components/BrandLogo';
 import { useAuth } from '../context/AuthContext';
-import { runLocalAuth, shouldUseLocalAuth } from '../lib/localAuth';
 import './AuthFlow.css';
 
 async function postJson(path, body) {
+  const res = await fetch(path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const text = await res.text();
+  let data = {};
   try {
-    const res = await fetch(path, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
-    const text = await res.text();
-    if (shouldUseLocalAuth(res, text)) {
-      return runLocalAuth(path, body);
-    }
-    const data = (() => {
-      try {
-        return text ? JSON.parse(text) : {};
-      } catch {
-        return null;
-      }
-    })();
-    if (!data) return runLocalAuth(path, body);
-    if (!res.ok) {
-      const detail = Array.isArray(data.detail) ? data.detail.map((d) => d.msg || d).join(', ') : data.detail;
-      throw new Error(data.error || detail || `Request failed (${res.status})`);
-    }
-    return data;
-  } catch (err) {
-    if (err instanceof TypeError || /Failed to fetch|NetworkError|Load failed/i.test(err.message || '')) {
-      return runLocalAuth(path, body);
-    }
-    throw err;
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    throw new Error('Sign-in server did not respond. Start Postgres + Mailpit (npm run stack) then npm run dev.');
   }
+  if (!res.ok) {
+    const detail = Array.isArray(data.detail) ? data.detail.map((d) => d.msg || d).join(', ') : data.detail;
+    throw new Error(data.error || detail || `Request failed (${res.status})`);
+  }
+  return data;
 }
 
 function OtpBoxes({ value, onChange }) {
@@ -81,7 +68,7 @@ function OtpBoxes({ value, onChange }) {
   );
 }
 
-export default function AuthFlow({ variant = 'page', onSkip }) {
+export default function AuthFlow({ variant = 'page', onSkip, requireAccount = false }) {
   const { signIn, authMode } = useAuth();
   const navigate = useNavigate();
   const [pane, setPane] = useState(authMode === 'login' ? 'login' : 'signup');
@@ -195,8 +182,8 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
             <h1>{pane === 'login' ? 'Log in' : 'Create account'}</h1>
             <p className="af-lead">
               {pane === 'login'
-                ? 'Name and mobile, then a code on your email. No SMS.'
-                : 'Name, birthday, phone for the account. The one-time code goes to email, not the phone.'}
+                ? 'Name and mobile. A 6-digit code goes to your email (Mailpit locally, or real SMTP).'
+                : 'Name, birthday, phone (saved on the account), email for the OTP. Phone SMS vendors are not used.'}
             </p>
           </>
         )}
@@ -256,12 +243,10 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
         {pane === 'otp' && (
           <form className="af-form" onSubmit={verify}>
             <p className="af-kicker">Enter code</p>
-            <h1>{otp.length === 6 ? 'Your code' : 'Enter the code'}</h1>
+            <h1>Enter the code</h1>
             <p className="af-lead">
-              The code is sent to your email, not SMS.
-              {otp.length === 6 ? ' If mail failed, the digits are also shown here.' : ' Open the mail and type the six digits.'}
+              The code is in your email inbox (Mailpit at localhost:8025 when running locally). Type the six digits.
             </p>
-            {otp.length === 6 && <p className="af-otp-show" aria-live="polite">{otp}</p>}
             <OtpBoxes value={otp} onChange={setOtp} />
             <label>
               Or type all 6 digits
@@ -296,9 +281,11 @@ export default function AuthFlow({ variant = 'page', onSkip }) {
         )}
         {error && <p className="af-error">{error}</p>}
 
-        <button type="button" className="af-guest" onClick={skip}>
-          Continue without an account
-        </button>
+        {!requireAccount && (
+          <button type="button" className="af-guest" onClick={skip}>
+            Continue without an account
+          </button>
+        )}
       </div>
     </div>
   );

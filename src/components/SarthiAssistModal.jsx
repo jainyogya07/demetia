@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  Captions, Heart, MessageCircle, Mic, MicOff, Phone, PhoneOff, Send, Sparkles, Languages, Volume2, X,
+  Captions, Heart, Lock, MessageCircle, Mic, MicOff, Phone, PhoneOff, Send, Sparkles, Languages, Volume2, X,
 } from 'lucide-react';
 import SmritiAvatar from '../assets/smriti-avatar.svg';
 import { useGeminiLive } from '../hooks/useGeminiLive';
@@ -103,6 +103,7 @@ export default function SarthiAssistRuntime({
   paused,
   onLiveChange,
   authenticated = true,
+  onNeedAuth,
 }) {
   const { openModule, openEmergency, currentModuleId, activeGameId } = useAppNav();
   const { language, setLang, lang } = useI18n();
@@ -466,7 +467,21 @@ export default function SarthiAssistRuntime({
   const micMuted = isConnected && !isListening;
   const fabLabel = isSpeaking ? 'Speaking…' : isThinking ? 'Understanding…' : isListening || keepAlive ? 'Listening…' : 'Ask Sarthi';
 
-  if (!authenticated || paused) return null;
+  if (paused) return null;
+
+  if (!authenticated) {
+    return (
+      <button
+        type="button"
+        className="sarthi-assist-fab is-need-auth"
+        aria-label="Sign in to use Assist"
+        onClick={() => onNeedAuth?.()}
+      >
+        <Lock size={18} />
+        <span className="sarthi-assist-fab-label">Sign in</span>
+      </button>
+    );
+  }
 
   const fab = (
     <button

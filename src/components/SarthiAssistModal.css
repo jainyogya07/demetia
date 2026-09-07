@@ -20,11 +20,24 @@
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
 }
 
+.sarthi-assist-fab.is-need-auth {
+  min-width: 0;
+  height: 52px;
+  padding: 0 12px 0 12px;
+  gap: 6px;
+}
+
 .sarthi-assist-fab-label {
   display: none;
   font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
+}
+
+.sarthi-assist-fab.is-need-auth .sarthi-assist-fab-label {
+  display: inline;
+  font-size: 12px;
+  font-weight: 750;
 }
 
 .sarthi-assist-fab.is-live {

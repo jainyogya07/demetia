@@ -20,7 +20,7 @@ export function mailPreviewUrl() {
 }
 
 export function isSmtpConfigured() {
-  return Boolean(smtpUser() && smtpPass()) || true;
+  return Boolean(smtpUser() && smtpPass());
 }
 
 function portOpen(host, port) {

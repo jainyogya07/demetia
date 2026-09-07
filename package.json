@@ -14,6 +14,8 @@
     "db:seed": "node scripts/db.mjs seed",
     "api": "node server/api.mjs",
     "mailpit": "mailpit",
+    "stack": "docker compose up -d",
+    "db:setup": "node scripts/db.mjs migrate",
     "auth": "uvicorn main:app --reload --app-dir backend --port 8000"
   },
   "dependencies": {

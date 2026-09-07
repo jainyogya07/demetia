@@ -179,6 +179,7 @@ function UserWorkspace({ boot }) {
   const [railCollapsed, setRailCollapsed] = useState(false);
   const [railOpen, setRailOpen] = useState(false);
   const [showAssist, setShowAssist] = useState(false);
+  const pendingAssistRef = useRef(false);
   const [assistMuted, setAssistMuted] = useState(false);
   const [, setAssistLive] = useState(false);
   const [activeGameId, setActiveGameId] = useState(null);
@@ -261,6 +262,12 @@ function UserWorkspace({ boot }) {
 
   const assistPaused = currentModuleId === 'ai' || (currentModuleId === 'games' && activeGameId === 'story-solver');
   const assistReady = Boolean(session?.verified);
+
+  useEffect(() => {
+    if (!session?.verified || !pendingAssistRef.current) return;
+    pendingAssistRef.current = false;
+    setShowAssist(true);
+  }, [session?.verified]);
 
   const openAssist = useCallback(() => {
     if (assistPaused) return;
@@ -449,6 +456,10 @@ function UserWorkspace({ boot }) {
           onMutedChange={setAssistMuted}
           onLiveChange={setAssistLive}
           authenticated={assistReady}
+          onNeedAuth={() => {
+            pendingAssistRef.current = true;
+            openAuth('signup', { gate: 'assist' });
+          }}
         />
 
         {showTabs && (
@@ -570,12 +581,12 @@ function SignInPage() {
 }
 
 function AuthModal() {
-  const { authOpen, closeAuth } = useAuth();
+  const { authOpen, closeAuth, authGate } = useAuth();
   if (!authOpen) return null;
   return (
     <div className="af-overlay" role="dialog" aria-label="Account">
       <button type="button" className="af-overlay-bg" onClick={closeAuth} aria-label="Close" />
-      <AuthFlow variant="modal" onSkip={closeAuth} />
+      <AuthFlow variant="modal" onSkip={authGate === 'assist' ? undefined : closeAuth} requireAccount={authGate === 'assist'} />
     </div>
   );
 }

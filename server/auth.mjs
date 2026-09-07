@@ -1,11 +1,12 @@
 /** Phone OTP + Postgres users. Email send is optional (FastAPI). */
 
 import { sendAppMail, isSmtpConfigured, mailPreviewUrl } from './mail.mjs';
-const AUTH_DEV_MODE = String(process.env.AUTH_DEV_MODE || 'true').toLowerCase();
+const AUTH_DEV_MODE = String(process.env.AUTH_DEV_MODE || 'false').toLowerCase();
 const DEV_MODE = AUTH_DEV_MODE !== 'false' && AUTH_DEV_MODE !== '0' && AUTH_DEV_MODE !== 'no';
 
-const memUsers = new Map();
-const memOtps = new Map();
+function dbHint(err) {
+  return `Postgres is required for accounts. Run: npm run stack && npm run db:migrate. ${err ? `(${err})` : ''}`.trim();
+}
 
 export function digitsPhone(raw) {
   const d = String(raw || '').replace(/\D/g, '');
@@ -63,8 +64,8 @@ export function createAuthHandlers({ withDb, json, readBody }) {
         [phone, code, purpose, JSON.stringify(pending || {})],
       );
     });
-    if (!db.ok) memOtps.set(phone, { code, purpose, pending, at: Date.now() });
-    return db.ok ? 'postgres' : 'memory';
+    if (!db.ok) return { ok: false, error: db.error };
+    return { ok: true, source: 'postgres' };
   }
 
   async function readOtp(phone) {
@@ -76,21 +77,13 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       return rows[0] || null;
     });
     if (db.ok) return db.result;
-    const row = memOtps.get(phone);
-    if (!row) return null;
-    return {
-      code: row.code,
-      purpose: row.purpose,
-      pending_json: row.pending,
-      created_at: new Date(row.at),
-    };
+    return null;
   }
 
   async function clearOtp(phone) {
     await withDb(async (client) => {
       await client.query('DELETE FROM otp_challenges WHERE phone = $1', [phone]);
     });
-    memOtps.delete(phone);
   }
 
   async function getUserByPhone(phone) {
@@ -98,8 +91,8 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       const { rows } = await client.query('SELECT * FROM app_users WHERE phone = $1', [phone]);
       return rows[0] || null;
     });
-    if (db.ok) return db.result;
-    return memUsers.get(phone) || null;
+    if (!db.ok) return { ok: false, error: db.error };
+    return { ok: true, user: db.result };
   }
 
   async function upsertUser(fields, verified) {
@@ -136,11 +129,11 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       return rows[0];
     });
     if (db.ok && db.result) return { source: 'postgres', user: db.result };
-    memUsers.set(row.phone, row);
-    return { source: 'memory', user: row };
+    return { source: 'none', error: db.error, user: null };
   }
 
   async function startSignup(body) {
+    if (!process.env.DATABASE_URL?.trim()) return { status: 503, body: { error: dbHint('DATABASE_URL is not set') } };
     const phone = digitsPhone(body.phone);
     const firstName = String(body.firstName || '').trim();
     const lastName = String(body.lastName || '').trim();
@@ -153,12 +146,14 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       return { status: 400, body: { error: 'Enter a working email. The code is sent there, not by SMS.' } };
     }
     const existing = await getUserByPhone(phone);
-    if (existing?.verified) {
+    if (!existing.ok) return { status: 503, body: { error: dbHint(existing.error) } };
+    if (existing.user?.verified) {
       return { status: 409, body: { error: 'This number already has an account. Log in instead.' } };
     }
     const code = newCode();
     const pending = { firstName, lastName, birthDate, email, phone, role: 'user' };
     const store = await saveOtp(phone, code, 'signup', pending);
+    if (!store.ok) return { status: 503, body: { error: dbHint(store.error) } };
     const delivered = await deliverOtp({ email, otp: code });
     const preview = delivered.previewUrl || '';
     const mailNote = preview
@@ -173,10 +168,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
         status: 200,
         body: {
           ok: true,
-          source: store,
-          smsSent: false,
-          emailSent: false,
-          channel: 'screen',
+          source: store.source,
           phone,
           otp: code,
           devOtp: code,
@@ -187,10 +179,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     }
     const payload = {
       ok: true,
-      source: store,
-      smsSent: false,
-      emailSent: true,
-      channel: preview ? 'mailpit' : 'email',
+      source: store.source,
       phone,
       previewUrl: preview,
       message: mailNote,
@@ -203,11 +192,14 @@ export function createAuthHandlers({ withDb, json, readBody }) {
   }
 
   async function startLogin(body) {
+    if (!process.env.DATABASE_URL?.trim()) return { status: 503, body: { error: dbHint('DATABASE_URL is not set') } };
     const phone = digitsPhone(body.phone);
     const name = String(body.name || '').trim();
     if (phone.length !== 10) return { status: 400, body: { error: 'Enter a 10-digit mobile number.' } };
     if (!name) return { status: 400, body: { error: 'Enter the name on the account.' } };
-    const user = await getUserByPhone(phone);
+    const found = await getUserByPhone(phone);
+    if (!found.ok) return { status: 503, body: { error: dbHint(found.error) } };
+    const user = found.user;
     if (!user) return { status: 404, body: { error: 'No account for this number. Create one.' } };
     if (!namesMatch(name, user)) {
       return { status: 403, body: { error: 'Name does not match this number.' } };
@@ -223,6 +215,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       email: mailTo,
       phone,
     });
+    if (!store.ok) return { status: 503, body: { error: dbHint(store.error) } };
     const delivered = await deliverOtp({ email: mailTo, otp: code });
     const preview = delivered.previewUrl || '';
     const mailNote = preview
@@ -237,9 +230,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
         status: 200,
         body: {
           ok: true,
-          source: store,
-          smsSent: false,
-          emailSent: false,
+          source: store.source,
           phone,
           otp: code,
           devOtp: code,
@@ -250,9 +241,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     }
     const bodyOut = {
       ok: true,
-      source: store,
-      smsSent: false,
-      emailSent: true,
+      source: store.source,
       phone,
       previewUrl: preview,
       message: mailNote,
@@ -265,6 +254,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
   }
 
   async function verify(body) {
+    if (!process.env.DATABASE_URL?.trim()) return { status: 503, body: { error: dbHint('DATABASE_URL is not set') } };
     const phone = digitsPhone(body.phone);
     const otp = String(body.otp || '').replace(/\D/g, '');
     if (phone.length !== 10 || otp.length !== 6) {
@@ -285,6 +275,9 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       email: pending.email,
       birthDate: pending.birthDate,
     }, true);
+    if (!saved.user || saved.source !== 'postgres') {
+      return { status: 503, body: { error: dbHint(saved.error) } };
+    }
     await clearOtp(phone);
     return {
       status: 200,

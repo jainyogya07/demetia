@@ -42,6 +42,16 @@ app.add_middleware(
 ROLES = {"user", "caregiver", "doctor"}
 OTP_TTL = 300
 
+try:
+    from backend.detection.engine import DetectionEngine
+    from backend.detection.schema import DetectionInput, DetectionReport
+    DETECTION_AVAILABLE = True
+    detection_engine = DetectionEngine()
+except Exception as _detection_err:
+    DETECTION_AVAILABLE = False
+    detection_engine = None
+    print("[detection] Detection module initialization notice:", _detection_err)
+
 
 def load_env_file(path: Path) -> None:
     if not path.exists():
@@ -739,3 +749,29 @@ def legacy_send(data: dict[str, Any]):
     if DEV_MODE:
         out["otp"] = otp
     return out
+
+
+@app.post("/detection/evaluate")
+def evaluate_detection(payload: dict[str, Any]):
+    """
+    Evaluates client-side motor kinematics, caregiver FAQ, and demographics.
+    Performs demographic bias calibration, ONNX inference, TreeSHAP decomposition,
+    and returns clinical domain sub-indices with critical risk flags.
+    """
+    if not DETECTION_AVAILABLE or detection_engine is None:
+        raise HTTPException(status_code=503, detail="Detection pipeline not available.")
+    try:
+        input_obj = DetectionInput(**payload)
+        report = detection_engine.evaluate(input_obj, use_onnx=True)
+        return report.model_dump()
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/detection/health")
+def detection_health():
+    return {
+        "ok": True,
+        "detection_available": DETECTION_AVAILABLE,
+        "onnx_model_ready": bool(detection_engine and detection_engine.onnx_runner.model_path.exists()),
+    }

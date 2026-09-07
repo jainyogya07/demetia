@@ -10,13 +10,27 @@ from __future__ import annotations
 import json
 import time
 
-from .schema import (
-    CaregiverFAQ,
-    DemographicProfile,
-    DetectionInput,
-    MotorKinematics,
-)
-from .engine import DetectionEngine
+import sys
+from pathlib import Path
+
+# Support running directly as script (python demo_cli.py) or as a module (-m backend.detection.demo_cli)
+if __package__ is None or __package__ == "":
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent.parent))
+    from backend.detection.schema import (
+        CaregiverFAQ,
+        DemographicProfile,
+        DetectionInput,
+        MotorKinematics,
+    )
+    from backend.detection.engine import DetectionEngine
+else:
+    from .schema import (
+        CaregiverFAQ,
+        DemographicProfile,
+        DetectionInput,
+        MotorKinematics,
+    )
+    from .engine import DetectionEngine
 
 
 def run_demo() -> None:

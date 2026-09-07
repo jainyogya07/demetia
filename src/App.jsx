@@ -29,6 +29,7 @@ import {
   CgOverview, CgRoutine, CgSafety, CgProgress, CgCircle, CgDocuments, CgSettings,
   CgCalendar, CgProfile,
 } from './pages/caregiver/CaregiverPages';
+import CaregiverAssessment from './pages/caregiver/CaregiverAssessment';
 import DoctorLayout from './pages/doctor/DoctorLayout';
 import {
   DoctorPatients, DoctorPatient, DoctorAlerts, DoctorReports,
@@ -606,6 +607,7 @@ function App() {
         <Route path="/stories" element={<RequireRole role="user" allowGuest><UserWorkspace boot="stories" /></RequireRole>} />
       <Route path="/caregiver" element={<RequireRole role="caregiver"><CaregiverLayout /></RequireRole>}>
         <Route index element={<CgOverview />} />
+        <Route path="assessment" element={<CaregiverAssessment />} />
         <Route path="routine" element={<CgRoutine />} />
         <Route path="safety" element={<CgSafety />} />
         <Route path="progress" element={<CgProgress />} />

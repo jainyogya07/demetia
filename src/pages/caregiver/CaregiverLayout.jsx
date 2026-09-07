@@ -1,6 +1,6 @@
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound,
+  LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound, ClipboardList,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import BrandLogo from '../../components/BrandLogo';
@@ -12,6 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 
 const NAV = [
   { to: '/caregiver', end: true, icon: LayoutDashboard, label: 'Today' },
+  { to: '/caregiver/assessment', icon: ClipboardList, label: 'Cognitive check-in' },
   { to: '/caregiver/routine', icon: CalendarDays, label: 'Routine & medicines' },
   { to: '/caregiver/calendar', icon: CalendarDays, label: 'Calendar' },
   { to: '/caregiver/safety', icon: MapPin, label: 'Safety & location' },
@@ -24,6 +25,7 @@ const NAV = [
 
 const TITLES = {
   '/caregiver': ['Today', 'A working family-care day — tasks, safety, the person in front of you.'],
+  '/caregiver/assessment': ['Cognitive Check-in (FAQ-10)', '10-item Activities of Daily Living observation for clinical telemetry.'],
   '/caregiver/routine': ['Routine & medicines', 'What was due, what was taken, what is next.'],
   '/caregiver/calendar': ['Calendar', 'Meds, doctor, ASHA — the week on one board.'],
   '/caregiver/safety': ['Safety & location', 'Caregiver view of the home zone and last check-in.'],

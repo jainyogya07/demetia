@@ -35,6 +35,9 @@ async function postJson(path, body) {
   }
   if (!res.ok) {
     const detail = Array.isArray(data.detail) ? data.detail.map((d) => d.msg || d).join(', ') : data.detail;
+    if (res.status === 405) {
+      throw new Error(data.error || detail || 'Authentication server error (405). Ensure the auth server is running.');
+    }
     throw new Error(data.error || detail || `Request failed (${res.status})`);
   }
   return data;
@@ -107,6 +110,10 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
   const [loginPhone, setLoginPhone] = useState('');
 
   useEffect(() => {
+    if (defaultRole) setRole(defaultRole);
+  }, [defaultRole]);
+
+  useEffect(() => {
     setPane(authMode === 'login' ? 'login' : 'signup');
   }, [authMode]);
 
@@ -143,6 +150,10 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
         setHint(`SMS verification code sent to ${formatted}`);
         if (role === 'user') {
           setHouseholdHint('After you confirm the code, you will get a household code to share with caregiver and doctor.');
+        } else if (familyCode) {
+          setHouseholdHint(`Linking to household ${familyCode} once confirmed.`);
+        } else {
+          setHouseholdHint('Creating an unlinked account. You can connect to a patient household anytime later.');
         }
       } else {
         const data = await postJson('/auth-api/auth/signup', {
@@ -158,6 +169,10 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
         setMailPreview(data.previewUrl || '');
         if (role === 'user') {
           setHouseholdHint('After you confirm the code, you will get a household code to share with caregiver and doctor.');
+        } else if (familyCode) {
+          setHouseholdHint(`Linking to household ${familyCode} once confirmed.`);
+        } else {
+          setHouseholdHint('Creating an unlinked account. You can connect to a patient household anytime later.');
         }
       }
     } catch (err) {
@@ -241,7 +256,7 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
         otp,
         verified: verifiedByFirebase,
         firebaseUid,
-        firstName,
+        firstName: firstName || loginName,
         lastName,
         birthDate,
         email,
@@ -310,12 +325,11 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
             )}
             {role !== 'user' && (
               <label>
-                Household code
+                Household code (optional)
                 <input
                   value={familyCode}
                   onChange={(e) => setFamilyCode(e.target.value.toUpperCase())}
-                  required
-                  placeholder="From patient account"
+                  placeholder="Optional — to link with a patient"
                   autoComplete="off"
                 />
               </label>

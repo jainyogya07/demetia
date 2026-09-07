@@ -140,9 +140,11 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     const lastName = String(body.lastName || '').trim();
     const birthDate = String(body.birthDate || '').trim();
     const email = String(body.email || '').trim();
+    const role = String(body.role || 'user').trim().toLowerCase();
+    const familyCode = String(body.familyCode || '').trim().toUpperCase();
     if (phone.length !== 10) return { status: 400, body: { error: 'Enter a 10-digit mobile number.' } };
     if (!firstName || !lastName) return { status: 400, body: { error: 'First and last name are required.' } };
-    if (!birthDate) return { status: 400, body: { error: 'Choose your date of birth.' } };
+    if (role === 'user' && !birthDate) return { status: 400, body: { error: 'Choose your date of birth.' } };
     if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return { status: 400, body: { error: 'Enter a valid email address.' } };
     }
@@ -152,7 +154,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       return { status: 409, body: { error: 'This number already has an account. Log in instead.' } };
     }
     const code = newCode();
-    const pending = { firstName, lastName, birthDate, email, phone, role: 'user' };
+    const pending = { firstName, lastName, birthDate, email, phone, role, familyCode };
     const store = await saveOtp(phone, code, 'signup', pending);
     if (!store.ok) return { status: 503, body: { error: dbHint(store.error) } };
     const wa = await sendWhatsAppOtp({ phone, otp: code });
@@ -277,6 +279,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       phone,
       email: pending.email,
       birthDate: pending.birthDate,
+      role: pending.role || 'user',
     }, true);
     if (!saved.user || saved.source !== 'postgres') {
       return { status: 503, body: { error: dbHint(saved.error) } };

@@ -43,8 +43,12 @@ ROLES = {"user", "caregiver", "doctor"}
 OTP_TTL = 300
 
 try:
-    from backend.detection.engine import DetectionEngine
-    from backend.detection.schema import DetectionInput, DetectionReport
+    try:
+        from backend.detection.engine import DetectionEngine
+        from backend.detection.schema import DetectionInput, DetectionReport
+    except ModuleNotFoundError:
+        from detection.engine import DetectionEngine
+        from detection.schema import DetectionInput, DetectionReport
     DETECTION_AVAILABLE = True
     detection_engine = DetectionEngine()
 except Exception as _detection_err:
@@ -422,6 +426,7 @@ def health():
 
 
 @app.post("/auth/signup")
+@app.post("/auth/signup/")
 def auth_signup(body: SignupBody):
     phone = digits_phone(body.phone)
     first = body.firstName.strip()
@@ -440,8 +445,6 @@ def auth_signup(body: SignupBody):
         raise HTTPException(400, "Enter a valid email address.")
     if role not in ROLES:
         raise HTTPException(400, "Role must be user, caregiver, or doctor.")
-    if role != "user" and len(family) < 4:
-        raise HTTPException(400, "Enter the household code from the patient account to link dashboards.")
 
     with connect() as conn, conn.cursor() as cur:
         cur.execute("SELECT * FROM app_users WHERE phone = %s", (phone,))
@@ -453,11 +456,11 @@ def auth_signup(body: SignupBody):
         household_code = None
         if role == "user":
             household_code = new_household_code()
-        else:
+        elif family:
             cur.execute("SELECT * FROM households WHERE code = %s", (family,))
             house = cur.fetchone()
             if not house:
-                raise HTTPException(404, "Household code not found. Ask the patient for their code.")
+                raise HTTPException(404, f"Household code '{family}' not found. Ask the patient for their code or leave it blank.")
             linked_patient_id = house["patient_id"]
             household_code = house["code"]
 
@@ -516,6 +519,7 @@ def auth_signup(body: SignupBody):
 
 
 @app.post("/auth/login")
+@app.post("/auth/login/")
 def auth_login(body: LoginBody):
     phone = digits_phone(body.phone)
     name = body.name.strip()
@@ -589,6 +593,7 @@ def auth_login(body: LoginBody):
 
 
 @app.post("/auth/verify")
+@app.post("/auth/verify/")
 def auth_verify(body: VerifyBody):
     phone = digits_phone(body.phone)
     otp = re.sub(r"\D", "", body.otp or "")
@@ -616,18 +621,85 @@ def auth_verify(body: VerifyBody):
             cur.execute("SELECT * FROM app_users WHERE phone = %s", (phone,))
             existing = cur.fetchone()
             if existing:
-                cur.execute("UPDATE app_users SET last_login_at = NOW(), verified = TRUE WHERE phone = %s RETURNING *", (phone,))
+                req_role = (body.role or existing.get("role") or "user").strip().lower()
+                if req_role not in ROLES:
+                    req_role = existing.get("role") or "user"
+
+                family = (body.familyCode or body.householdCode or "").strip().upper()
+                h_code = existing.get("household_code")
+                l_pid = existing.get("linked_patient_id")
+
+                if req_role == "user" and not h_code:
+                    h_code = new_household_code()
+                    cur.execute(
+                        """
+                        INSERT INTO households (code, patient_id, patient_phone, created_at)
+                        VALUES (%s, %s, %s, NOW())
+                        ON CONFLICT (code) DO UPDATE SET patient_id = EXCLUDED.patient_id, patient_phone = EXCLUDED.patient_phone
+                        """,
+                        (h_code, existing["id"], phone),
+                    )
+                elif family:
+                    cur.execute("SELECT * FROM households WHERE code = %s", (family,))
+                    house = cur.fetchone()
+                    if house:
+                        h_code = house["code"]
+                        l_pid = house["patient_id"]
+
+                first_name = (body.firstName or existing.get("first_name") or "").strip()
+                last_name = (body.lastName or existing.get("last_name") or "").strip()
+                display = f"{first_name} {last_name}".strip() or existing.get("display_name")
+                email = (body.email or existing.get("email") or "").strip() or None
+
+                cur.execute(
+                    """
+                    UPDATE app_users SET
+                      first_name = COALESCE(NULLIF(%s, ''), first_name),
+                      last_name = COALESCE(NULLIF(%s, ''), last_name),
+                      display_name = COALESCE(NULLIF(%s, ''), display_name),
+                      email = COALESCE(NULLIF(%s, ''), email),
+                      role = %s,
+                      household_code = COALESCE(%s, household_code),
+                      linked_patient_id = COALESCE(%s, linked_patient_id),
+                      last_login_at = NOW(),
+                      verified = TRUE
+                    WHERE phone = %s RETURNING *
+                    """,
+                    (first_name, last_name, display, email, req_role, h_code, l_pid, phone),
+                )
                 user = cur.fetchone()
+                patient = None
+                if user.get("linked_patient_id"):
+                    cur.execute("SELECT * FROM app_users WHERE id = %s", (user["linked_patient_id"],))
+                    patient = cur.fetchone()
+                cur.execute("DELETE FROM otp_challenges WHERE phone = %s", (phone,))
                 conn.commit()
-                return {"ok": True, "source": "postgres", "user": public_user(user)}
+                return {"ok": True, "source": "postgres", "user": public_user(user, patient)}
+
+            # Brand-new verified user
+            req_role = (body.role or "user").strip().lower()
+            if req_role not in ROLES:
+                req_role = "user"
+            family = (body.familyCode or body.householdCode or "").strip().upper()
+            h_code = None
+            l_pid = None
+            if req_role == "user":
+                h_code = new_household_code()
+            elif family:
+                cur.execute("SELECT * FROM households WHERE code = %s", (family,))
+                house = cur.fetchone()
+                if house:
+                    h_code = house["code"]
+                    l_pid = house["patient_id"]
+
             pending = {
                 "firstName": body.firstName,
                 "lastName": body.lastName,
                 "birthDate": body.birthDate,
                 "email": body.email,
-                "role": body.role or "user",
-                "householdCode": body.householdCode,
-                "familyCode": body.familyCode,
+                "role": req_role,
+                "householdCode": h_code,
+                "linkedPatientId": l_pid,
             }
         else:
             raise HTTPException(400, "No code found. Request a new one.")
@@ -635,6 +707,9 @@ def auth_verify(body: VerifyBody):
         role = pending.get("role") or "user"
         household_code = pending.get("householdCode") or None
         linked_patient_id = pending.get("linkedPatientId") or None
+        if role == "user" and not household_code:
+            household_code = new_household_code()
+
         user_id = f"u-{phone}"
         display = f"{pending.get('firstName', '')} {pending.get('lastName', '')}".strip()
 
@@ -694,6 +769,9 @@ def auth_verify(body: VerifyBody):
 
 
 @app.get("/auth/household/{code}")
+@app.get("/auth/household/{code}/")
+@app.post("/auth/household/{code}")
+@app.post("/auth/household/{code}/")
 def auth_household(code: str):
     code = code.strip().upper()
     with connect() as conn, conn.cursor() as cur:
@@ -721,6 +799,7 @@ def auth_household(code: str):
 
 
 @app.post("/alarms/event")
+@app.post("/alarms/event/")
 def alarms_event(body: AlarmEventBody):
     code = body.householdCode.strip().upper()
     if not code:
@@ -734,6 +813,7 @@ def alarms_event(body: AlarmEventBody):
 
 
 @app.get("/alarms/{code}")
+@app.get("/alarms/{code}/")
 def alarms_list(code: str):
     code = code.strip().upper()
     return {"ok": True, "events": ALARM_EVENTS.get(code, [])[:20]}

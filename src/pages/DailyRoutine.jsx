@@ -12,6 +12,7 @@ import {
   Check,
 } from 'lucide-react';
 import { getRoutineItems, markRoutineDone, pingLive, subscribeLive } from '../lib/liveState';
+import PatientDailyCheckin from '../components/PatientDailyCheckin';
 import './DailyRoutine.css';
 
 const ICONS = {
@@ -58,6 +59,8 @@ const DailyRoutine = () => {
           <p>Times follow this house clock. Mark what is done — morning items stay due until you confirm them.</p>
         </div>
       </div>
+
+      <PatientDailyCheckin />
 
       <div className="routine-stats">
         <div className="routine-stat">

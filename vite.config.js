@@ -49,4 +49,13 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    proxy: {
+      '/auth-api': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/auth-api/, ''),
+      },
+    },
+  },
 })

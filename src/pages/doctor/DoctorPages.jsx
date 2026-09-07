@@ -1,8 +1,13 @@
-import { useState } from 'react';
-import { Link, NavLink, useParams, Navigate, useSearchParams } from 'react-router-dom';
-import { Search, ExternalLink } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Link, NavLink, useParams, Navigate, useSearchParams, useNavigate } from 'react-router-dom';
+import {
+  Search, ExternalLink, Cpu, RefreshCw, AlertTriangle, Sliders, ShieldCheck,
+} from 'lucide-react';
 import AvatarSlot from '../../components/AvatarSlot';
 import { useAuth } from '../../context/AuthContext';
+import {
+  FAQ_QUESTIONS, getAssessmentForPatient, evaluateTelemetry, getLatestEvaluation, subscribeAssessmentChange,
+} from '../../lib/assessmentStore';
 import {
   LiveDot, SyncBar, Stat, Badge, Panel, DataTable, TaskRow, TimelineRail, Spark, AppLink,
 } from '../../components/clinic/LiveChrome';
@@ -287,18 +292,285 @@ function ProfileTab({ patient }) {
 }
 
 function CognitiveTab({ patient }) {
+  const [assessment, setAssessment] = useState(() => getAssessmentForPatient(patient.id));
+  const [report, setReport] = useState(() => getLatestEvaluation(patient.id));
+  const [loading, setLoading] = useState(false);
+  const [simulatorOpen, setSimulatorOpen] = useState(false);
+  const [simValues, setSimValues] = useState(() => (assessment?.functional || {}));
+
   const rows = DR_COGNITIVE[patient.id] || [];
   const last = rows[rows.length - 1] || {};
+
+  useEffect(() => {
+    const data = getAssessmentForPatient(patient.id);
+    setAssessment(data);
+    setSimValues(data.functional || {});
+    const existing = getLatestEvaluation(patient.id);
+    if (existing) {
+      setReport(existing);
+    } else {
+      handleRunEval(data);
+    }
+  }, [patient.id]);
+
+  useEffect(() => {
+    return subscribeAssessmentChange((detail) => {
+      if (!detail || detail.patientId === patient.id) {
+        const data = getAssessmentForPatient(patient.id);
+        setAssessment(data);
+        setSimValues(data.functional || {});
+        setReport(getLatestEvaluation(patient.id));
+      }
+    });
+  }, [patient.id]);
+
+  const handleRunEval = async (sourceData = null) => {
+    setLoading(true);
+    const curr = sourceData || assessment;
+    try {
+      const res = await evaluateTelemetry({
+        patient_id: patient.id,
+        demographics: {
+          age: curr.age || patient.age || 75,
+          education_years: curr.education_years ?? 0,
+        },
+        motor: curr.motor,
+        functional: simValues,
+      });
+      setReport(res);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSimScore = (qId, score) => {
+    setSimValues((prev) => ({ ...prev, [qId]: score }));
+  };
+
+  const severityTone =
+    !report ? 'neutral' :
+    report.severity_band === 'NORMAL' ? 'stable' :
+    report.severity_band === 'MILD_COGNITIVE_CONCERN' ? 'watch' : 'urgent';
+
   return (
     <ChartShell
       patient={patient}
       rail={(
-        <Panel title="How to read">
-          <p className="os-note-body">Engagement from games and voice. Age- and language-adjusted for the file — not a diagnosis or a test score.</p>
-        </Panel>
+        <>
+          <Panel title="How to read telemetry">
+            <p className="os-note-body">
+              Combines 6 device micro-motor metrics with the caregiver 10-Item Functional Activities Questionnaire (FAQ).
+              Normalizes for non-pathological senescent slowing and formal schooling inequality.
+            </p>
+          </Panel>
+          <Panel title="Patient Demographics">
+            <dl className="os-kv">
+              <div><dt>Age</dt><dd>{assessment.age || patient.age} Years</dd></div>
+              <div><dt>Education</dt><dd>{assessment.education_label || `${assessment.education_years} Years`}</dd></div>
+              <div><dt>Demographic Offset</dt><dd>-{report?.demographic_adjustment || '0.1360'}</dd></div>
+              <div><dt>Primary Caregiver</dt><dd>{patient.caregiver} ({patient.caregiverRole})</dd></div>
+            </dl>
+          </Panel>
+          {report?.top_feature_attributions?.length > 0 && (
+            <Panel title="Top TreeSHAP Attributions">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                {report.top_feature_attributions.slice(0, 4).map((f) => (
+                  <div key={f.feature} style={{ fontSize: '0.82rem', display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: '#57606a' }}>{f.feature}</span>
+                    <strong style={{ color: f.attribution > 0 ? '#cf222e' : '#1a7f37' }}>
+                      {f.attribution > 0 ? `+${f.attribution}` : f.attribution}
+                    </strong>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          )}
+        </>
       )}
     >
-      <Panel title="Four-week trend">
+      {/* 1. Real-time AI Cognitive-Motor Telemetry Panel */}
+      <Panel
+        title="Cognitive-Motor Detection & ONNX Inference"
+        action={(
+          <button
+            type="button"
+            className="os-full-btn"
+            style={{ width: 'auto', padding: '6px 14px', fontSize: '0.84rem' }}
+            onClick={() => handleRunEval()}
+            disabled={loading}
+          >
+            {loading ? <RefreshCw size={14} className="spin" /> : <Cpu size={14} />}
+            {loading ? 'Evaluating...' : 'Re-run Evaluation'}
+          </button>
+        )}
+      >
+        <div className="os-kpis tight" style={{ marginBottom: 16 }}>
+          <Stat
+            label="Severity Band"
+            value={<Badge tone={severityTone}>{report?.severity_band?.replace(/_/g, ' ') || 'CALCULATING'}</Badge>}
+            hint="Demographically Normalized"
+          />
+          <Stat
+            label="Calibrated Impairment Index"
+            value={report ? `${report.calibrated_risk_score}` : '...'}
+            hint={report ? `Raw Score: ${report.raw_risk_score}` : ''}
+          />
+          <Stat
+            label="Demographic Bias Offset"
+            value={report ? `-${report.demographic_adjustment}` : '-0.1360'}
+            hint="Age & schooling penalty removed"
+          />
+          <Stat
+            label="Inference Runtime"
+            value={report?.model_runtime?.split(' in ')?.[1] || '<2.0ms'}
+            hint="Edge ONNX Engine"
+          />
+        </div>
+
+        {/* TreeSHAP Clinical Domain Sub-indices */}
+        <div style={{ marginBottom: 16 }}>
+          <h4 style={{ margin: '0 0 10px', fontSize: '0.92rem', fontWeight: 600 }}>
+            Clinical Domain Decomposition (TreeSHAP Aggregates)
+          </h4>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
+            {report?.domain_sub_indices && Object.entries(report.domain_sub_indices).map(([name, sub]) => {
+              const pct = Math.round(sub.normalized_score * 100);
+              const tone = sub.risk_level === 'LOW' ? 'stable' : sub.risk_level === 'MILD' ? 'watch' : 'urgent';
+              return (
+                <div key={name} style={{ background: 'var(--subtle-bg, #f6f8fa)', border: '1px solid var(--border-subtle, #e1e4e8)', padding: 12, borderRadius: 10 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <strong style={{ fontSize: '0.88rem' }}>{name}</strong>
+                    <Badge tone={tone}>{sub.risk_level}</Badge>
+                  </div>
+                  <div style={{ height: 8, background: '#e1e4e8', borderRadius: 4, overflow: 'hidden', marginBottom: 8 }}>
+                    <div
+                      style={{
+                        height: '100%',
+                        width: `${pct}%`,
+                        background: tone === 'stable' ? '#2da44e' : tone === 'watch' ? '#0969da' : '#cf222e',
+                      }}
+                    />
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: '#57606a' }}>
+                    <span>Index: {sub.normalized_score}</span>
+                    <span>SHAP: {sub.additive_attribution > 0 ? `+${sub.additive_attribution}` : sub.additive_attribution}</span>
+                  </div>
+                  <p style={{ margin: '6px 0 0', fontSize: '0.78rem', color: '#57606a' }}>
+                    {sub.clinical_summary}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Critical Safety Flags */}
+        {report?.critical_flags?.length > 0 ? (
+          <div style={{ marginBottom: 16 }}>
+            <h4 style={{ margin: '0 0 8px', fontSize: '0.92rem', fontWeight: 600, color: '#cf222e' }}>
+              Actionable Safety Alarms Detected:
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {report.critical_flags.map((f) => (
+                <div key={f.code} style={{ background: '#fff5f5', border: '1px solid #ffc8c8', padding: '10px 14px', borderRadius: 8 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <AlertTriangle size={16} color="#cf222e" />
+                    <strong style={{ fontSize: '0.88rem', color: '#cf222e' }}>[{f.severity}] {f.code}</strong>
+                  </div>
+                  <p style={{ margin: '4px 0 2px', fontSize: '0.84rem' }}>{f.message}</p>
+                  <p style={{ margin: 0, fontSize: '0.8rem', color: '#57606a' }}>
+                    <strong>Recommended Action:</strong> {f.recommended_action}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div style={{ background: '#dafbe1', border: '1px solid #4ac26b', padding: '10px 14px', borderRadius: 8, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 10 }}>
+            <ShieldCheck size={18} color="#1a7f37" />
+            <span style={{ fontSize: '0.88rem', color: '#1a7f37', fontWeight: 600 }}>
+              No critical functional alarms triggered. Independent daily routine sustained.
+            </span>
+          </div>
+        )}
+
+        {/* Interactive Clinician Simulator Toggle */}
+        <div style={{ borderTop: '1px solid var(--border-subtle, #e1e4e8)', paddingTop: 14 }}>
+          <button
+            type="button"
+            onClick={() => setSimulatorOpen(!simulatorOpen)}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: 'var(--brand-accent, #0969da)',
+              fontSize: '0.88rem',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: 0,
+            }}
+          >
+            <Sliders size={16} />
+            {simulatorOpen ? 'Hide Clinician Telemetry Simulator' : 'Open Clinician Telemetry Simulator (Adjust 10 FAQ Scores & Motor)'}
+          </button>
+
+          {simulatorOpen && (
+            <div style={{ background: '#f6f8fa', padding: 14, borderRadius: 10, marginTop: 12 }}>
+              <p style={{ margin: '0 0 12px', fontSize: '0.84rem', color: '#57606a' }}>
+                Adjust scores on the fly to simulate how patient impairments or interventions affect calibrated severity and TreeSHAP domain attributions:
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+                {FAQ_QUESTIONS.map((q) => (
+                  <div key={q.id} style={{ background: '#fff', padding: '8px 12px', borderRadius: 8, border: '1px solid #e1e4e8' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span style={{ fontSize: '0.82rem', fontWeight: 600 }}>{q.title}</span>
+                      <strong style={{ fontSize: '0.82rem' }}>{simValues[q.id] ?? 0} / 3</strong>
+                    </div>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      {[0, 1, 2, 3].map((score) => (
+                        <button
+                          key={score}
+                          type="button"
+                          onClick={() => handleSimScore(q.id, score)}
+                          style={{
+                            flex: 1,
+                            padding: '4px 0',
+                            borderRadius: 6,
+                            border: `1px solid ${(simValues[q.id] ?? 0) === score ? '#0969da' : '#d0d7de'}`,
+                            background: (simValues[q.id] ?? 0) === score ? '#ddf4ff' : '#fff',
+                            color: (simValues[q.id] ?? 0) === score ? '#0969da' : '#24292f',
+                            fontWeight: 700,
+                            fontSize: '0.78rem',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {score}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ marginTop: 12, textAlign: 'right' }}>
+                <button
+                  type="button"
+                  className="os-full-btn"
+                  style={{ width: 'auto', padding: '8px 18px', fontSize: '0.88rem' }}
+                  onClick={() => handleRunEval()}
+                  disabled={loading}
+                >
+                  {loading ? 'Evaluating...' : 'Apply Simulation & Run Edge Model'}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </Panel>
+
+      {/* 2. Four-week trend */}
+      <Panel title="Four-week historical trend">
         <div className="os-kpis tight">
           <Stat label="Memory (W4)" value={last.memory} hint={<Spark rows={rows} field="memory" />} />
           <Stat label="Attention (W4)" value={last.attention} hint={<Spark rows={rows} field="attention" />} />
@@ -467,6 +739,7 @@ function CalendarTab({ patient }) {
 
 export function DoctorPatient() {
   const { patientId, tab } = useParams();
+  const navigate = useNavigate();
   const patient = DR_PATIENTS.find((row) => row.id === patientId);
   if (!patient) return <Navigate to="/doctor" replace />;
   const active = TABS.some((item) => item.id === tab) ? tab : 'profile';
@@ -474,7 +747,28 @@ export function DoctorPatient() {
 
   return (
     <div className="os-page">
-      <SyncBar asOf={`${DR_LIVE.asOf} · ${DR_LIVE.clock}`} lastSync={DR_LIVE.lastSync} extra={patient.lastSeenRel} />
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+        <SyncBar asOf={`${DR_LIVE.asOf} · ${DR_LIVE.clock}`} lastSync={DR_LIVE.lastSync} extra={patient.lastSeenRel} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <span style={{ fontSize: '0.82rem', color: '#57606a', fontWeight: 600 }}>Chart lookup:</span>
+          <select
+            value={patientId}
+            onChange={(e) => navigate(`/doctor/patients/${e.target.value}/${active}`)}
+            style={{
+              padding: '4px 10px',
+              borderRadius: 6,
+              border: '1px solid var(--border-subtle, #d0d7de)',
+              background: '#fff',
+              fontSize: '0.86rem',
+              fontWeight: 600,
+            }}
+          >
+            {DR_PATIENTS.map((p) => (
+              <option key={p.id} value={p.id}>{p.name} ({p.age}y · {p.stage})</option>
+            ))}
+          </select>
+        </div>
+      </div>
       <nav className="os-tabs" role="tablist">
         {TABS.map((item) => (
           <NavLink

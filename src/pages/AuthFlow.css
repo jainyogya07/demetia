@@ -188,6 +188,58 @@
   color: #176b58;
 }
 
+.af-roles {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.af-roles legend {
+  font-size: 12px;
+  font-weight: 600;
+  color: #3d4742;
+  margin-bottom: 6px;
+}
+
+.af-role-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.af-role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid #ddd6cc;
+  background: #fbfaf7;
+  font-size: 13px;
+  font-weight: 650;
+  color: #3d4742;
+  cursor: pointer;
+}
+
+.af-role-chip input {
+  width: auto;
+  height: auto;
+  margin: 0;
+}
+
+.af-role-chip.is-on {
+  border-color: #176b58;
+  background: #e7f2ee;
+  color: #114d40;
+}
+
+.af-hint {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #176b58;
+}
+
 .af-error {
   margin: 10px 0 0;
   font-size: 13px;

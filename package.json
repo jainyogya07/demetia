@@ -16,7 +16,8 @@
     "mailpit": "mailpit",
     "stack": "docker compose up -d",
     "db:setup": "node scripts/db.mjs migrate",
-    "auth": "uvicorn main:app --reload --app-dir backend --port 8000"
+    "auth": "uvicorn main:app --reload --app-dir backend --port 8000",
+    "auth:install": "pip install -r backend/requirements.txt"
   },
   "dependencies": {
     "leaflet": "^1.9.4",

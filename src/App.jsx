@@ -42,6 +42,8 @@ import { useAuth } from './context/AuthContext';
 import VoiceToggle from './components/VoiceToggle';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import SarthiAssistRuntime from './components/SarthiAssistModal';
+import AlarmRuntime from './components/AlarmRuntime';
+import RequireRole from './components/RequireRole';
 import './components/SarthiAssistModal.css';
 import { user } from './data/user';
 import { greetingForHour } from './data/patientDashboard';
@@ -447,6 +449,7 @@ function UserWorkspace({ boot }) {
           </div>
         </header>
         {showEmergency && <EmergencyPanel onClose={() => setShowEmergency(false)} />}
+        <AlarmRuntime />
         <SarthiAssistRuntime
           panelOpen={showAssist}
           onPanelOpen={() => setShowAssist(true)}
@@ -597,11 +600,11 @@ function App() {
       <Routes>
         <Route path="/" element={<HomeLanding />} />
         <Route path="/signin" element={<SignInPage />} />
-        <Route path="/user" element={<UserWorkspace />} />
-        <Route path="/talk" element={<UserWorkspace boot="talk" />} />
-        <Route path="/assist" element={<UserWorkspace boot="assist" />} />
-        <Route path="/stories" element={<UserWorkspace boot="stories" />} />
-      <Route path="/caregiver" element={<CaregiverLayout />}>
+        <Route path="/user" element={<RequireRole role="user" allowGuest><UserWorkspace /></RequireRole>} />
+        <Route path="/talk" element={<RequireRole role="user" allowGuest><UserWorkspace boot="talk" /></RequireRole>} />
+        <Route path="/assist" element={<RequireRole role="user" allowGuest><UserWorkspace boot="assist" /></RequireRole>} />
+        <Route path="/stories" element={<RequireRole role="user" allowGuest><UserWorkspace boot="stories" /></RequireRole>} />
+      <Route path="/caregiver" element={<RequireRole role="caregiver"><CaregiverLayout /></RequireRole>}>
         <Route index element={<CgOverview />} />
         <Route path="routine" element={<CgRoutine />} />
         <Route path="safety" element={<CgSafety />} />
@@ -612,7 +615,7 @@ function App() {
         <Route path="profile" element={<CgProfile />} />
         <Route path="settings" element={<CgSettings />} />
       </Route>
-      <Route path="/doctor" element={<DoctorLayout />}>
+      <Route path="/doctor" element={<RequireRole role="doctor"><DoctorLayout /></RequireRole>}>
         <Route index element={<DoctorPatients />} />
         <Route path="alerts" element={<DoctorAlerts />} />
         <Route path="reports" element={<DoctorReports />} />

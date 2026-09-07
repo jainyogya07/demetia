@@ -2,11 +2,13 @@ import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import BrandLogo from '../../components/BrandLogo';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import AvatarSlot from '../../components/AvatarSlot';
 import { LiveDot } from '../../components/clinic/LiveChrome';
 import { CG_LIVE, CG_PROFILE, CG_PATIENT } from '../../data/caregiverPlaceholders';
+import { useAuth } from '../../context/AuthContext';
 
 const NAV = [
   { to: '/caregiver', end: true, icon: LayoutDashboard, label: 'Today' },
@@ -34,7 +36,32 @@ const TITLES = {
 
 export default function CaregiverLayout() {
   const { pathname } = useLocation();
+  const { session } = useAuth();
   const [title, lead] = TITLES[pathname] || TITLES['/caregiver'];
+  const patientName = session?.linkedPatient?.name || CG_PATIENT.name;
+  const caregiverName = session?.name || CG_PROFILE.name;
+  const [alarms, setAlarms] = useState([]);
+
+  useEffect(() => {
+    const code = session?.householdCode;
+    if (!code) return undefined;
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const res = await fetch(`/auth-api/alarms/${code}`);
+        const data = await res.json();
+        if (!cancelled && data?.events) setAlarms(data.events);
+      } catch {
+        /* offline */
+      }
+    };
+    load();
+    const id = setInterval(load, 20000);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [session?.householdCode]);
 
   return (
     <div className="app-container ss-theme">
@@ -70,7 +97,10 @@ export default function CaregiverLayout() {
         <header className="top-bar ss-topbar">
           <div className="ss-greeting-block">
             <h1>{title}</h1>
-            <p>{lead}</p>
+            <p>
+              {lead}
+              {session?.householdCode ? ` · Linked household ${session.householdCode}` : ''}
+            </p>
           </div>
           <div className="top-bar-right">
             <span className="os-header-live">
@@ -79,8 +109,8 @@ export default function CaregiverLayout() {
             </span>
             <LanguageSwitcher />
             <Link to="/caregiver/profile" className="top-action profile ss-profile">
-              <AvatarSlot name={CG_PROFILE.name} photoUrl={CG_PROFILE.photoUrl} size={32} />
-              <span>{CG_PROFILE.name} · {CG_PATIENT.relation}</span>
+              <AvatarSlot name={caregiverName} photoUrl={CG_PROFILE.photoUrl} size={32} />
+              <span>{caregiverName} · caring for {patientName}</span>
             </Link>
           </div>
         </header>
@@ -92,7 +122,18 @@ export default function CaregiverLayout() {
           ))}
         </nav>
         <div className="dashboard-scroll">
-          <Outlet />
+          {alarms[0] && (
+            <div className="os-card" style={{ margin: '12px 16px 0', padding: 14 }}>
+              <p className="os-kicker">Patient alarm feed</p>
+              <p style={{ margin: 0 }}>
+                <strong>{alarms[0].title || alarms[0].alarmId}</strong>
+                {' · '}
+                {alarms[0].action}
+                {alarms[0].at ? ` · ${new Date(alarms[0].at).toLocaleTimeString('en-IN', { hour: 'numeric', minute: '2-digit' })}` : ''}
+              </p>
+            </div>
+          )}
+          <Outlet context={{ patientName, householdCode: session?.householdCode, alarms }} />
         </div>
       </main>
     </div>

@@ -26,7 +26,7 @@ function DailyRoutine() {
       <div className="routine-header">
         <div className="routine-title">
           <CalendarDays size={25} />
-          <h2>Today&apos;s Routine</h2>
+          <h2>Today&apos;s Routine &amp; Alarms</h2>
         </div>
         <button type="button" className="tell-next-button" onClick={tellNext}>
           <Volume2 size={17} />

@@ -52,16 +52,27 @@ CREATE TABLE IF NOT EXISTS app_users (
   birth_date DATE,
   role TEXT NOT NULL DEFAULT 'user',
   verified BOOLEAN NOT NULL DEFAULT FALSE,
+  household_code TEXT,
+  linked_patient_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   last_login_at TIMESTAMPTZ
 );
 
 CREATE INDEX IF NOT EXISTS app_users_phone_idx ON app_users (phone);
+CREATE INDEX IF NOT EXISTS app_users_household_idx ON app_users (household_code);
 
 CREATE TABLE IF NOT EXISTS otp_challenges (
   phone TEXT PRIMARY KEY,
   code TEXT NOT NULL,
   purpose TEXT NOT NULL,
   pending_json JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- Correlates patient + caregiver + doctor under one join code
+CREATE TABLE IF NOT EXISTS households (
+  code TEXT PRIMARY KEY,
+  patient_id TEXT NOT NULL,
+  patient_phone TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

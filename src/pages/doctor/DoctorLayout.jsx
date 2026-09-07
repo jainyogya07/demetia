@@ -5,6 +5,7 @@ import LanguageSwitcher from '../../components/LanguageSwitcher';
 import AvatarSlot from '../../components/AvatarSlot';
 import { LiveDot } from '../../components/clinic/LiveChrome';
 import { DR_CLINIC, DR_LIVE, DR_PATIENTS } from '../../data/doctorPlaceholders';
+import { useAuth } from '../../context/AuthContext';
 
 const NAV = [
   { to: '/doctor', end: true, icon: Users, label: 'Patients' },
@@ -17,8 +18,10 @@ const NAV = [
 
 export default function DoctorLayout() {
   const { pathname } = useLocation();
+  const { session } = useAuth();
   const patientId = pathname.split('/')[3];
   const patient = DR_PATIENTS.find((row) => row.id === patientId);
+  const linkedName = session?.linkedPatient?.name;
 
   let title = 'Patients';
   let lead = `${DR_CLINIC.site} — review and notes, not a diagnosis.`;
@@ -40,7 +43,12 @@ export default function DoctorLayout() {
   } else if (patient) {
     title = patient.name;
     lead = `Last visit ${patient.lastVisit} · ${patient.stage}`;
+  } else if (linkedName) {
+    title = 'Patients';
+    lead = `Linked household ${session.householdCode} · ${linkedName}`;
   }
+
+  const doctorName = session?.name || DR_CLINIC.name;
 
   return (
     <div className="app-container ss-theme">
@@ -88,8 +96,8 @@ export default function DoctorLayout() {
             </span>
             <LanguageSwitcher />
             <Link to="/doctor/profile" className="top-action profile ss-profile">
-              <AvatarSlot name={DR_CLINIC.name} photoUrl={DR_CLINIC.photoUrl} size={32} />
-              <span>{DR_CLINIC.name}</span>
+              <AvatarSlot name={doctorName} photoUrl={DR_CLINIC.photoUrl} size={32} />
+              <span>{doctorName}{linkedName ? ` · ${linkedName}` : ''}</span>
             </Link>
           </div>
         </header>

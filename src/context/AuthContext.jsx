@@ -3,6 +3,16 @@ import { createContext, useCallback, useContext, useMemo, useState } from 'react
 const STORAGE_KEY = 'ss-auth-session';
 const AuthContext = createContext(null);
 
+const ROLE_HOME = {
+  user: '/user',
+  caregiver: '/caregiver',
+  doctor: '/doctor',
+};
+
+export function homeForRole(role) {
+  return ROLE_HOME[role] || '/user';
+}
+
 function readSession() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -41,6 +51,9 @@ export function AuthProvider({ children }) {
       email: next.email || '',
       birthDate: next.birthDate || '',
       role: next.role || 'user',
+      householdCode: next.householdCode || '',
+      linkedPatientId: next.linkedPatientId || '',
+      linkedPatient: next.linkedPatient || null,
       verified: true,
       at: new Date().toISOString(),
     };
@@ -52,6 +65,7 @@ export function AuthProvider({ children }) {
     setSession(row);
     setAuthOpen(false);
     setAuthGate(null);
+    return row;
   }, []);
 
   const signOut = useCallback(() => {
@@ -64,7 +78,7 @@ export function AuthProvider({ children }) {
   }, []);
 
   const value = useMemo(
-    () => ({ session, signIn, signOut, authOpen, authMode, authGate, openAuth, closeAuth }),
+    () => ({ session, signIn, signOut, authOpen, authMode, authGate, openAuth, closeAuth, homeForRole }),
     [session, signIn, signOut, authOpen, authMode, authGate, openAuth, closeAuth],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

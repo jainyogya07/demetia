@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, useParams, Navigate, useSearchParams } from 'react-router-dom';
 import { Search, ExternalLink } from 'lucide-react';
 import AvatarSlot from '../../components/AvatarSlot';
+import { useAuth } from '../../context/AuthContext';
 import {
   LiveDot, SyncBar, Stat, Badge, Panel, DataTable, TaskRow, TimelineRail, Spark, AppLink,
 } from '../../components/clinic/LiveChrome';
@@ -150,6 +151,7 @@ function ChartShell({ patient, children, rail }) {
 }
 
 export function DoctorPatients() {
+  const { session } = useAuth();
   const [q, setQ] = useState('');
   const [params] = useSearchParams();
   const focusAlert = params.get('alert');
@@ -159,10 +161,18 @@ export function DoctorPatients() {
   });
   const liveAlerts = DR_ALERTS.filter((a) => a.open);
   const today = DR_CALENDAR.find((d) => d.today) || DR_CALENDAR[1];
+  const linked = session?.linkedPatient;
 
   return (
     <div className="os-page">
       <SyncBar asOf={`${DR_LIVE.asOf} · ${DR_LIVE.clock}`} lastSync={DR_LIVE.lastSync} extra={DR_LIVE.feed} />
+      {linked && (
+        <div className="os-card" style={{ marginBottom: 12, padding: 14 }}>
+          <p className="os-kicker">Linked via household {session.householdCode}</p>
+          <h2 style={{ margin: '4px 0 0' }}>{linked.name}</h2>
+          <p style={{ margin: '4px 0 0', color: '#5c6560' }}>{linked.phone} · correlated from Python auth</p>
+        </div>
+      )}
       <div className="os-kpis">
         <Stat label="Open charts" value={DR_PATIENTS.length} hint="NPHCE OPD list" />
         <Stat label="Tasks due" value={DR_TASKS.filter((t) => !t.done).length} hint="Today + held" />

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import "./App.css";
 
@@ -10,6 +10,7 @@ import Tabs from "./components/Tabs";
 import PagePlaceholder from "./components/PagePlaceholder";
 import DailyRoutineDashboard from "./components/DailyRoutineDashboard";
 import MemoryProgress from "./pages/MemoryProgress";
+import MemoryQuiz from "./components/MemoryQuiz";
 
 import VoiceCompanion from "./components/VoiceCompanion";
 import DailyRoutine from "./pages/DailyRoutine";
@@ -52,86 +53,132 @@ function App() {
     },
   ]);
 
+  // Memory Quiz states
+  const [showMemoryQuiz, setShowMemoryQuiz] = useState(false);
+  const [memoryResult, setMemoryResult] = useState(null);
+
+  // Show Memory Quiz once per day
+  useEffect(() => {
+    const today = new Date().toDateString();
+
+    const quizDate = localStorage.getItem(
+      "smritiSaarthiMemoryQuizDate"
+    );
+
+    const savedResult = localStorage.getItem(
+      "smritiSaarthiMemoryResult"
+    );
+
+    // Load previous result if available
+    if (savedResult) {
+      try {
+        setMemoryResult(JSON.parse(savedResult));
+      } catch (error) {
+        console.error("Could not load memory result:", error);
+      }
+    }
+
+    // Show quiz if it has not been completed today
+    if (quizDate !== today) {
+      setShowMemoryQuiz(true);
+    }
+  }, []);
+
+  // Called when Memory Quiz is completed
+  const handleMemoryQuizComplete = (result) => {
+    setMemoryResult(result);
+    setShowMemoryQuiz(false);
+  };
+
   return (
-    <div className="app">
-      <Sidebar
-        openTabs={openTabs}
-        setOpenTabs={setOpenTabs}
-      />
-
-      <main className="main-content">
-        <Topbar />
-
-        <Tabs
+    <>
+      <div className="app">
+        <Sidebar
           openTabs={openTabs}
           setOpenTabs={setOpenTabs}
         />
 
-        {/* NEW: CONTENT + FOOTER */}
-        <div className="page-scroll-area">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
+        <main className="main-content">
+          <Topbar />
 
-            <Route
-              path="/brain-games"
-              element={<PagePlaceholder title="Brain Games" />}
-            />
+          <Tabs
+            openTabs={openTabs}
+            setOpenTabs={setOpenTabs}
+          />
 
-            <Route
-              path="/talk-to-smriti"
-              element={<PagePlaceholder title="Talk to Smriti" />}
-            />
+          {/* CONTENT + FOOTER */}
+          <div className="page-scroll-area">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
 
-            <Route
-              path="/daily-routine"
-              element={<DailyRoutine />}
-            />
+              <Route
+                path="/brain-games"
+                element={<PagePlaceholder title="Brain Games" />}
+              />
 
-            <Route
-              path="/medicine-health"
-              element={<PagePlaceholder title="Medicine & Health" />}
-            />
+              <Route
+                path="/talk-to-smriti"
+                element={<PagePlaceholder title="Talk to Smriti" />}
+              />
 
-            <Route
-              path="/memory-progress"
-              element={<MemoryProgress />}
-            />
+              <Route
+                path="/daily-routine"
+                element={<DailyRoutine />}
+              />
 
-            <Route
-              path="/care-circle"
-              element={<PagePlaceholder title="My Care Circle" />}
-            />
+              <Route
+                path="/medicine-health"
+                element={<PagePlaceholder title="Medicine & Health" />}
+              />
 
-            <Route
-              path="/safety-location"
-              element={<PagePlaceholder title="Safety & Location" />}
-            />
+              <Route
+                path="/memory-progress"
+                element={<MemoryProgress />}
+              />
 
-            <Route
-              path="/memory-book"
-              element={<PagePlaceholder title="Memory Book" />}
-            />
+              <Route
+                path="/care-circle"
+                element={<PagePlaceholder title="My Care Circle" />}
+              />
 
-            <Route
-              path="/language"
-              element={<PagePlaceholder title="Language" />}
-            />
+              <Route
+                path="/safety-location"
+                element={<PagePlaceholder title="Safety & Location" />}
+              />
 
-            <Route
-              path="/help-support"
-              element={<PagePlaceholder title="Help & Support" />}
-            />
+              <Route
+                path="/memory-book"
+                element={<PagePlaceholder title="Memory Book" />}
+              />
 
-            <Route
-              path="/settings"
-              element={<PagePlaceholder title="Settings" />}
-            />
-          </Routes>
+              <Route
+                path="/language"
+                element={<PagePlaceholder title="Language" />}
+              />
 
-          <Footer />
-        </div>
-      </main>
-    </div>
+              <Route
+                path="/help-support"
+                element={<PagePlaceholder title="Help & Support" />}
+              />
+
+              <Route
+                path="/settings"
+                element={<PagePlaceholder title="Settings" />}
+              />
+            </Routes>
+
+            <Footer />
+          </div>
+        </main>
+      </div>
+
+      {/* MEMORY QUIZ MODAL */}
+      {showMemoryQuiz && (
+        <MemoryQuiz
+          onComplete={handleMemoryQuizComplete}
+        />
+      )}
+    </>
   );
 }
 

@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { pickPhoneticJokeExamples } from '../data/phoneticJokes';
+import { cancelSpeakFallback, speakFallback, ttsLangForName } from '../lib/speakFallback';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 const WS_URL = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${API_KEY}`;
@@ -153,12 +154,37 @@ const arrayBufferToBase64 = (buffer) => {
 };
 
 const base64ToArrayBuffer = (base64) => {
-  const binaryString = window.atob(base64);
-  const bytes = new Uint8Array(binaryString.length);
-  for (let i = 0; i < binaryString.length; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
+  const cleaned = String(base64 || '').replace(/[^A-Za-z0-9+/=]/g, '').replace(/-/g, '+').replace(/_/g, '/');
+  try {
+    const binaryString = window.atob(cleaned);
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+    return bytes.buffer;
+  } catch {
+    return new ArrayBuffer(0);
   }
-  return bytes.buffer;
+};
+
+const pcmRateFromMime = (mimeType) => {
+  const match = String(mimeType || '').match(/rate\s*=\s*(\d+)/i);
+  return match ? Number(match[1]) : PLAYBACK_RATE;
+};
+
+const resamplePcm = (buffer, inputRate, outputRate) => {
+  if (!buffer?.length || inputRate === outputRate) return buffer;
+  if (inputRate > outputRate) return downsampleBuffer(buffer, inputRate, outputRate);
+  const ratio = inputRate / outputRate;
+  const next = new Float32Array(Math.max(1, Math.round(buffer.length / ratio)));
+  for (let i = 0; i < next.length; i += 1) {
+    const src = i * ratio;
+    const i0 = Math.min(buffer.length - 1, Math.floor(src));
+    const i1 = Math.min(buffer.length - 1, i0 + 1);
+    const frac = src - i0;
+    next[i] = buffer[i0] * (1 - frac) + buffer[i1] * frac;
+  }
+  return next;
 };
 
 const pcm16ToFloat32 = (pcmData) => {
@@ -263,6 +289,8 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
   const captionsSnapshotRef = useRef([]);
   const voiceSwapRef = useRef(false);
   const keepUiLiveRef = useRef(false);
+  const heardAudioRef = useRef(false);
+  const gainNodeRef = useRef(null);
 
   const resetTurnBuffers = () => {
     turnSaheliRef.current = '';
@@ -337,69 +365,96 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
   }, []);
 
   const initPlaybackContext = () => {
-    if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
-      audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)({
-        sampleRate: PLAYBACK_RATE,
-      });
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      analyserRef.current.fftSize = 256;
-      analyserRef.current.connect(audioContextRef.current.destination);
-      nextPlayTimeRef.current = audioContextRef.current.currentTime;
-    }
-    if (audioContextRef.current.state === 'suspended') {
-      audioContextRef.current.resume();
-    }
-    if (!animationFrameRef.current) {
-      const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-      const updateLevel = () => {
-        if (!analyserRef.current) return;
-        analyserRef.current.getByteFrequencyData(dataArray);
-        let sum = 0;
-        for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
-        setAudioLevel(Math.min(sum / dataArray.length / 100, 1));
-        animationFrameRef.current = requestAnimationFrame(updateLevel);
-      };
-      updateLevel();
+    try {
+      if (!audioContextRef.current || audioContextRef.current.state === 'closed') {
+        const Ctor = window.AudioContext || window.webkitAudioContext;
+        try {
+          audioContextRef.current = new Ctor({ sampleRate: PLAYBACK_RATE });
+        } catch {
+          audioContextRef.current = new Ctor();
+        }
+        const ctx = audioContextRef.current;
+        analyserRef.current = ctx.createAnalyser();
+        analyserRef.current.fftSize = 256;
+        gainNodeRef.current = ctx.createGain();
+        gainNodeRef.current.gain.value = 1;
+        analyserRef.current.connect(gainNodeRef.current);
+        gainNodeRef.current.connect(ctx.destination);
+        nextPlayTimeRef.current = ctx.currentTime;
+      }
+      if (audioContextRef.current.state === 'suspended') {
+        audioContextRef.current.resume().catch(() => {});
+      }
+      if (!animationFrameRef.current && analyserRef.current) {
+        const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
+        const updateLevel = () => {
+          if (!analyserRef.current) return;
+          analyserRef.current.getByteFrequencyData(dataArray);
+          let sum = 0;
+          for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+          setAudioLevel(Math.min(sum / dataArray.length / 100, 1));
+          animationFrameRef.current = requestAnimationFrame(updateLevel);
+        };
+        updateLevel();
+      }
+    } catch (err) {
+      console.warn('Playback audio context failed', err);
     }
   };
 
   const playbackMutedRef = useRef(false);
 
-  const playAudioChunk = (base64Audio) => {
-    if (playbackMutedRef.current) return;
-    if (!audioContextRef.current) initPlaybackContext();
-    const ctx = audioContextRef.current;
-    if (!ctx) return;
-    if (ctx.state === 'suspended') ctx.resume();
+  const playAudioChunk = (base64Audio, mimeType = '') => {
+    if (playbackMutedRef.current || !base64Audio) return;
+    try {
+      cancelSpeakFallback();
+      if (!audioContextRef.current) initPlaybackContext();
+      const ctx = audioContextRef.current;
+      if (!ctx) return;
+      if (ctx.state === 'suspended') ctx.resume().catch(() => {});
 
-    const arrayBuffer = base64ToArrayBuffer(base64Audio);
-    const float32Data = pcm16ToFloat32(arrayBuffer);
-    if (!float32Data.length) return;
+      const arrayBuffer = base64ToArrayBuffer(base64Audio);
+      const sourceRate = pcmRateFromMime(mimeType);
+      const pcm = resamplePcm(pcm16ToFloat32(arrayBuffer), sourceRate, ctx.sampleRate || PLAYBACK_RATE);
+      if (!pcm.length) return;
 
-    const audioBuffer = ctx.createBuffer(1, float32Data.length, PLAYBACK_RATE);
-    audioBuffer.getChannelData(0).set(float32Data);
+      const audioBuffer = ctx.createBuffer(1, pcm.length, ctx.sampleRate);
+      audioBuffer.getChannelData(0).set(pcm);
 
-    const sourceNode = ctx.createBufferSource();
-    sourceNode.buffer = audioBuffer;
-    sourceNode.connect(analyserRef.current);
+      const sourceNode = ctx.createBufferSource();
+      sourceNode.buffer = audioBuffer;
+      const sink = analyserRef.current || gainNodeRef.current || ctx.destination;
+      sourceNode.connect(sink);
 
-    const currentTime = ctx.currentTime;
-    if (nextPlayTimeRef.current < currentTime) {
-      nextPlayTimeRef.current = currentTime;
+      const currentTime = ctx.currentTime;
+      if (nextPlayTimeRef.current < currentTime) {
+        nextPlayTimeRef.current = currentTime;
+      }
+
+      sourceNode.start(nextPlayTimeRef.current);
+      nextPlayTimeRef.current += audioBuffer.duration;
+      sourceNodesRef.current.push(sourceNode);
+      sourceNode.onended = () => {
+        sourceNodesRef.current = sourceNodesRef.current.filter((n) => n !== sourceNode);
+      };
+
+      heardAudioRef.current = true;
+      setIsSpeaking(true);
+      setIsThinking(false);
+    } catch (err) {
+      console.warn('Gemini audio chunk failed', err);
     }
-
-    sourceNode.start(nextPlayTimeRef.current);
-    nextPlayTimeRef.current += audioBuffer.duration;
-    sourceNodesRef.current.push(sourceNode);
-    sourceNode.onended = () => {
-      sourceNodesRef.current = sourceNodesRef.current.filter((n) => n !== sourceNode);
-    };
-
-    setIsSpeaking(true);
-    setIsThinking(false);
   };
 
+  const unlockPlayback = useCallback(() => {
+    playbackMutedRef.current = false;
+    initPlaybackContext();
+    const ctx = audioContextRef.current;
+    if (ctx?.state === 'suspended') ctx.resume().catch(() => {});
+  }, []);
+
   const stopAudioPlayback = () => {
+    cancelSpeakFallback();
     sourceNodesRef.current.forEach((node) => {
       try {
         node.stop();
@@ -488,6 +543,7 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
       stopAudioPlayback();
       sealCaptions();
       resetTurnBuffers();
+      heardAudioRef.current = false;
     }
 
     if (serverContent.inputTranscription?.text) {
@@ -514,13 +570,22 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
           turnSaheliRef.current += part.text;
           appendCaption('saheli', part.text);
         }
-        if (part.inlineData?.data) {
-          playAudioChunk(part.inlineData.data);
+        const inline = part.inlineData || part.inline_data;
+        if (inline?.data) {
+          playAudioChunk(inline.data, inline.mimeType || inline.mime_type || '');
         }
       }
     }
 
     if (serverContent.turnComplete) {
+      if (!heardAudioRef.current && !playbackMutedRef.current) {
+        const spoken = (turnSaheliRef.current || '').trim();
+        if (spoken) {
+          speakFallback(spoken, ttsLangForName(languageRef.current));
+          setIsSpeaking(true);
+        }
+      }
+      heardAudioRef.current = false;
       sealCaptions();
       emitCompletedTurn();
     }
@@ -685,6 +750,8 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
 
     connectingRef.current = true;
     setupReadyRef.current = false;
+    heardAudioRef.current = false;
+    playbackMutedRef.current = false;
     initPlaybackContext();
     if (keepUiLive) {
       setIsConnected(true);
@@ -839,7 +906,8 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
   const setPlaybackMuted = useCallback((muted) => {
     playbackMutedRef.current = Boolean(muted);
     if (muted) stopAudioPlayback();
-  }, []);
+    else unlockPlayback();
+  }, [unlockPlayback]);
 
   useEffect(() => {
     return () => disconnect();
@@ -917,14 +985,6 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
     lastError,
     completedTurn,
     setPlaybackMuted,
-    isConnected: isConnected,
-    isSpeaking: isSpeaking,
-    isListening: isListening,
-    isThinking: isThinking,
-    lastError: lastError,
-    stopGeneration: stopGeneration,
-    userTranscript: userTranscript,
-    completedTurn: completedTurn,
-    setPlaybackMuted: setPlaybackMuted,
+    unlockPlayback,
   };
 };

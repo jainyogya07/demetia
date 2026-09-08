@@ -299,6 +299,51 @@ export function getLatestEvaluation(patientId = 'aita') {
   return readJson(`${LATEST_EVAL_KEY_PREFIX}${patientId}`, null);
 }
 
+export function quizPercentToFaqScore(percentage) {
+  const pct = Number(percentage);
+  if (!Number.isFinite(pct)) return 1;
+  if (pct >= 80) return 0;
+  if (pct >= 60) return 1;
+  if (pct >= 40) return 2;
+  return 3;
+}
+
+export function applyMemoryQuizToAssessment(result, patientId = 'aita') {
+  const id = patientId || 'aita';
+  const total = Math.max(1, Number(result?.totalQuestions || 0) || 1);
+  const score = Number(result?.score || 0);
+  const pct = Number.isFinite(Number(result?.percentage))
+    ? Number(result.percentage)
+    : Math.round((score / total) * 100);
+  const faqMapped = quizPercentToFaqScore(pct);
+  const current = getAssessmentForPatient(id);
+  const remembering = Math.max(
+    Number(current.functional?.faq_remembering_appointments || 0),
+    faqMapped,
+  );
+  const updated = saveAssessmentForPatient(id, {
+    memoryQuiz: {
+      score,
+      totalQuestions: Number(result?.totalQuestions || total),
+      percentage: pct,
+      language: result?.language || '',
+      completedAt: result?.completedAt || new Date().toISOString(),
+      faqMapped,
+    },
+    functional: {
+      faq_remembering_appointments: remembering,
+    },
+  });
+  evaluateTelemetry({
+    patient_id: id,
+    demographics: { age: updated.age, education_years: updated.education_years },
+    motor: updated.motor,
+    functional: updated.functional,
+    memoryQuiz: updated.memoryQuiz,
+  }).catch(() => {});
+  return updated;
+}
+
 export function saveLatestEvaluation(patientId, report) {
   writeJson(`${LATEST_EVAL_KEY_PREFIX}${patientId}`, report);
   notifyAssessmentChange(patientId);
@@ -329,7 +374,7 @@ export function savePatientDailyCheckin(patientId, answers) {
 /**
  * Calls FastAPI detection endpoint with client-side fallback
  */
-export async function evaluateTelemetry({ patient_id, demographics, motor, functional }) {
+export async function evaluateTelemetry({ patient_id, demographics, motor, functional, memoryQuiz }) {
   const payload = {
     patient_id: patient_id || 'patient_local',
     demographics: {
@@ -358,6 +403,15 @@ export async function evaluateTelemetry({ patient_id, demographics, motor, funct
     },
   };
 
+  const quiz = memoryQuiz || getAssessmentForPatient(patient_id).memoryQuiz || null;
+  const quizPct = Number(quiz?.percentage);
+  if (Number.isFinite(quizPct)) {
+    payload.functional.faq_remembering_appointments = Math.max(
+      payload.functional.faq_remembering_appointments,
+      quizPercentToFaqScore(quizPct),
+    );
+  }
+
   try {
     const res = await fetch('/auth-api/detection/evaluate', {
       method: 'POST',
@@ -366,6 +420,19 @@ export async function evaluateTelemetry({ patient_id, demographics, motor, funct
     });
     if (res.ok) {
       const data = await res.json();
+      if (Number.isFinite(quizPct)) {
+        data.domain_sub_indices = {
+          ...(data.domain_sub_indices || {}),
+          'Memory Quiz': {
+            domain_name: 'Memory Quiz',
+            risk_level: quizPct >= 80 ? 'LOW' : quizPct >= 60 ? 'MILD' : 'MODERATE',
+            normalized_score: Number(((100 - quizPct) / 100).toFixed(2)),
+            additive_attribution: Number(((100 - quizPct) / 400).toFixed(3)),
+            clinical_summary: `Daily memory check scored ${quizPct}% (${quiz?.score ?? 0}/${quiz?.totalQuestions ?? 0}).`,
+          },
+        };
+        data.memory_quiz = quiz;
+      }
       saveLatestEvaluation(patient_id, data);
       return data;
     }
@@ -375,7 +442,8 @@ export async function evaluateTelemetry({ patient_id, demographics, motor, funct
 
   // Client-side fallback calculation matching calibrator logic
   const faqSum = Object.values(payload.functional).reduce((a, b) => a + b, 0);
-  const rawScore = Math.min(1.0, Math.max(0.0, (faqSum / 30.0) * 0.7 + (payload.motor.tap_latency_mean_ms / 600.0) * 0.3));
+  const quizRisk = Number.isFinite(quizPct) ? Math.max(0, (100 - quizPct) / 100) * 0.2 : 0;
+  const rawScore = Math.min(1.0, Math.max(0.0, (faqSum / 30.0) * 0.6 + (payload.motor.tap_latency_mean_ms / 600.0) * 0.2 + quizRisk));
   
   // Demographic bias calculation
   let eduOffset = 0.0;
@@ -446,6 +514,15 @@ export async function evaluateTelemetry({ patient_id, demographics, motor, funct
         additive_attribution: 0.048,
         clinical_summary: 'Observation of stove, navigation, and medication safety.',
       },
+      'Memory Quiz': {
+        domain_name: 'Memory Quiz',
+        risk_level: Number.isFinite(quizPct) ? (quizPct >= 80 ? 'LOW' : quizPct >= 60 ? 'MILD' : 'MODERATE') : 'LOW',
+        normalized_score: Number.isFinite(quizPct) ? Number(((100 - quizPct) / 100).toFixed(2)) : 0,
+        additive_attribution: Number.isFinite(quizPct) ? Number(((100 - quizPct) / 400).toFixed(3)) : 0,
+        clinical_summary: Number.isFinite(quizPct)
+          ? `Daily memory check scored ${quizPct}% (${quiz?.score ?? 0}/${quiz?.totalQuestions ?? 0}). Linked to recalling appointments.`
+          : 'No memory quiz submitted yet today.',
+      },
       'Motor Speed': {
         domain_name: 'Motor Speed',
         risk_level: payload.motor.tap_latency_mean_ms > 350 ? 'MILD' : 'LOW',
@@ -458,9 +535,11 @@ export async function evaluateTelemetry({ patient_id, demographics, motor, funct
     top_feature_attributions: [
       { feature: 'faq_orientation_time_space', value: payload.functional.faq_orientation_time_space, attribution: 0.035, impact: 'Increases Risk' },
       { feature: 'faq_cooking_stove_safety', value: payload.functional.faq_cooking_stove_safety, attribution: 0.028, impact: 'Increases Risk' },
+      { feature: 'memory_quiz_percent', value: Number.isFinite(quizPct) ? quizPct : null, attribution: quizRisk, impact: Number.isFinite(quizPct) && quizPct < 60 ? 'Increases Risk' : 'Neutral' },
       { feature: 'tap_latency_mean_ms', value: payload.motor.tap_latency_mean_ms, attribution: 0.015, impact: 'Increases Risk' },
     ],
     model_runtime: 'Client-side fallback',
+    memory_quiz: quiz,
   };
 
   saveLatestEvaluation(patient_id, fallbackReport);

@@ -18,6 +18,7 @@ export function useStoryVoice({ lang = 'en', gender = 'female', languageName = '
     isConnected,
     isSpeaking,
     lastError,
+    unlockPlayback,
   } = useGeminiLive({
     uiLanguageName: languageName,
     voiceName,
@@ -38,6 +39,8 @@ export function useStoryVoice({ lang = 'en', gender = 'female', languageName = '
   sendTextRef.current = sendText;
   const connectRef = useRef(connect);
   connectRef.current = connect;
+  const unlockRef = useRef(unlockPlayback);
+  unlockRef.current = unlockPlayback;
   const disconnectRef = useRef(disconnect);
   disconnectRef.current = disconnect;
   const isSpeakingRef = useRef(isSpeaking);
@@ -138,7 +141,7 @@ export function useStoryVoice({ lang = 'en', gender = 'female', languageName = '
   const prepare = useCallback(() => {
     claimVoice('stories');
     liveFailedRef.current = false;
-    connectRef.current({ startMic: false, mode: 'text' });
+        connectRef.current({ startMic: false, mode: 'text' });
   }, []);
 
   const speak = useCallback((text, { onEnd, pauseMs = 0, minMs = 4000 } = {}) => {
@@ -164,6 +167,7 @@ export function useStoryVoice({ lang = 'en', gender = 'female', languageName = '
         pendingRef.current.text = null;
         sendStory(cleaned);
       } else {
+        unlockRef.current?.();
         connectRef.current({ startMic: false, mode: 'text' });
       }
       fallbackTimerRef.current = setTimeout(() => {

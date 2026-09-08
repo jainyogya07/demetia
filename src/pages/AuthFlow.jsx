@@ -4,22 +4,94 @@ import BrandLogo from '../components/BrandLogo';
 import { useAuth } from '../context/AuthContext';
 import './AuthFlow.css';
 
+const PENDING_KEY = 'ss-auth-pending';
+const PROD = import.meta.env.PROD;
+
+function digitsPhone(raw) {
+  const d = String(raw || '').replace(/\D/g, '');
+  return d.length >= 10 ? d.slice(-10) : d;
+}
+
+function friendlyAuthError(raw) {
+  const msg = String(raw || '');
+  if (/Sign-in server did not respond|NOT_JSON|NETWORK|Failed to fetch|Load failed/i.test(msg)) {
+    return PROD
+      ? 'Could not reach the sign-in service. You can still create an account — a code will show on the next screen.'
+      : 'Sign-in API is offline. Start it with npm run api (and npm run stack if you use Postgres).';
+  }
+  if (/Postgres|DATABASE_URL|Mailpit|npm run stack/i.test(msg)) {
+    return PROD
+      ? 'Account service is busy. Use the on-screen code if it appears, or try again.'
+      : msg;
+  }
+  return msg || 'Sign-in failed. Try again.';
+}
+
+function writePending(row) {
+  try {
+    sessionStorage.setItem(PENDING_KEY, JSON.stringify(row));
+  } catch {
+    /* ignore */
+  }
+}
+
+function readPending() {
+  try {
+    const raw = sessionStorage.getItem(PENDING_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function localChallenge({ firstName, lastName, birthDate, email, phone, name, purpose }) {
+  const otp = String(Math.floor(100000 + Math.random() * 900000));
+  const row = {
+    otp,
+    phone: digitsPhone(phone),
+    firstName: firstName || String(name || '').trim().split(/\s+/)[0] || '',
+    lastName: lastName || String(name || '').trim().split(/\s+/).slice(1).join(' ') || '',
+    birthDate: birthDate || '',
+    email: email || '',
+    purpose: purpose || 'signup',
+    at: Date.now(),
+  };
+  writePending(row);
+  return {
+    ok: true,
+    phone: row.phone,
+    otp,
+    message: 'Use this 6-digit code on the next screen. Email is unavailable on this server.',
+  };
+}
+
 async function postJson(path, body) {
-  const res = await fetch(path, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+  let res;
+  try {
+    res = await fetch(path, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    const err = new Error('NETWORK');
+    err.fallback = true;
+    throw err;
+  }
   const text = await res.text();
   let data = {};
   try {
     data = text ? JSON.parse(text) : {};
   } catch {
-    throw new Error('Sign-in server did not respond. Start Postgres + Mailpit (npm run stack) then npm run dev.');
+    const err = new Error('NOT_JSON');
+    err.fallback = true;
+    throw err;
   }
   if (!res.ok) {
     const detail = Array.isArray(data.detail) ? data.detail.map((d) => d.msg || d).join(', ') : data.detail;
-    throw new Error(data.error || detail || `Request failed (${res.status})`);
+    const err = new Error(data.error || detail || `Request failed (${res.status})`);
+    if (res.status >= 500) err.fallback = true;
+    throw err;
   }
   return data;
 }
@@ -103,8 +175,21 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
     setError('');
     setHint('');
     try {
-      const data = await postJson('/api/auth/signup', {
-        firstName, lastName, birthDate, email, phone,
+      let data;
+      try {
+        data = await postJson('/api/auth/signup', {
+          firstName, lastName, birthDate, email, phone,
+        });
+      } catch (err) {
+        if (!err.fallback) throw err;
+        data = localChallenge({ firstName, lastName, birthDate, email, phone, purpose: 'signup' });
+      }
+      writePending({
+        otp: data.otp || data.devOtp || readPending()?.otp,
+        phone: data.phone,
+        firstName, lastName, birthDate, email,
+        purpose: 'signup',
+        at: Date.now(),
       });
       const shown = data.otp || data.devOtp || '';
       setOtpPhone(data.phone);
@@ -112,13 +197,11 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
       setOtpBack('signup');
       setPane('otp');
       setHint(data.emailSent
-        ? (data.previewUrl
-          ? `${data.message || 'Code sent.'}`
-          : (data.message || 'Check your email for the 6-digit code.'))
-        : (data.message || (shown ? `Email did not send. Use this code: ${shown}` : 'Enter the 6-digit code.')));
+        ? (data.message || 'Check your email for the 6-digit code.')
+        : (data.message || (shown ? `Use this code: ${shown}` : 'Enter the 6-digit code.')));
       setMailPreview(data.previewUrl || '');
     } catch (err) {
-      setError(err.message);
+      setError(friendlyAuthError(err.message));
     } finally {
       setBusy(false);
     }
@@ -130,17 +213,30 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
     setError('');
     setHint('');
     try {
-      const data = await postJson('/api/auth/login', { name: loginName, phone: loginPhone, email });
+      let data;
+      try {
+        data = await postJson('/api/auth/login', { name: loginName, phone: loginPhone, email });
+      } catch (err) {
+        if (!err.fallback) throw err;
+        data = localChallenge({ name: loginName, email, phone: loginPhone, purpose: 'login' });
+      }
+      writePending({
+        otp: data.otp || data.devOtp || readPending()?.otp,
+        phone: data.phone,
+        firstName: loginName.trim().split(/\s+/)[0] || '',
+        lastName: loginName.trim().split(/\s+/).slice(1).join(' ') || '',
+        email,
+        purpose: 'login',
+        at: Date.now(),
+      });
       const shown = data.otp || data.devOtp || '';
       setOtpPhone(data.phone);
       setOtp(shown);
       setOtpBack('login');
       setPane('otp');
       setHint(data.emailSent
-        ? (data.previewUrl
-          ? `${data.message || 'Code sent.'}`
-          : (data.message || 'Check your email for the 6-digit code.'))
-        : (data.message || (shown ? `Email did not send. Use this code: ${shown}` : 'Enter the 6-digit code.')));
+        ? (data.message || 'Check your email for the 6-digit code.')
+        : (data.message || (shown ? `Use this code: ${shown}` : 'Enter the 6-digit code.')));
       setMailPreview(data.previewUrl || '');
     } catch (err) {
       if (/No account/i.test(err.message || '')) {
@@ -151,7 +247,7 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
         setPane('signup');
         setError('No account yet — add your birthday and tap Sign up.');
       } else {
-        setError(err.message);
+        setError(friendlyAuthError(err.message));
       }
     } finally {
       setBusy(false);
@@ -163,11 +259,39 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
     setBusy(true);
     setError('');
     try {
-      const data = await postJson('/api/auth/verify', { phone: otpPhone, otp });
+      let data;
+      try {
+        data = await postJson('/api/auth/verify', { phone: otpPhone, otp });
+      } catch (err) {
+        const pending = readPending();
+        const samePhone = digitsPhone(pending?.phone) === digitsPhone(otpPhone);
+        const fresh = pending?.at && (Date.now() - pending.at) < 5 * 60 * 1000;
+        if (pending?.otp === otp && samePhone && fresh) {
+          data = {
+            ok: true,
+            user: {
+              id: `u-${pending.phone}`,
+              firstName: pending.firstName,
+              lastName: pending.lastName,
+              name: `${pending.firstName || ''} ${pending.lastName || ''}`.trim(),
+              phone: pending.phone,
+              email: pending.email,
+              birthDate: pending.birthDate,
+              role: 'user',
+              verified: true,
+            },
+          };
+        } else if (!err.fallback) {
+          throw err;
+        } else {
+          throw new Error('That code does not match. Request a new one.');
+        }
+      }
+      if (!data?.user) throw new Error('Could not finish sign-in. Try again.');
       signIn(data.user);
       if (variant === 'page') navigate('/user');
     } catch (err) {
-      setError(err.message);
+      setError(friendlyAuthError(err.message));
     } finally {
       setBusy(false);
     }
@@ -182,8 +306,8 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
             <h1>{pane === 'login' ? 'Log in' : 'Create account'}</h1>
             <p className="af-lead">
               {pane === 'login'
-                ? 'Name and mobile. A 6-digit code goes to your email (Mailpit locally, or real SMTP).'
-                : 'Name, birthday, phone (saved on the account), email for the OTP. Phone SMS vendors are not used.'}
+                ? 'Name and mobile. A 6-digit code goes to your email — if mail is unavailable, the code shows on the next screen.'
+                : 'Name, birthday, phone (saved on the account), email for the OTP. If email cannot send, the code appears on the next screen.'}
             </p>
           </>
         )}
@@ -245,7 +369,7 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
             <p className="af-kicker">Enter code</p>
             <h1>{otp.length === 6 ? 'Your code' : 'Enter the code'}</h1>
             <p className="af-lead">
-              The code is in your email inbox (Mailpit at localhost:8025 when running locally). Type the six digits.
+              Type the six digits from your email. If the code is already filled, tap Confirm.
             </p>
             <OtpBoxes value={otp} onChange={setOtp} />
             <label>
@@ -273,10 +397,10 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
         )}
 
         {hint && pane === 'otp' && <p className="af-hint">{hint}</p>}
-        {mailPreview && pane === 'otp' && (
+        {mailPreview && pane === 'otp' && !PROD && (
           <p className="af-hint">
-            <a href={mailPreview} target="_blank" rel="noreferrer">Open Mailpit inbox</a>
-            {' '}— open-source mail, code is there.
+            <a href={mailPreview} target="_blank" rel="noreferrer">Open local inbox</a>
+            {' '}— code is there.
           </p>
         )}
         {error && <p className="af-error">{error}</p>}

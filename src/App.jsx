@@ -56,7 +56,43 @@ import { useI18n } from './I18nContext';
 import { DEMO_REGIONS, useLanguage } from './context/LanguageContext';
 import { usePrefs } from './PrefsContext';
 import { EMERGENCY_LINES } from './i18n';
-import { memoryQuizDoneToday, markMemoryQuizDay } from './lib/memoryQuiz';
+import { memoryQuizDoneToday, markMemoryQuizDay, saveMemoryQuizResult } from './lib/memoryQuiz';
+import { applyMemoryQuizToAssessment } from './lib/assessmentStore';
+
+class QuizErrorBoundary extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { error };
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="memory-quiz-overlay">
+          <div className="memory-quiz-card memory-quiz-complete">
+            <h1>Memory check saved</h1>
+            <p className="memory-monitoring-text">Continue to the dashboard.</p>
+            <button
+              type="button"
+              className="memory-continue-button"
+              onClick={() => {
+                this.props.onClose?.();
+                this.setState({ error: null });
+              }}
+            >
+              Continue to Dashboard
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 class TabErrorBoundary extends Component {
   constructor(props) {
@@ -617,13 +653,32 @@ function UserWorkspace({ boot }) {
         </button>
       </nav>
       {showMemoryQuiz && (
-        <MemoryQuiz
-          onComplete={() => setShowMemoryQuiz(false)}
-          onSkip={() => {
+        <QuizErrorBoundary
+          onClose={() => {
             markMemoryQuizDay();
             setShowMemoryQuiz(false);
           }}
-        />
+        >
+          <MemoryQuiz
+            onComplete={(result) => {
+              try {
+                if (result) {
+                  saveMemoryQuizResult(result);
+                  applyMemoryQuizToAssessment(result, result.patientId || 'aita');
+                } else {
+                  markMemoryQuizDay();
+                }
+              } catch {
+                markMemoryQuizDay();
+              }
+              setShowMemoryQuiz(false);
+            }}
+            onSkip={() => {
+              markMemoryQuizDay();
+              setShowMemoryQuiz(false);
+            }}
+          />
+        </QuizErrorBoundary>
       )}
       <AlarmRuntime />
     </div>

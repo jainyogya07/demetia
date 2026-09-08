@@ -23,6 +23,7 @@ import {
   spokenFor,
   activeAssistFill,
 } from '../lib/sarthiAssist';
+import { speakFallback, ttsLangForName } from '../lib/speakFallback';
 import '../AICompanion.css';
 import './SarthiAssistModal.css';
 
@@ -126,6 +127,8 @@ export default function SarthiAssistRuntime({
     audioLevel,
     lastError,
     completedTurn,
+    setPlaybackMuted,
+    unlockPlayback,
   } = useGeminiLive({
     uiLanguageName: language.englishName,
     voiceName,
@@ -427,6 +430,8 @@ export default function SarthiAssistRuntime({
     claimVoice('assist');
     keepAliveRef.current = true;
     setKeepAlive(true);
+    setPlaybackMuted?.(false);
+    unlockPlayback?.();
     connect({ startMic: true, mode: 'voice', languageName: language.englishName, voiceName });
   };
 
@@ -562,7 +567,16 @@ export default function SarthiAssistRuntime({
                   <button className={`ai-mic-btn ${isListening ? 'active' : ''} ${micMuted ? 'muted' : ''}`} onClick={toggleMic}>
                     {micMuted ? <MicOff size={18} /> : <Mic size={18} />}
                   </button>
-                  <button type="button" className="ai-speaker-btn" title="Audio active">
+                  <button
+                    type="button"
+                    className="ai-speaker-btn"
+                    title="Turn speaker on"
+                    onClick={() => {
+                      setPlaybackMuted?.(false);
+                      unlockPlayback?.();
+                      speakFallback('Audio is on.', ttsLangForName(language.englishName));
+                    }}
+                  >
                     <Volume2 size={18} />
                   </button>
                   <button className={`ai-cc-action ${showCaptions ? 'active' : ''}`} onClick={() => setShowCaptions((v) => !v)}>

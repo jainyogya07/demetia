@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import {
   Flame, Pill, Coins, Compass, Bus, Phone, Calendar, Sparkles, Utensils, KeyRound,
-  CheckCircle2, AlertTriangle, Cpu, RefreshCw, Info,
+  CheckCircle2, AlertTriangle, Cpu, RefreshCw, Info, Brain,
 } from 'lucide-react';
 import {
   FAQ_QUESTIONS, DEMO_PATIENTS, getAssessmentForPatient, saveAssessmentForPatient,
   evaluateTelemetry, getLatestEvaluation, subscribeAssessmentChange,
 } from '../../lib/assessmentStore';
+import { loadMemoryQuizResult } from '../../lib/memoryQuiz';
 import AvatarSlot from '../../components/AvatarSlot';
 import { Badge, Panel, Stat } from '../../components/clinic/LiveChrome';
 
@@ -55,6 +56,7 @@ export default function CaregiverAssessment() {
         },
         motor: assessment.motor,
         functional: assessment.functional,
+        memoryQuiz: assessment.memoryQuiz || loadMemoryQuizResult(),
       });
       setReport(res);
     } finally {
@@ -62,6 +64,7 @@ export default function CaregiverAssessment() {
     }
   };
 
+  const quiz = assessment.memoryQuiz || loadMemoryQuizResult();
   const functional = assessment.functional || {};
   const answeredCount = Object.keys(functional).length;
   const patientMeta = DEMO_PATIENTS[selectedPatientId] || DEMO_PATIENTS.aita;
@@ -133,6 +136,11 @@ export default function CaregiverAssessment() {
           label="Demographic Bias Offset"
           value={report ? `-${report.demographic_adjustment}` : `-${(patientMeta.education_years === 0 ? 0.09 : 0.04) + Math.max(0, (patientMeta.age - 65) * 0.0035).toFixed(4)}`}
           hint="Age & schooling penalty removed"
+        />
+        <Stat
+          label="Memory quiz"
+          value={quiz?.percentage != null ? `${quiz.percentage}%` : 'Not taken'}
+          hint={quiz?.score != null ? `${quiz.score}/${quiz.totalQuestions || 0} today · feeds severity` : 'Complete on patient app'}
         />
         <Stat label="Active Safety Alarms" value={activeHazards.length} hint={activeHazards.length ? 'Attention needed' : 'All clear'} />
       </div>
@@ -425,6 +433,32 @@ export default function CaregiverAssessment() {
                   Run Baseline Evaluation
                 </button>
               </div>
+            )}
+          </Panel>
+
+          <Panel title="Memory Quiz (patient app)">
+            {quiz?.percentage != null ? (
+              <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <div style={{
+                  width: 40, height: 40, borderRadius: 10, background: '#eef6f2',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#176b58',
+                }}>
+                  <Brain size={20} />
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: '1.05rem' }}>
+                    {quiz.percentage}% · {quiz.score}/{quiz.totalQuestions || 0}
+                  </p>
+                  <p className="os-meta" style={{ margin: '4px 0 0' }}>
+                    This score updates “Remembering appointments” and the AI severity band for {patientMeta.name}.
+                    {quiz.completedAt ? ` Last check ${new Date(quiz.completedAt).toLocaleString()}.` : ''}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="os-meta">
+                No memory check yet. When Latveria finishes the daily quiz on the patient app, the score appears here and is mixed into the severity evaluation.
+              </p>
             )}
           </Panel>
 

@@ -43,6 +43,7 @@ export default function CognitiveDetectionPanel({ patient }) {
         },
         motor: assessment.motor,
         functional: simValues,
+        memoryQuiz: assessment.memoryQuiz,
       });
       setReport(res);
     } finally {

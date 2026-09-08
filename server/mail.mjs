@@ -20,7 +20,11 @@ export function mailPreviewUrl() {
 }
 
 export function isSmtpConfigured() {
-  return Boolean(smtpUser() && smtpPass()) || true;
+  return Boolean(smtpUser() && smtpPass());
+}
+
+function isServerless() {
+  return Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
 }
 
 function portOpen(host, port) {
@@ -62,6 +66,7 @@ async function waitForSmtp(tries = 20) {
 /** Mailpit — open-source SMTP catcher (https://github.com/axllent/mailpit). */
 export async function ensureMailpit() {
   if (smtpUser() && smtpPass()) return true;
+  if (isServerless()) return false;
   if (await portOpen(MAILPIT_HOST, MAILPIT_SMTP)) return true;
   await spawnDetached('mailpit', []);
   if (await waitForSmtp(12)) return true;

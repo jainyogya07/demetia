@@ -5,10 +5,11 @@ import { apiPath, json, readBody, withDb } from './httpKit.mjs';
 const auth = createAuthHandlers({ withDb, json, readBody });
 
 export async function handleApiRequest(req, res) {
-  if (req.method === 'OPTIONS') {
-    json(res, 204, {});
-    return true;
-  }
+  try {
+    if (req.method === 'OPTIONS') {
+      json(res, 204, {});
+      return true;
+    }
 
   const path = apiPath(req);
   if (!path.startsWith('/api')) return false;
@@ -151,4 +152,8 @@ export async function handleApiRequest(req, res) {
 
   json(res, 404, { error: 'Not found' });
   return true;
+  } catch (err) {
+    json(res, 500, { error: err?.message || 'API failed' });
+    return true;
+  }
 }

@@ -13,6 +13,7 @@ import { voiceNameForGender } from './data/liveVoices';
 import VoiceToggle from './components/VoiceToggle';
 import { getSchemeChips, relatedSchemeLine } from './schemeLinks';
 import { VOICE_EVENTS, notifyCompanionOpen, onVoice } from './lib/voiceBus';
+import { speakFallback, ttsLangForName } from './lib/speakFallback';
 
 const getTimeString = () => {
   const now = new Date();
@@ -126,6 +127,7 @@ const AICompanion = () => {
     lastError,
     completedTurn,
     setPlaybackMuted,
+    unlockPlayback,
   } = useGeminiLive({
     uiLanguageName: language.englishName,
     voiceName,
@@ -183,6 +185,8 @@ const AICompanion = () => {
     setTypedTurnActive(false);
     lastAiTranscriptRef.current = '';
     try {
+      setPlaybackMuted?.(false);
+      unlockPlayback?.();
       connect({ startMic: true, mode: 'voice', languageName: language.englishName, voiceName });
     } catch (err) {
       console.error('Care Agent voice connect failed', err);
@@ -390,6 +394,8 @@ const AICompanion = () => {
     } else {
       notifyCompanionOpen();
       setMode('voice');
+      setPlaybackMuted?.(false);
+      unlockPlayback?.();
       connect({ startMic: true, mode: 'voice', languageName: language.englishName, voiceName });
     }
   };
@@ -400,6 +406,8 @@ const AICompanion = () => {
       lastAiTranscriptRef.current = '';
       setMode('voice');
       notifyCompanionOpen();
+      setPlaybackMuted?.(false);
+      unlockPlayback?.();
       connect({ startMic: true, mode: 'voice', languageName: language.englishName, voiceName });
       return;
     }
@@ -519,7 +527,16 @@ const AICompanion = () => {
                 >
                   {micMuted ? <MicOff size={18} /> : <Mic size={18} />}
                 </button>
-                <button className="ai-speaker-btn" title="Audio active">
+                <button
+                  type="button"
+                  className="ai-speaker-btn"
+                  title="Turn speaker on"
+                  onClick={() => {
+                    setPlaybackMuted?.(false);
+                    unlockPlayback?.();
+                    speakFallback('Audio is on.', ttsLangForName(language.englishName));
+                  }}
+                >
                   <Volume2 size={18} />
                 </button>
                 {voiceCallActive && (

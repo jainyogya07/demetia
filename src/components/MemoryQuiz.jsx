@@ -13,6 +13,8 @@ import {
   EXTRA_SPEECH,
   extraQuestionSets,
 } from "../data/memoryQuizLangs";
+import { saveMemoryQuizResult } from "../lib/memoryQuiz";
+import { applyMemoryQuizToAssessment } from "../lib/assessmentStore";
 
 const UI_TEXT = {
   en: {
@@ -351,7 +353,11 @@ function MemoryQuiz({ onComplete, onSkip }) {
 
   const location = SAFETY?.zone || "Home";
 
-  const t = UI_TEXT[language] || UI_TEXT.en;
+  const t = {
+    ...UI_TEXT.en,
+    ...(UI_TEXT[language] || {}),
+    ...(EXTRA_QUIZ_UI[language] || {}),
+  };
 
   const questions = useMemo(() => {
     const questionSets = {
@@ -755,7 +761,8 @@ function MemoryQuiz({ onComplete, onSkip }) {
       }),
     };
 
-    return questionSets[language] || questionSets.en;
+    const list = questionSets[language] || questionSets.en || [];
+    return Array.isArray(list) && list.length ? list : (questionSets.en || []);
   }, [
     language,
     patientName,
@@ -804,7 +811,7 @@ const speakQuestion = () => {
   // 1. Try exact language
   let selectedVoice = voices.find(
     (voice) =>
-      voice.lang.toLowerCase() ===
+      String(voice.lang || "").toLowerCase() ===
       utterance.lang.toLowerCase()
   );
 
@@ -815,7 +822,7 @@ const speakQuestion = () => {
 
     selectedVoice = voices.find(
       (voice) =>
-        voice.lang
+        String(voice.lang || "")
           .toLowerCase()
           .startsWith(languagePrefix)
     );
@@ -934,7 +941,7 @@ const speakQuestion = () => {
 
     const correct = answerMatches(
       spokenAnswer,
-      question.answers
+      question?.answers || []
     );
 
     if (correct) {
@@ -1019,6 +1026,7 @@ const speakQuestion = () => {
     }
 
     setLanguage(newLanguage);
+    setCurrentQuestion(0);
     setSpokenAnswer("");
     setFeedback("");
     setFeedbackType("");
@@ -1041,39 +1049,41 @@ const speakQuestion = () => {
 
   useEffect(() => {
     if (!finished) {
+      if (!questions.length) setFinished(true);
       return;
     }
 
-    const today = new Date().toDateString();
-
+    const total = Math.max(1, questions.length);
     const result = {
       score,
       totalQuestions: questions.length,
-      percentage: Math.round(
-        (score / questions.length) * 100
-      ),
+      percentage: Math.round((score / total) * 100),
       language,
-      patientId: PATIENT?.id || null,
+      patientId: PATIENT?.id || "aita",
       patientName: PATIENT?.name || "",
       completedAt: new Date().toISOString(),
     };
 
-    localStorage.setItem(
-      "smritiSaarthiMemoryResult",
-      JSON.stringify(result)
-    );
-
-    localStorage.setItem(
-      "smritiSaarthiMemoryQuizDate",
-      today
-    );
+    try {
+      saveMemoryQuizResult(result);
+      applyMemoryQuizToAssessment(result, result.patientId);
+    } catch {
+      try {
+        localStorage.setItem("smritiSaarthiMemoryResult", JSON.stringify(result));
+        localStorage.setItem("smritiSaarthiMemoryQuizDate", new Date().toDateString());
+      } catch {
+        /* ignore quota */
+      }
+    }
   }, [
     finished,
     score,
     questions.length,
     language,
   ]);
-  if (finished) {
+  if (finished || !question) {
+    const total = Math.max(1, questions.length);
+    const pct = Math.round((score / total) * 100);
     return (
       <div className="memory-quiz-overlay">
         <div className="memory-quiz-card memory-quiz-complete">
@@ -1086,13 +1096,11 @@ const speakQuestion = () => {
 
           <div className="memory-score-circle">
             <strong>
-              {score}/{questions.length}
+              {score}/{questions.length || 0}
             </strong>
 
             <span>
-              {Math.round(
-                (score / questions.length) * 100
-              )}
+              {Number.isFinite(pct) ? pct : 0}
               %
             </span>
           </div>
@@ -1106,19 +1114,22 @@ const speakQuestion = () => {
           <button
             className="memory-continue-button"
             onClick={() => {
-              if (onComplete) {
-                onComplete({
-                  score,
-                  totalQuestions: questions.length,
-                  percentage: Math.round(
-                    (score / questions.length) * 100
-                  ),
-                  language,
-                  patientId: PATIENT?.id || null,
-                  patientName: PATIENT?.name || "",
-                  completedAt: new Date().toISOString(),
-                });
+              const result = {
+                score,
+                totalQuestions: questions.length,
+                percentage: Number.isFinite(pct) ? pct : 0,
+                language,
+                patientId: PATIENT?.id || "aita",
+                patientName: PATIENT?.name || "",
+                completedAt: new Date().toISOString(),
+              };
+              try {
+                saveMemoryQuizResult(result);
+                applyMemoryQuizToAssessment(result, result.patientId);
+              } catch {
+                /* dashboard still opens */
               }
+              if (onComplete) onComplete(result);
             }}
           >
             {t.continue}
@@ -1129,7 +1140,9 @@ const speakQuestion = () => {
   }
 
   const progress =
-    ((currentQuestion + 1) / questions.length) * 100;
+    questions.length
+      ? ((currentQuestion + 1) / questions.length) * 100
+      : 100;
 
   return (
     <div className="memory-quiz-overlay">
@@ -1193,7 +1206,7 @@ const speakQuestion = () => {
             {t.question} {currentQuestion + 1}
           </div>
 
-          <h2>{question.text}</h2>
+          <h2>{question?.text || ""}</h2>
 
           <button
             className="hear-question-button"

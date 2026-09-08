@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, Mic, MicOff, RotateCcw, Volume2 } from 'lucide-react';
+import { BookOpen, Mic, MicOff, RotateCcw, Volume2, Send } from 'lucide-react';
 import { useI18n } from '../I18nContext';
 import { usePrefs } from '../PrefsContext';
 import { useStoryVoice } from '../hooks/useStoryVoice';
@@ -52,6 +52,7 @@ export default function StorySolver() {
   const [beatIndex, setBeatIndex] = useState(0);
   const [phase, setPhase] = useState('ready');
   const [voiceOn, setVoiceOn] = useState(false);
+  const [typedAnswer, setTypedAnswer] = useState('');
   const [choices, setChoices] = useState([]);
   const [feedback, setFeedback] = useState(null);
   const [held, setHeld] = useState(0);
@@ -173,6 +174,20 @@ export default function StorySolver() {
     backupTimerRef.current = window.setTimeout(() => {
       goNext();
     }, BACKUP_ADVANCE_MS);
+  };
+
+  const handleTypeAnswer = (e) => {
+    e.preventDefault();
+    if (!typedAnswer.trim() || picked) return;
+    const lower = typedAnswer.toLowerCase().trim();
+    const match = choices.find(opt => t(opt).toLowerCase().includes(lower) || lower.includes(t(opt).toLowerCase()));
+    
+    if (match) {
+      answer(match);
+    } else {
+      answer({ ok: false, en: typedAnswer, hi: typedAnswer, as: typedAnswer });
+    }
+    setTypedAnswer('');
   };
 
   const reset = () => {
@@ -324,6 +339,20 @@ export default function StorySolver() {
               </button>
             ))}
           </div>
+          {!picked && (
+            <form onSubmit={handleTypeAnswer} style={{ marginTop: '20px', display: 'flex', gap: '8px' }}>
+              <input 
+                type="text" 
+                placeholder={t({ en: 'Or type your answer...', hi: 'या यहाँ अपना उत्तर लिखें...', as: 'বা আপোনাৰ উত্তৰ লিখক...' })} 
+                value={typedAnswer}
+                onChange={(e) => setTypedAnswer(e.target.value)}
+                style={{ flex: 1, padding: '12px 16px', borderRadius: '12px', border: '1px solid var(--line)', fontSize: '16px', background: 'var(--surface)', color: 'var(--ink)' }}
+              />
+              <button type="submit" className="game-btn-primary" disabled={!typedAnswer.trim()} style={{ padding: '0 20px' }}>
+                <Send size={18} />
+              </button>
+            </form>
+          )}
         </div>
       )}
 

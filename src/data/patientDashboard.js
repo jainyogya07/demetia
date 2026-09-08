@@ -1,4 +1,5 @@
 export const PATIENT = {
+  id: 'aita',
   name: 'Latveria',
   roleLabel: 'Patient',
   photo: '',

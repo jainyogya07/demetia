@@ -37,4 +37,5 @@ export function saveMemoryQuizResult(result) {
   } catch {
     /* ignore */
   }
+  return result;
 }

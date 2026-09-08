@@ -34,6 +34,8 @@ export async function withDb(fn) {
 }
 
 export function apiPath(req) {
-  const raw = (req.url || '/').split('?')[0];
-  return raw.replace(/\/$/, '') || '/';
+  const raw = (req.url || '/').split('?')[0] || '/';
+  const path = raw.replace(/\/$/, '') || '/';
+  if (path === '/api' || path.startsWith('/api/')) return path;
+  return path === '/' ? '/api' : `/api${path.startsWith('/') ? path : `/${path}`}`;
 }

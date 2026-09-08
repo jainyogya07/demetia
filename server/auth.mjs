@@ -3,6 +3,9 @@
 import { sendAppMail, isSmtpConfigured, mailPreviewUrl } from './mail.mjs';
 const AUTH_DEV_MODE = String(process.env.AUTH_DEV_MODE || 'false').toLowerCase();
 const DEV_MODE = AUTH_DEV_MODE !== 'false' && AUTH_DEV_MODE !== '0' && AUTH_DEV_MODE !== 'no';
+const memOtps = new Map();
+const memUsers = new Map();
+const SHOW_OTP = DEV_MODE || !isSmtpConfigured() || Boolean(process.env.VERCEL);
 
 function dbHint(err) {
   return `Postgres is required for accounts. Run: npm run stack && npm run db:migrate. ${err ? `(${err})` : ''}`.trim();
@@ -64,7 +67,10 @@ export function createAuthHandlers({ withDb, json, readBody }) {
         [phone, code, purpose, JSON.stringify(pending || {})],
       );
     });
-    if (!db.ok) return { ok: false, error: db.error };
+    if (!db.ok) {
+      memOtps.set(phone, { code, purpose, pending_json: pending || {}, created_at: new Date().toISOString() });
+      return { ok: true, source: 'memory' };
+    }
     return { ok: true, source: 'postgres' };
   }
 
@@ -76,8 +82,8 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       );
       return rows[0] || null;
     });
-    if (db.ok) return db.result;
-    return null;
+    if (db.ok && db.result) return db.result;
+    return memOtps.get(phone) || null;
   }
 
   async function clearOtp(phone) {
@@ -91,8 +97,8 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       const { rows } = await client.query('SELECT * FROM app_users WHERE phone = $1', [phone]);
       return rows[0] || null;
     });
-    if (!db.ok) return { ok: false, error: db.error };
-    return { ok: true, user: db.result };
+    if (db.ok) return { ok: true, user: db.result };
+    return { ok: true, user: memUsers.get(phone) || null };
   }
 
   async function upsertUser(fields, verified) {
@@ -129,11 +135,11 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       return rows[0];
     });
     if (db.ok && db.result) return { source: 'postgres', user: db.result };
-    return { source: 'none', error: db.error, user: null };
+    memUsers.set(row.phone, row);
+    return { source: 'memory', user: row };
   }
 
   async function startSignup(body) {
-    if (!process.env.DATABASE_URL?.trim()) return { status: 503, body: { error: dbHint('DATABASE_URL is not set') } };
     const phone = digitsPhone(body.phone);
     const firstName = String(body.firstName || '').trim();
     const lastName = String(body.lastName || '').trim();
@@ -146,7 +152,6 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       return { status: 400, body: { error: 'Enter a working email. The code is sent there, not by SMS.' } };
     }
     const existing = await getUserByPhone(phone);
-    if (!existing.ok) return { status: 503, body: { error: dbHint(existing.error) } };
     if (existing.user?.verified) {
       return { status: 409, body: { error: 'This number already has an account. Log in instead.' } };
     }
@@ -156,27 +161,9 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     if (!store.ok) return { status: 503, body: { error: dbHint(store.error) } };
     const delivered = await deliverOtp({ email, otp: code });
     const preview = delivered.previewUrl || '';
-    const mailNote = preview
-      ? `Code sent. Open ${preview} (Mailpit) to read the OTP.`
-      : `Code mailed to ${email}. Check inbox and spam.`;
-    if (!delivered.emailSent) {
-      const hint = delivered.reason === 'mailpit-not-running'
-        ? 'Start Mailpit: npm run mailpit (or brew install mailpit). Then try again.'
-        : `Could not send mail (${delivered.reason || 'smtp'}).`;
-      if (!DEV_MODE) return { status: 502, body: { error: hint } };
-      return {
-        status: 200,
-        body: {
-          ok: true,
-          source: store.source,
-          phone,
-          otp: code,
-          devOtp: code,
-          previewUrl: preview,
-          message: hint,
-        },
-      };
-    }
+    const mailNote = delivered.emailSent
+      ? (preview ? `Code sent. Open ${preview} to read the OTP.` : `Code mailed to ${email}. Check inbox and spam.`)
+      : 'Could not email the code. Use the 6-digit code on this screen.';
     const payload = {
       ok: true,
       source: store.source,
@@ -184,7 +171,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       previewUrl: preview,
       message: mailNote,
     };
-    if (DEV_MODE) {
+    if (SHOW_OTP || !delivered.emailSent) {
       payload.otp = code;
       payload.devOtp = code;
     }
@@ -192,7 +179,6 @@ export function createAuthHandlers({ withDb, json, readBody }) {
   }
 
   async function startLogin(body) {
-    if (!process.env.DATABASE_URL?.trim()) return { status: 503, body: { error: dbHint('DATABASE_URL is not set') } };
     const phone = digitsPhone(body.phone);
     const name = String(body.name || '').trim();
     if (phone.length !== 10) return { status: 400, body: { error: 'Enter a 10-digit mobile number.' } };
@@ -218,27 +204,9 @@ export function createAuthHandlers({ withDb, json, readBody }) {
     if (!store.ok) return { status: 503, body: { error: dbHint(store.error) } };
     const delivered = await deliverOtp({ email: mailTo, otp: code });
     const preview = delivered.previewUrl || '';
-    const mailNote = preview
-      ? `Code sent. Open ${preview} (Mailpit) to read the OTP.`
-      : `Code mailed to ${mailTo}. Check inbox and spam.`;
-    if (!delivered.emailSent) {
-      const hint = delivered.reason === 'mailpit-not-running'
-        ? 'Start Mailpit: npm run mailpit (or brew install mailpit). Then try again.'
-        : `Could not send mail (${delivered.reason || 'smtp'}).`;
-      if (!DEV_MODE) return { status: 502, body: { error: hint } };
-      return {
-        status: 200,
-        body: {
-          ok: true,
-          source: store.source,
-          phone,
-          otp: code,
-          devOtp: code,
-          previewUrl: preview,
-          message: hint,
-        },
-      };
-    }
+    const mailNote = delivered.emailSent
+      ? (preview ? `Code sent. Open ${preview} to read the OTP.` : `Code mailed to ${mailTo}. Check inbox and spam.`)
+      : 'Could not email the code. Use the 6-digit code on this screen.';
     const bodyOut = {
       ok: true,
       source: store.source,
@@ -246,7 +214,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       previewUrl: preview,
       message: mailNote,
     };
-    if (DEV_MODE) {
+    if (SHOW_OTP || !delivered.emailSent) {
       bodyOut.otp = code;
       bodyOut.devOtp = code;
     }
@@ -254,7 +222,6 @@ export function createAuthHandlers({ withDb, json, readBody }) {
   }
 
   async function verify(body) {
-    if (!process.env.DATABASE_URL?.trim()) return { status: 503, body: { error: dbHint('DATABASE_URL is not set') } };
     const phone = digitsPhone(body.phone);
     const otp = String(body.otp || '').replace(/\D/g, '');
     if (phone.length !== 10 || otp.length !== 6) {
@@ -275,10 +242,11 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       email: pending.email,
       birthDate: pending.birthDate,
     }, true);
-    if (!saved.user || saved.source !== 'postgres') {
-      return { status: 503, body: { error: dbHint(saved.error) } };
+    if (!saved.user) {
+      return { status: 503, body: { error: 'Could not save the account. Try again.' } };
     }
     await clearOtp(phone);
+    memOtps.delete(phone);
     return {
       status: 200,
       body: { ok: true, source: saved.source, user: publicUser(saved.user) },

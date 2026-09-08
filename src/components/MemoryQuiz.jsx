@@ -248,12 +248,43 @@ const SPEECH_LANGUAGES = {
   hi: "hi-IN",
   as: "as-IN",
   bn: "bn-IN",
-  mni: "mni-IN",
-  brx: "brx-IN",
-  kha: "kha-IN",
-  lus: "lus-IN",
+  mni: "bn-IN",
+  brx: "hi-IN",
+  kha: "en-IN",
+  lus: "en-IN",
   ...EXTRA_SPEECH,
 };
+
+function quizVoiceLang(language) {
+  const raw = String(language || "").trim();
+  const lower = raw.toLowerCase();
+  const byName = {
+    english: "en",
+    hindi: "hi",
+    assamese: "as",
+    bengali: "bn",
+    bangla: "bn",
+    manipuri: "mni",
+    meitei: "mni",
+    bodo: "brx",
+    khasi: "kha",
+    mizo: "lus",
+    tamil: "ta",
+    telugu: "te",
+    marathi: "mr",
+    gujarati: "gu",
+    kannada: "kn",
+    malayalam: "ml",
+    punjabi: "pa",
+  };
+  const code = SPEECH_LANGUAGES[raw]
+    ? raw
+    : SPEECH_LANGUAGES[lower]
+      ? lower
+      : byName[lower]
+        || raw.split(/[-_]/)[0].toLowerCase();
+  return SPEECH_LANGUAGES[code] || "en-IN";
+}
 
 const LANGUAGE_NAMES = {
   en: "English",
@@ -792,66 +823,50 @@ const speakQuestion = () => {
     return;
   }
 
-  window.speechSynthesis.cancel();
-
-  const utterance = new SpeechSynthesisUtterance(
-    question.text
-  );
-
-  utterance.lang =
-    SPEECH_LANGUAGES[language] || "en-IN";
-
-  utterance.rate = 0.82;
-  utterance.pitch = 1;
-  utterance.volume = 1;
-
-  const voices =
-    window.speechSynthesis.getVoices();
-
-  // 1. Try exact language
-  let selectedVoice = voices.find(
-    (voice) =>
-      String(voice.lang || "").toLowerCase() ===
-      utterance.lang.toLowerCase()
-  );
-
-  // 2. Try same language family
-  if (!selectedVoice) {
-    const languagePrefix =
-      utterance.lang.split("-")[0].toLowerCase();
-
-    selectedVoice = voices.find(
-      (voice) =>
-        String(voice.lang || "")
-          .toLowerCase()
-          .startsWith(languagePrefix)
-    );
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  try {
+    synth.resume();
+  } catch {
+    /* ignore */
   }
 
-  // 3. Use the matching voice if available
-  if (selectedVoice) {
-    utterance.voice = selectedVoice;
+  const fire = () => {
+    const utterance = new SpeechSynthesisUtterance(question.text);
+    utterance.lang = quizVoiceLang(language);
+    utterance.rate = 0.82;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    const voices = synth.getVoices() || [];
+    const want = utterance.lang.toLowerCase();
+    const prefix = want.split("-")[0];
+    const selectedVoice =
+      voices.find((voice) => String(voice.lang || "").toLowerCase() === want) ||
+      voices.find((voice) => String(voice.lang || "").toLowerCase().startsWith(prefix)) ||
+      voices.find((voice) => /en-IN|hi-IN|en-GB|en-US/i.test(String(voice.lang || ""))) ||
+      voices[0];
+
+    if (selectedVoice) utterance.voice = selectedVoice;
+
+    utterance.onerror = (event) => {
+      console.error("Speech synthesis error:", event);
+    };
+
+    synth.speak(utterance);
+  };
+
+  const voices = synth.getVoices() || [];
+  if (!voices.length) {
+    const once = () => {
+      synth.removeEventListener("voiceschanged", once);
+      fire();
+    };
+    synth.addEventListener("voiceschanged", once);
+    setTimeout(fire, 280);
+    return;
   }
-
-  utterance.onstart = () => {
-    console.log(
-      "Speaking:",
-      question.text,
-      "Language:",
-      utterance.lang,
-      "Voice:",
-      selectedVoice?.name || "Browser default"
-    );
-  };
-
-  utterance.onerror = (event) => {
-    console.error(
-      "Speech synthesis error:",
-      event
-    );
-  };
-
-  window.speechSynthesis.speak(utterance);
+  fire();
 };
 
   const startListening = () => {
@@ -876,9 +891,7 @@ const speakQuestion = () => {
 
     const recognition = new SpeechRecognition();
 
-    recognition.lang =
-      SPEECH_LANGUAGES[language] || "en-IN";
-
+    recognition.lang = quizVoiceLang(language);
     recognition.interimResults = false;
     recognition.continuous = false;
     recognition.maxAlternatives = 3;
@@ -891,16 +904,18 @@ const speakQuestion = () => {
 
     recognition.onresult = (event) => {
       const transcript =
-        event.results?.[0]?.[0]?.transcript || "";
+        event.results?.[0]?.[0]?.transcript?.trim() || "";
 
       setSpokenAnswer(transcript);
+      setMicrophoneError("");
       setIsListening(false);
     };
 
     recognition.onerror = (event) => {
       console.error(
         "Speech recognition error:",
-        event.error
+        event.error,
+        event.message || ""
       );
 
       setIsListening(false);
@@ -912,6 +927,12 @@ const speakQuestion = () => {
         setMicrophoneError(t.microphoneError);
       } else if (event.error === "no-speech") {
         setMicrophoneError(t.noSpeech);
+      } else if (event.error === "network") {
+        setMicrophoneError(
+          "Speech could not reach Chrome's voice service. Check internet and try Google Chrome."
+        );
+      } else if (event.error === "audio-capture") {
+        setMicrophoneError(t.microphoneError);
       } else {
         setMicrophoneError(t.microphoneError);
       }
@@ -926,7 +947,7 @@ const speakQuestion = () => {
     try {
       recognition.start();
     } catch (error) {
-      console.error(error);
+      console.error("Could not start speech recognition:", error);
       setIsListening(false);
       setMicrophoneError(t.microphoneError);
     }

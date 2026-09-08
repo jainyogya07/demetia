@@ -85,6 +85,15 @@ export const CG_ENGAGEMENT = {
   ],
 };
 
+export function getMemoryQuizResult() {
+  try {
+    const raw = localStorage.getItem('smritiSaarthiMemoryResult');
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export const CG_CIRCLE = [
   { id: 'rina', name: 'Rina Devi', role: 'Daughter · primary', status: 'Here', note: 'This device', phone: '94350-11820' },
   { id: 'amit', name: 'Doom', role: 'Son · Guwahati', status: 'Away', note: 'Check-in 2h ago', phone: '98640-22118' },

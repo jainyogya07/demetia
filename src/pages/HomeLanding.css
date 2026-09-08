@@ -50,7 +50,7 @@
 .hl-nav {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 80;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -128,7 +128,7 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
-  z-index: 60;
+  z-index: 90;
   min-width: 220px;
   max-height: 340px;
   overflow-y: auto;
@@ -271,6 +271,7 @@
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 24px;
 }
 .hl-btn-primary {
@@ -310,6 +311,10 @@
   background: rgba(23, 107, 88, 0.06);
   border-color: rgba(23, 107, 88, 0.4);
   transform: translateY(-1px);
+}
+button.hl-btn-ghost {
+  font-family: inherit;
+  cursor: pointer;
 }
 
 .hl-lang-ribbon {
@@ -358,6 +363,8 @@
   border: 1px solid rgba(23, 107, 88, 0.14);
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+  max-width: 100%;
 }
 .hl-music-tabs {
   display: grid;
@@ -425,7 +432,16 @@
   color: #60716b;
 }
 .hl-focus-music { margin-top: 10px; }
-.hl-track-picker { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 0 10px 10px; }
+.hl-track-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 0;
+  max-height: min(220px, 36vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
 .hl-track-picker button { border: 1px solid rgba(23,107,88,.12); background: rgba(255,255,255,.7); border-radius: 8px; padding: 7px 8px; color: #28584d; text-align: left; cursor: pointer; font: inherit; }
 .hl-track-picker button:hover, .hl-track-picker button.is-active { background: #176b58; color: #fff; }
 .hl-track-picker span, .hl-track-picker small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -810,7 +826,180 @@
   transition: gap 0.25s;
 }
 .hl-role-card:hover .hl-role-arrow {
-  gap: 10px;
+  gap: 8px;
+}
+
+.hl-aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.55;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hl-hero-simple {
+  display: block;
+  max-width: 760px;
+  padding-bottom: 28px;
+}
+.hl-hero-simple .hl-title {
+  max-width: 18ch;
+  font-size: clamp(32px, 5vw, 46px);
+}
+.hl-hero-roles {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.hl-role-card-front {
+  width: 100%;
+  max-width: none;
+}
+.hl-role-how {
+  font-size: 12px !important;
+  line-height: 1.45 !important;
+  color: #5c6f68 !important;
+  margin: 0 0 12px !important;
+}
+.hl-guide {
+  margin: 0 0 22px;
+  padding: 16px 18px;
+  border: 1px solid rgba(23, 107, 88, 0.14);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.62);
+}
+.hl-guide strong {
+  display: block;
+  font-size: 16px;
+  color: #214d42;
+  margin: 0 0 8px;
+}
+.hl-guide ol {
+  margin: 0;
+  padding: 0 0 0 18px;
+  color: #3d5c52;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.hl-guide li {
+  margin: 0 0 6px;
+}
+.hl-guide-keypad {
+  margin: 10px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #5c6f68;
+}
+.hl-music-quiet {
+  margin-top: 0;
+  overflow: hidden;
+}
+.hl-music-stage {
+  overflow: hidden;
+  max-width: 640px;
+}
+.hl-music-quiet {
+  margin-top: 18px;
+}
+.hl-music-off-note {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: #5c6f68;
+}
+.hl-flow-band {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto 12px;
+  padding: 0 32px 24px;
+}
+.hl-hero-flow-below {
+  width: 100%;
+  min-height: 420px;
+  height: 52vh;
+  border: 1px solid rgba(23, 107, 88, 0.12);
+  border-radius: 22px;
+  background: #fff;
+  box-shadow: 0 16px 40px rgba(23, 107, 88, 0.08);
+}
+.hl-stage {
+  position: relative;
+  z-index: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 8px 32px 56px;
+}
+.hl-stage-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.hl-stage-tabs button {
+  border: 1px solid rgba(23, 107, 88, 0.18);
+  background: #fff;
+  color: #176b58;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.hl-stage-tabs button.is-on {
+  background: #176b58;
+  color: #fff;
+  border-color: #176b58;
+}
+.hl-dash-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.hl-dash-toolbar p {
+  margin: 0;
+  max-width: 52ch;
+  color: #3d5c52;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.hl-dash-preview {
+  border: 1px solid rgba(23, 107, 88, 0.12);
+  border-radius: 22px;
+  background: #f7faf8;
+  overflow: auto;
+  max-height: min(70vh, 720px);
+  overscroll-behavior: contain;
+  padding: 8px;
+}
+.hl-does-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.hl-does-grid .hl-feature-card {
+  margin: 0;
+  height: 100%;
+}
+.hl-role-card-wide {
+  max-width: 520px;
+}
+.hl-role-wide-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+@media (max-width: 720px) {
+  .hl-flow-band { padding: 0 16px 18px; }
+  .hl-hero-flow-below { min-height: 280px; height: 42vh; }
+  .hl-stage { padding: 8px 16px 40px; }
+  .hl-does-grid { grid-template-columns: 1fr; }
+  .hl-dash-toolbar { flex-direction: column; align-items: flex-start; }
 }
 
 /* ── Footer ── */
@@ -879,6 +1068,7 @@
     padding-top: 8px;
     order: 2;
   }
+  .hl-hero-roles { order: 2; }
   .hl-hero {
     grid-template-columns: 1fr;
     padding: 20px 16px 24px;
@@ -896,6 +1086,12 @@
     flex-direction: column;
     align-items: stretch;
   }
+  .hl-hero-actions .hl-btn-primary,
+  .hl-hero-actions .hl-btn-ghost {
+    min-height: 48px;
+    justify-content: center;
+  }
+  .hl-guide { padding: 14px 14px; }
   .hl-hero-flow {
     width: min(380px, 100%);
     height: min(480px, 58vh);

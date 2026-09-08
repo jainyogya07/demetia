@@ -9,7 +9,9 @@ import LanguageSwitcher from '../components/LanguageSwitcher';
 import VoiceToggle from '../components/VoiceToggle';
 import { useI18n } from '../I18nContext';
 import { usePrefs } from '../PrefsContext';
-import { LANG_STORAGE_KEY } from '../i18n';
+import { LANG_STORAGE_KEY, markLangManual } from '../i18n';
+import { detectAndResolveLang } from '../lib/regionLanguage';
+import { ensureNotifyPermission, getAlarmPrefs, setAlarmPrefs } from '../lib/alarms';
 import { useAppNav } from '../AppNavContext';
 import { useAuth } from '../context/AuthContext';
 
@@ -35,6 +37,8 @@ function Settings() {
   const { session, signOut, openAuth } = useAuth();
   const [profileDraft, setProfileDraft] = useState(prefs.profile);
   const [dataNote, setDataNote] = useState('');
+  const [regionNote, setRegionNote] = useState('');
+  const [alarmPrefs, setAlarmPrefsState] = useState(getAlarmPrefs);
   const photoInputRef = useRef(null);
 
   const [assistFill, setAssistFill] = useState(false);
@@ -285,6 +289,29 @@ function Settings() {
             <LanguageSwitcher />
           </div>
           <div className="settings-row">
+            <div>
+              <h4>Detect language from location</h4>
+              <p>{regionNote || 'Uses this device GPS, then Assam → Assamese, Manipur → Manipuri, and so on.'}</p>
+            </div>
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={async () => {
+                const found = await detectAndResolveLang();
+                if (found.lang) {
+                  markLangManual();
+                  setLang(found.lang);
+                  try { localStorage.setItem('smriti-region-applied', '1'); } catch { /* ignore */ }
+                  setRegionNote(found.region ? `Detected ${found.region}` : 'Language updated');
+                } else {
+                  setRegionNote('Could not detect region. Stay on the current language.');
+                }
+              }}
+            >
+              Detect
+            </button>
+          </div>
+          <div className="settings-row">
             <button type="button" className="btn btn-primary" onClick={saveProfile}>
               {t('settingsPage.saveProfile')}
             </button>
@@ -369,6 +396,20 @@ function Settings() {
               />
             </div>
           ))}
+          <div className="settings-row">
+            <div>
+              <h4>Routine alarms</h4>
+              <p>Wired to today’s medicine / water / meals. Left off until you turn this on.</p>
+            </div>
+            <Toggle
+              checked={alarmPrefs.enabled}
+              label="Routine alarms"
+              onChange={async (value) => {
+                if (value) await ensureNotifyPermission();
+                setAlarmPrefsState(setAlarmPrefs({ enabled: value }));
+              }}
+            />
+          </div>
         </div>
       </section>
 
@@ -438,7 +479,10 @@ function Settings() {
                 key={item.code}
                 type="button"
                 className={`settings-lang-chip ${item.code === lang ? 'active' : ''}`}
-                onClick={() => setLang(item.code)}
+                onClick={() => {
+                  markLangManual();
+                  setLang(item.code);
+                }}
               >
                 <strong>{item.nativeLabel}</strong>
                 <span>{item.englishName}</span>

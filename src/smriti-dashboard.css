@@ -127,6 +127,7 @@
 
 .ss-theme .main-content,
 .ss-theme .main-content {
+  position: relative;
   flex: 1;
   min-height: 0;
   display: flex;
@@ -136,6 +137,152 @@
     radial-gradient(900px 420px at 12% -10%, rgba(23, 107, 88, 0.16), transparent 55%),
     radial-gradient(700px 380px at 100% 0%, rgba(33, 77, 66, 0.1), transparent 50%),
     var(--ss-paper);
+}
+
+.ss-aurora-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.28;
+  pointer-events: none;
+}
+@media (max-width: 860px) {
+  .ss-aurora-layer { display: none; }
+}
+.ss-theme .ss-topbar {
+  position: relative;
+  z-index: 200;
+  isolation: isolate;
+  overflow: visible;
+}
+.ss-theme .ss-mobile-subnav,
+.ss-theme .dashboard-scroll,
+.ss-theme .tab-system,
+.ss-theme .tab-contents-wrapper {
+  position: relative;
+  z-index: 0;
+}
+.ss-theme .ss-bit-card {
+  height: 100%;
+  border-radius: 18px;
+  background: transparent;
+}
+
+.ss-focus-bar {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+  position: static;
+  grid-column: 1 / -1;
+}
+.ss-home-shell {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.ss-home-main { min-width: 0; }
+.ss-quiz-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 180px;
+  padding: 18px;
+  border-radius: 20px;
+  background: #fff;
+  border: 1px solid #dce7e2;
+}
+.ss-quiz-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: rgba(23, 107, 88, 0.12);
+  color: #176b58;
+}
+.ss-quiz-card h2 {
+  margin: 0;
+  font-size: 17px;
+  color: #214d42;
+}
+.ss-quiz-card p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #5c6f68;
+}
+.ss-quiz-card small {
+  display: block;
+  margin-top: 6px;
+  color: #176b58;
+  font-weight: 700;
+}
+.ss-quiz-open {
+  margin-top: auto;
+  border: 0;
+  border-radius: 12px;
+  min-height: 44px;
+  background: #176b58;
+  color: #fff;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+.ss-focus-bar button {
+  border: 1px solid rgba(23, 107, 88, 0.16);
+  background: rgba(255, 255, 255, 0.78);
+  color: #214d42;
+  border-radius: 16px;
+  padding: 12px 14px;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  min-height: 64px;
+  flex: 1;
+}
+.ss-focus-bar button strong,
+.ss-focus-bar button span {
+  display: block;
+}
+.ss-focus-bar button strong {
+  font-size: 15px;
+  font-weight: 750;
+}
+.ss-focus-bar button span {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #5c6f68;
+}
+.ss-focus-bar button.is-on {
+  background: #176b58;
+  border-color: #176b58;
+  color: #fff;
+}
+.ss-focus-bar button.is-on span {
+  color: rgba(255, 255, 255, 0.82);
+}
+.ss-focus-pane {
+  min-height: 280px;
+}
+@media (max-width: 720px) {
+  .ss-home-shell {
+    grid-template-columns: 1fr;
+  }
+  .ss-focus-bar {
+    order: -1;
+    flex-direction: row;
+    position: static;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  .ss-focus-bar button {
+    min-height: 52px;
+    min-width: 148px;
+    flex: 1;
+  }
 }
 
 .ss-topbar {
@@ -198,6 +345,44 @@
   font-size: 12px;
   font-weight: 600;
   backdrop-filter: blur(10px);
+}
+
+.ss-demo-loc {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ss-glass);
+  color: var(--ss-teal);
+  border: 1px solid var(--ss-glass-border);
+  border-radius: 999px;
+  padding: 4px 8px 4px 10px;
+  max-width: 220px;
+}
+.ss-demo-loc select {
+  border: 0;
+  background: transparent;
+  color: var(--ss-teal);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  max-width: 180px;
+  cursor: pointer;
+}
+.ss-place-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: var(--ss-glass);
+  color: var(--ss-teal);
+  border: 1px solid var(--ss-glass-border);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 650;
 }
 
 .ss-bell {
@@ -654,6 +839,9 @@
 }
 
 .ss-home-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 13px;
   font-weight: 650;
   color: #176b58;

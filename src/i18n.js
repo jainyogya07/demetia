@@ -136,6 +136,23 @@ const en = {
     help: 'Emergency Help',
   },
   helpNowSub: 'Emergency & Safety',
+  chrome: {
+    signOut: 'Sign out',
+    signIn: 'Sign in',
+    menu: 'Menu',
+    offlineChip: 'Offline Mode — Data will sync later.',
+    quietDay: 'A quiet day. Medicine, a little game, a little talk.',
+    patient: 'Patient',
+    emergencyHelp: 'Emergency Help',
+    emergencySub: 'Call for immediate support',
+    newDay: 'New day',
+    todayKicker: 'Today',
+    moreKicker: 'More',
+    openNow: 'Open now',
+    goodMorning: 'Good morning',
+    goodAfternoon: 'Good afternoon',
+    goodEvening: 'Good evening',
+  },
   docs: {
     verified: 'Verified documents',
     pending: 'Pending review',
@@ -258,8 +275,17 @@ const hi = {
   ...en,
   brandSub: 'आपकी विश्वसनीय साथी',
   modules: {
+    ...en.modules,
     home: 'होम',
-    ai: 'एआई साथी',
+    games: 'दिमाग के खेल',
+    ai: 'केयर एजेंट से बात',
+    routine: 'रोज़ का काम',
+    medicine: 'दवाई और सेहत',
+    progress: 'स्मृति की प्रगति',
+    'care-circle': 'देखभाल चक्र',
+    safety: 'सुरक्षा और जगह',
+    'memory-book': 'स्मृति की किताब',
+    language: 'भाषा',
     'support-plan': 'मेरी सहायता योजना',
     services: 'सेवाएँ और क्रेडिट',
     'support-credits': 'सहायता क्रेडिट',
@@ -370,22 +396,22 @@ const hi = {
     whatsapp: 'व्हाट्सऐप',
     footer: 'तुरंत खतरे में हों तो 112 पर कॉल करें या पास किसी से मदद लें। ये सार्वजनिक हेल्पलाइन हैं, चिकित्सा सलाह नहीं।',
     n112Title: 'राष्ट्रीय आपातकाल (112)',
-    n112Desc: 'पुलिस, आग, चिकित्सा — अखिल भारतीय ईआरएसएस',
+    n112Desc: 'पुलिस, आग, चिकित्सा — अखिल भारतीय ERSS',
     n181Title: 'महिला हेल्पलाइन (181)',
     n181Desc: 'महिलाओं के लिए 24×7 सहायता; वन स्टॉप सेंटर से जुड़ाव',
     n1091Title: 'संकट में महिलाएँ (1091)',
     n1091Desc: 'जहाँ सक्रिय हो, महिला पुलिस हेल्पलाइन',
-    n1098Title: 'चाइल्डलाइन (1098)',
+    n1098Title: 'CHILDLINE (1098)',
     n1098Desc: 'ज़रूरतमंद बच्चों के लिए 24×7 आपातकालीन सहायता',
-    n14416Title: 'टेली-मानस',
+    n14416Title: 'Tele-MANAS',
     n14416Desc: '24×7 मानसिक स्वास्थ्य सहायता',
-    telemanasTfTitle: 'टेली-मानस (टोल-फ्री)',
-    telemanasTfDesc: 'टेली-मानस का वैकल्पिक टोल-फ्री नंबर',
-    n14490Title: 'एनसीडब्ल्यू महिला हेल्पलाइन',
+    telemanasTfTitle: 'Tele-MANAS (toll-free)',
+    telemanasTfDesc: 'Tele-MANAS का वैकल्पिक toll-free नंबर',
+    n14490Title: 'NCW महिला हेल्पलाइन',
     n14490Desc: 'राष्ट्रीय महिला आयोग — शिकायत और परामर्श',
-    ncwWaTitle: 'एनसीडब्ल्यू व्हाट्सऐप',
-    ncwWaDesc: 'राष्ट्रीय महिला आयोग का व्हाट्सऐप सहयोग',
-    n14567Title: 'एल्डरलाइन',
+    ncwWaTitle: 'NCW WhatsApp',
+    ncwWaDesc: 'राष्ट्रीय महिला आयोग का WhatsApp सहयोग',
+    n14567Title: 'Elderline',
     n14567Desc: 'वरिष्ठ नागरिकों के लिए राष्ट्रीय हेल्पलाइन',
     n15100Title: 'कानूनी सहायता (NALSA)',
     n15100Desc: 'मुफ़्त कानूनी सेवा — संपत्ति, पेंशन, पारिवारिक मामले',
@@ -1319,6 +1345,100 @@ DICTIONARIES.en = mergePageStrings(DICTIONARIES.en, {
   docs: en.docs,
 });
 
+// Everyday Assamese chrome. Scientific names stay English (see restoreScientific).
+DICTIONARIES.as = {
+  ...DICTIONARIES.as,
+  modules: {
+    ...DICTIONARIES.en.modules,
+    home: 'ঘৰ',
+    games: 'মগজৰ খেল',
+    ai: 'যতন এজেণ্ট',
+    routine: 'দৈনিক কাম',
+    medicine: 'দৰব আৰু স্বাস্থ্য',
+    progress: 'স্মৃতিৰ অগ্ৰগতি',
+    'care-circle': 'যতন চক্ৰ',
+    safety: 'সুৰক্ষা আৰু স্থান',
+    'memory-book': 'স্মৃতিৰ বহী',
+    language: 'ভাষা',
+    services: 'যতন আঁচনি',
+    documents: 'নথি',
+    settings: 'ছেটিংছ',
+    help: 'জৰুৰী সহায়',
+  },
+  helpNowSub: 'জৰুৰী আৰু সুৰক্ষা',
+  settings: 'ছেটিংছ',
+};
+
+const EVERYDAY_MODULES = {
+  hi: { home: 'होम', games: 'दिमाग के खेल', ai: 'केयर एजेंट से बात', routine: 'रोज़ का काम', medicine: 'दवाई और सेहत', progress: 'स्मृति की प्रगति', 'care-circle': 'देखभाल चक्र', safety: 'सुरक्षा और जगह', 'memory-book': 'स्मृति की किताब', language: 'भाषा', documents: 'मेरे दस्तावेज़', settings: 'सेटिंग्स', help: 'अभी मदद' },
+  ta: { home: 'முகப்பு', games: 'மூளை விளையாட்டு', ai: 'பராமரிப்பு முகவர்', routine: 'இன்றைய பணி', medicine: 'மருந்து & உடல்நலம்', progress: 'நினைவு முன்னேற்றம்', 'care-circle': 'பராமரிப்பு வட்டம்', safety: 'பாதுகாப்பு', 'memory-book': 'நினைவுப் புத்தகம்', language: 'மொழி', documents: 'ஆவணங்கள்', settings: 'அமைப்புகள்', help: 'அவசர உதவி' },
+  te: { home: 'హోమ్', games: 'మెదడు ఆటలు', ai: 'కేర్ ఏజెంట్', routine: 'రోజువారీ పని', medicine: 'మందు & ఆరోగ్యం', progress: 'మెమరీ పురోగతి', 'care-circle': 'కేర్ సర్కిల్', safety: 'భద్రత', 'memory-book': 'మెమరీ బుక్', settings: 'సెట్టింగ్స్', help: 'అత్యవసర సహాయం' },
+  bn: { home: 'হোম', games: 'মস্তিষ্কের খেলা', ai: 'কেয়ার এজেন্ট', routine: 'আজকের কাজ', medicine: 'ওষুধ ও স্বাস্থ্য', progress: 'স্মৃতির অগ্রগতি', 'care-circle': 'যত্ন চক্র', safety: 'নিরাপত্তা', 'memory-book': 'স্মৃতির খাতা', settings: 'সেটিংস', help: 'জরুরি সাহায্য' },
+  mr: { home: 'होम', games: 'मेंदूचे खेळ', ai: 'केअर एजंट', routine: 'आजचे काम', medicine: 'औषध आणि आरोग्य', progress: 'स्मृती प्रगती', settings: 'सेटिंग्ज', help: 'आपत्कालीन मदत' },
+  gu: { home: 'હોમ', games: 'મગજની રમતો', ai: 'કેર એજન્ટ', routine: 'આજનું કામ', medicine: 'દવા અને સ્વાસ્થ્ય', progress: 'સ્મૃતિ પ્રગતિ', settings: 'સેટિંગ્સ', help: 'કટોકટી મદદ' },
+  kn: { home: 'ಹೋಮ್', games: 'ಮೆದುಳಿನ ಆಟಗಳು', ai: 'ಕೇರ್ ಏಜೆಂಟ್', routine: 'ಇಂದಿನ ಕೆಲಸ', medicine: 'ಔಷಧ ಮತ್ತು ಆರೋಗ್ಯ', settings: 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು', help: 'ತುರ್ತು ಸಹಾಯ' },
+  ml: { home: 'ഹോം', games: 'മസ്തിഷ്ക കളികൾ', ai: 'കെയർ ഏജന്റ്', routine: 'ഇന്നത്തെ ജോലി', medicine: 'മരുന്ന്', settings: 'ക്രമീകരണം', help: 'അടിയന്തര സഹായം' },
+  pa: { home: 'ਹੋਮ', games: 'ਦਿਮਾਗ ਦੀਆਂ ਖੇਡਾਂ', ai: 'ਕੇਅਰ ਏਜੰਟ', routine: 'ਅੱਜ ਦਾ ਕੰਮ', medicine: 'ਦਵਾਈ', settings: 'ਸੈਟਿੰਗਾਂ', help: 'ਐਮਰਜੈਂਸੀ ਮਦਦ' },
+  kha: { home: 'Ïing', games: 'Ki game pyrkhat', ai: 'Care Agent', routine: 'Ka kam mynta', medicine: 'Dawai', settings: 'Settings', help: 'Jingiarap kyrkieh' },
+  lus: { home: 'In', games: 'Rilru game', ai: 'Care Agent', routine: 'Vawiin hna', medicine: 'Damdawi', settings: 'Settings', help: 'Ṭanpui rang' },
+  mni: { home: 'হোম', games: 'মীং গেম', ai: 'কেয়ার এজেন্ট', routine: 'ঙসিগী থবক', medicine: 'হীদাক', settings: 'সেটিংস', help: 'অথুবা মতেং' },
+  brx: { home: 'ह्म', games: 'गोसो गेम', ai: 'केयार एजेन्ट', routine: 'दिनैनि खामानि', medicine: 'मुलि', settings: 'सेटिंग', help: 'गोख्रै मदद' },
+};
+
+const EVERYDAY_CHROME = {
+  hi: { signOut: 'साइन आउट', signIn: 'साइन इन', menu: 'मेनू', offlineChip: 'ऑफ़लाइन — डेटा बाद में सिंक होगा।', quietDay: 'शांत दिन। दवाई, थोड़ा खेल, थोड़ी बात।', patient: 'मरीज़', emergencyHelp: 'आपातकालीन मदद', emergencySub: 'तुरंत सहायता के लिए कॉल करें', newDay: 'नया दिन', todayKicker: 'आज', moreKicker: 'और', openNow: 'अभी खुला', goodMorning: 'सुप्रभात', goodAfternoon: 'नमस्कार', goodEvening: 'शुभ संध्या' },
+  ta: { signOut: 'வெளியேறு', signIn: 'உள்நுழை', menu: 'பட்டி', offlineChip: 'ஆஃப்லைன் — தரவு பின்னர் ஒத்திசைக்கும்.', quietDay: 'அமைதியான நாள். மருந்து, சிறிது விளையாட்டு, சிறிது பேச்சு.', patient: 'நோயாளி', emergencyHelp: 'அவசர உதவி', emergencySub: 'உடனடி ஆதரவுக்கு அழைக்கவும்', newDay: 'புதிய நாள்', todayKicker: 'இன்று', moreKicker: 'மேலும்', openNow: 'இப்போது திறந்துள்ளது', goodMorning: 'காலை வணக்கம்', goodAfternoon: 'மதிய வணக்கம்', goodEvening: 'மாலை வணக்கம்' },
+  te: { signOut: 'సైన్ అవుట్', signIn: 'సైన్ ఇన్', menu: 'మెను', offlineChip: 'ఆఫ్‌లైన్ — డేటా తర్వాత సింక్ అవుతుంది.', quietDay: 'నిశ్శబ్ద రోజు. మందు, కొంచెం ఆట, కొంచెం మాట.', patient: 'రోగి', emergencyHelp: 'అత్యవసర సహాయం', emergencySub: 'వెంటనే సహాయం కోసం కాల్ చేయండి', newDay: 'కొత్త రోజు', todayKicker: 'ఈరోజు', moreKicker: 'మరిన్ని', openNow: 'ఇప్పుడు తెరిచి ఉంది', goodMorning: 'శుభోదయం', goodAfternoon: 'శుభ మధ్యాహ్నం', goodEvening: 'శుభ సాయంత్రం' },
+  bn: { signOut: 'সাইন আউট', signIn: 'সাইন ইন', menu: 'মেনু', offlineChip: 'অফলাইন — ডেটা পরে সিঙ্ক হবে।', quietDay: 'শান্ত দিন। ওষুধ, একটু খেলা, একটু কথা।', patient: 'রোগী', emergencyHelp: 'জরুরি সাহায্য', emergencySub: 'সঙ্গে সঙ্গে সাহায্যের জন্য কল করুন', newDay: 'নতুন দিন', todayKicker: 'আজ', moreKicker: 'আরও', openNow: 'এখন খোলা', goodMorning: 'শুভ সকাল', goodAfternoon: 'শুভ দুপুর', goodEvening: 'শুভ সন্ধ্যা' },
+  mr: { signOut: 'साइन आउट', signIn: 'साइन इन', menu: 'मेनू', offlineChip: 'ऑफलाइन — डेटा नंतर सिंक होईल.', quietDay: 'शांत दिवस. औषध, थोडा खेळ, थोडी गप्पा.', patient: 'रुग्ण', emergencyHelp: 'आपत्कालीन मदत', emergencySub: 'ताबडतोब मदतीसाठी कॉल करा', newDay: 'नवा दिवस', todayKicker: 'आज', moreKicker: 'आणखी', openNow: 'आता उघडे', goodMorning: 'शुभ प्रभात', goodAfternoon: 'शुभ दुपार', goodEvening: 'शुभ संध्याकाळ' },
+  gu: { signOut: 'સાઇન આઉટ', signIn: 'સાઇન ઇન', menu: 'મેનૂ', offlineChip: 'ઑફલાઇન — ડેટા પછી સિંક થશે.', quietDay: 'શાંત દિવસ. દવા, થોડી રમત, થોડી વાત.', patient: 'દર્દી', emergencyHelp: 'કટોકટી મદદ', emergencySub: 'તરત મદદ માટે કૉલ કરો', newDay: 'નવો દિવસ', todayKicker: 'આજ', moreKicker: 'વધુ', openNow: 'હવે ખુલ્લું', goodMorning: 'શુભ સવાર', goodAfternoon: 'શુભ બપોર', goodEvening: 'શુભ સાંજ' },
+  kn: { signOut: 'ಸೈನ್ ಔಟ್', signIn: 'ಸೈನ್ ಇನ್', menu: 'ಮೆನು', offlineChip: 'ಆಫ್‌ಲೈನ್ — ಡೇಟಾ ನಂತರ ಸಿಂಕ್ ಆಗುತ್ತದೆ.', quietDay: 'ನಿಶ್ಶಬ್ದ ದಿನ. ಔಷಧ, ಸ್ವಲ್ಪ ಆಟ, ಸ್ವಲ್ಪ ಮಾತು.', patient: 'ರೋಗಿ', emergencyHelp: 'ತುರ್ತು ಸಹಾಯ', emergencySub: 'ತಕ್ಷಣ ಸಹಾಯಕ್ಕೆ ಕರೆ ಮಾಡಿ', newDay: 'ಹೊಸ ದಿನ', todayKicker: 'ಇಂದು', moreKicker: 'ಇನ್ನಷ್ಟು', openNow: 'ಈಗ ತೆರೆದಿದೆ', goodMorning: 'ಶುಭೋದಯ', goodAfternoon: 'ಶುಭ ಮಧ್ಯಾಹ್ನ', goodEvening: 'ಶುಭ ಸಂಜೆ' },
+  ml: { signOut: 'സൈൻ ഔട്ട്', signIn: 'സൈൻ ഇൻ', menu: 'മെനു', offlineChip: 'ഓഫ്‌ലൈൻ — ഡാറ്റ പിന്നീട് സിങ്ക് ചെയ്യും.', quietDay: 'ശാന്തമായ ദിവസം. മരുന്ന്, കുറച്ച് കളി, കുറച്ച് സംസാരം.', patient: 'രോഗി', emergencyHelp: 'അടിയന്തര സഹായം', emergencySub: 'ഉടൻ സഹായത്തിന് വിളിക്കുക', newDay: 'പുതിയ ദിവസം', todayKicker: 'ഇന്ന്', moreKicker: 'കൂടുതൽ', openNow: 'ഇപ്പോൾ തുറന്നിരിക്കുന്നു', goodMorning: 'സുപ്രഭാതം', goodAfternoon: 'ശുഭ മധ്യാഹ്നം', goodEvening: 'ശുഭ സന്ധ്യ' },
+  pa: { signOut: 'ਸਾਈਨ ਆਉਟ', signIn: 'ਸਾਈਨ ਇਨ', menu: 'ਮੀਨੂ', offlineChip: 'ਆਫਲਾਈਨ — ਡਾਟਾ ਬਾਅਦ ਵਿੱਚ ਸਿੰਕ ਹੋਵੇਗਾ.', quietDay: 'ਸ਼ਾਂਤ ਦਿਨ। ਦਵਾਈ, ਥੋੜ੍ਹੀ ਖੇਡ, ਥੋੜ੍ਹੀ ਗੱਲ।', patient: 'ਮਰੀਜ਼', emergencyHelp: 'ਐਮਰਜੈਂਸੀ ਮਦਦ', emergencySub: 'ਤੁਰੰਤ ਮਦਦ ਲਈ ਕਾਲ ਕਰੋ', newDay: 'ਨਵਾਂ ਦਿਨ', todayKicker: 'ਅੱਜ', moreKicker: 'ਹੋਰ', openNow: 'ਹੁਣ ਖੁੱਲ੍ਹਾ', goodMorning: 'ਸ਼ੁਭ ਸਵੇਰ', goodAfternoon: 'ਸ਼ੁਭ ਦੁਪਹਿਰ', goodEvening: 'ਸ਼ੁਭ ਸ਼ਾਮ' },
+  as: { signOut: 'ছাইন আউট', signIn: 'ছাইন ইন', menu: 'মেনু', offlineChip: 'অফলাইন — তথ্য পিছত sync হ’ব।', quietDay: 'শান্ত দিন। দৰব, অলপ খেল, অলপ কথা।', patient: 'ৰোগী', emergencyHelp: 'জৰুৰী সহায়', emergencySub: 'লগে লগে সহায়ৰ বাবে কল কৰক', newDay: 'নতুন দিন', todayKicker: 'আজি', moreKicker: 'অধিক', openNow: 'এতিয়া খোলা', goodMorning: 'শুভ প্ৰভাত', goodAfternoon: 'শুভ দুপৰীয়া', goodEvening: 'শুভ সন্ধিয়া' },
+};
+
+Object.entries(EVERYDAY_MODULES).forEach(([code, mods]) => {
+  if (!DICTIONARIES[code]) return;
+  DICTIONARIES[code] = {
+    ...DICTIONARIES[code],
+    modules: { ...DICTIONARIES.en.modules, ...(DICTIONARIES[code].modules || {}), ...mods },
+    chrome: { ...(DICTIONARIES.en.chrome || {}), ...(DICTIONARIES[code].chrome || {}), ...(EVERYDAY_CHROME[code] || {}) },
+  };
+});
+Object.entries(EVERYDAY_CHROME).forEach(([code, chrome]) => {
+  if (!DICTIONARIES[code] || EVERYDAY_MODULES[code]) return;
+  DICTIONARIES[code] = {
+    ...DICTIONARIES[code],
+    chrome: { ...(DICTIONARIES.en.chrome || {}), ...(DICTIONARIES[code].chrome || {}), ...chrome },
+  };
+});
+
+const SCIENTIFIC_SWAPS = [
+  [/टेली[-\s]?मानस/gi, 'Tele-MANAS'],
+  [/ঈৰ্ছছ|ईआरएसएस/gi, 'ERSS'],
+  [/एनसीडब्ल्यू/g, 'NCW'],
+  [/चाइल्डलाइन/gi, 'CHILDLINE'],
+  [/एल्डरलाइन|এল্ডাৰলাইন/gi, 'Elderline'],
+  [/\bनाल्सा\b|\bनल्सा\b|\bনালছা\b/gi, 'NALSA'],
+  [/\bएमएमएसई\b|\bএমএমএছই\b/gi, 'MMSE'],
+  [/\bएनपीएचसीई\b/gi, 'NPHCE'],
+];
+
+function restoreScientific(text) {
+  if (typeof text !== 'string') return text;
+  return SCIENTIFIC_SWAPS.reduce((acc, [re, enTerm]) => acc.replace(re, enTerm), text);
+}
+
+export function markLangManual() {
+  try {
+    localStorage.setItem('smriti-lang-manual', '1');
+    localStorage.setItem('smriti-auto-language', 'false');
+  } catch {
+    /* ignore */
+  }
+}
+
 export function normalizeLang(code) {
   if (code == null || typeof code !== 'string') return DEFAULT_LANG;
   const trimmed = code.trim();
@@ -1364,5 +1484,5 @@ export function translate(langCode, path, vars) {
   const value = code === 'en' ? english : lookup(dict, path);
   const raw = value == null ? english : value;
   if (raw == null || typeof raw === 'object') return path;
-  return interpolate(raw, vars);
+  return restoreScientific(interpolate(raw, vars));
 }

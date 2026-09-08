@@ -1,11 +1,13 @@
 import { BookOpen, ChevronRight, Music, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAppNav } from "../AppNavContext";
+import { useLanguage } from "../context/LanguageContext";
 import { MEMORIES_FALLBACK } from "../data/memoriesFallback";
 import { hideAlbum, hiddenAlbums, MEMORY_ALBUMS } from "../lib/memoryAlbums";
 
 function MemoryBook() {
   const { openModule } = useAppNav();
+  const { t } = useLanguage();
   const [rows, setRows] = useState(MEMORIES_FALLBACK);
   const [hidden, setHidden] = useState(() => hiddenAlbums());
 
@@ -33,7 +35,7 @@ function MemoryBook() {
     const matches = rows.filter((m) => m.album === slot.album);
     return {
       ...slot,
-      subtitle: `${matches.length || 0} memories`,
+      subtitle: `${matches.length || 0} ${t("memories")}`,
       image: matches[0]?.photo_url,
     };
   });
@@ -45,7 +47,7 @@ function MemoryBook() {
           <div className="title-icon">
             <BookOpen size={20} />
           </div>
-          <h2>My Memory Book</h2>
+          <h2>{t("myMemoryBook")}</h2>
         </div>
       </div>
 
@@ -98,7 +100,7 @@ function MemoryBook() {
         className="open-memory-book-btn"
         onClick={() => openModule("memory-book")}
       >
-        Open Memory Book
+        {t("openMemoryBook")}
         <ChevronRight size={16} />
       </button>
     </div>

@@ -1,12 +1,14 @@
 import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound,
+  LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound, BrainCircuit, ClipboardList,
 } from 'lucide-react';
 import BrandLogo from '../../components/BrandLogo';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import AvatarSlot from '../../components/AvatarSlot';
 import { LiveDot } from '../../components/clinic/LiveChrome';
 import { CG_LIVE, CG_PROFILE, CG_PATIENT } from '../../data/caregiverPlaceholders';
+import DashAurora from '../../components/bits/DashAurora';
+import Reveal from '../../components/bits/Reveal';
 
 const NAV = [
   { to: '/caregiver', end: true, icon: LayoutDashboard, label: 'Today' },
@@ -14,6 +16,8 @@ const NAV = [
   { to: '/caregiver/calendar', icon: CalendarDays, label: 'Calendar' },
   { to: '/caregiver/safety', icon: MapPin, label: 'Safety & location' },
   { to: '/caregiver/progress', icon: LineChart, label: 'Progress' },
+  { to: '/caregiver/assessment', icon: ClipboardList, label: 'Cognitive check-in' },
+  { to: '/caregiver/train-ai', icon: BrainCircuit, label: 'Train AI Agent' },
   { to: '/caregiver/circle', icon: Users, label: 'Care circle' },
   { to: '/caregiver/documents', icon: FileText, label: 'Documents' },
   { to: '/caregiver/profile', icon: UserRound, label: 'My profile' },
@@ -26,6 +30,8 @@ const TITLES = {
   '/caregiver/calendar': ['Calendar', 'Meds, doctor, ASHA — the week on one board.'],
   '/caregiver/safety': ['Safety & location', 'Caregiver view of the home zone and last check-in.'],
   '/caregiver/progress': ['Progress & engagement', 'How the week felt — support, not a diagnosis.'],
+  '/caregiver/assessment': ['Cognitive check-in', 'FAQ-10 plus motor telemetry. Severity is monitoring, not a diagnosis.'],
+  '/caregiver/train-ai': ['Train AI Agent', 'Teach the Care Agent specific facts and preferences to personalize patient assistance.'],
   '/caregiver/circle': ['Care circle', 'Family, ASHA, clinic — call from here.'],
   '/caregiver/documents': ['Shared documents', 'Prescriptions and papers the circle can see.'],
   '/caregiver/profile': ['Your file', 'The person holding this household clock.'],
@@ -67,6 +73,7 @@ export default function CaregiverLayout() {
         </div>
       </aside>
       <main className="main-content">
+        <DashAurora />
         <header className="top-bar ss-topbar">
           <div className="ss-greeting-block">
             <h1>{title}</h1>
@@ -92,7 +99,9 @@ export default function CaregiverLayout() {
           ))}
         </nav>
         <div className="dashboard-scroll">
-          <Outlet />
+          <Reveal>
+            <Outlet />
+          </Reveal>
         </div>
       </main>
     </div>

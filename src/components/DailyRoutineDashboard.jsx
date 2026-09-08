@@ -1,10 +1,12 @@
 import { CalendarDays, Volume2, CheckCircle2, Circle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAppNav } from "../AppNavContext";
+import { useLanguage } from "../context/LanguageContext";
 import { getRoutineItems, pingLive, subscribeLive } from "../lib/liveState";
 
 function DailyRoutine() {
   const { openModule } = useAppNav();
+  const { t } = useLanguage();
   const [, setTick] = useState(0);
   useEffect(() => subscribeLive(() => setTick((n) => n + 1)), []);
   const routine = getRoutineItems();
@@ -26,11 +28,11 @@ function DailyRoutine() {
       <div className="routine-header">
         <div className="routine-title">
           <CalendarDays size={25} />
-          <h2>Today&apos;s Routine</h2>
+          <h2>{t("todaysRoutine")}</h2>
         </div>
         <button type="button" className="tell-next-button" onClick={tellNext}>
           <Volume2 size={17} />
-          Tell me what&apos;s next
+          {t("tellWhatsNext")}
         </button>
       </div>
 
@@ -49,22 +51,18 @@ function DailyRoutine() {
             )}
             <span className="routine-task">{item.title}</span>
             <span className={`routine-status ${item.completed ? "completed" : "pending"}`}>
-              {item.completed ? "Completed" : item.status === "due" ? "Due" : "Upcoming"}
+              {item.completed ? t("completed") : item.status === "due" ? t("pending") : t("pending")}
             </span>
           </div>
         ))}
       </div>
 
-      <button
-        type="button"
-        className="view-routine-button"
-        onClick={() => {
+        <button type="button" className="view-routine-button" onClick={() => {
           pingLive();
           openModule("routine");
-        }}
-      >
-        View Full Routine →
-      </button>
+        }}>
+          {t("viewFullRoutine")}
+        </button>
     </section>
   );
 }

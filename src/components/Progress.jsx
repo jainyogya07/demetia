@@ -1,18 +1,20 @@
 import { BarChart3, Lightbulb } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useAppNav } from "../AppNavContext";
+import { useLanguage } from "../context/LanguageContext";
 import { getProgressSnapshot, subscribeLive } from "../lib/liveState";
 
 function Progress() {
   const { openModule } = useAppNav();
+  const { t } = useLanguage();
   const [tick, setTick] = useState(0);
   useEffect(() => subscribeLive(() => setTick((n) => n + 1)), []);
   const snap = useMemo(() => getProgressSnapshot(), [tick]);
   const stats = [
-    { label: "Activities Completed", value: `${snap.routineDone} / ${snap.routineTotal}` },
-    { label: "Plays this week", value: String(snap.activities) },
-    { label: "Accuracy", value: `${snap.accuracy}%` },
-    { label: "Streak", value: `${snap.streak}d` },
+    { label: t("activitiesCompleted"), value: `${snap.routineDone} / ${snap.routineTotal}` },
+    { label: t("playsThisWeek"), value: String(snap.activities) },
+    { label: t("accuracyLabel"), value: `${snap.accuracy}%` },
+    { label: t("streakLabel"), value: `${snap.streak}d` },
   ];
 
   return (
@@ -20,7 +22,7 @@ function Progress() {
       <div className="progress-header">
         <div className="progress-title">
           <BarChart3 size={25} />
-          <h2>This Week&apos;s Progress</h2>
+          <h2>{t("weeklyProgress")}</h2>
         </div>
       </div>
 
@@ -36,12 +38,10 @@ function Progress() {
       <div className="smriti-insight">
         <div className="insight-heading">
           <Lightbulb size={18} />
-          <strong>Care note</strong>
+          <strong>{t("smritiInsight")}</strong>
         </div>
         <p>
-          {snap.todayPlays
-            ? `A game is logged today. ${snap.routineDone} routine items marked.`
-            : "No game logged yet today. A short past story is enough."}
+          {snap.todayPlays ? t("insightHasPlay") : t("insightNoPlay")}
         </p>
         <div className="insight-brain">🌿</div>
       </div>
@@ -51,7 +51,7 @@ function Progress() {
         className="view-progress-button"
         onClick={() => openModule("progress")}
       >
-        View Detailed Progress →
+        {t("viewDetailedProgress")}
       </button>
     </section>
   );

@@ -7,30 +7,30 @@ function BrainActivity() {
   const { openModule } = useAppNav();
   const games = [
     {
-      name: "Picture Match",
-      detail: "Match familiar objects",
-      time: "5 min",
-      level: "Easy",
+      name: t("pictureMatch"),
+      detail: t("memoryGame"),
+      time: t("minutes"),
+      level: t("easy"),
       gameId: "match-pairs",
       image:
         "https://images.unsplash.com/photo-1560421683-6856ea585c78?auto=format&fit=crop&w=500&q=80",
       className: "game-memory",
     },
     {
-      name: "Find the Pair",
-      detail: "Improve attention",
-      time: "5 min",
-      level: "Easy",
+      name: t("findPair"),
+      detail: t("attentionGame"),
+      time: t("minutes"),
+      level: t("easy"),
       gameId: "spot-diff",
       image:
         "https://images.unsplash.com/photo-1633412802994-5c058f151b66?auto=format&fit=crop&w=500&q=80",
       className: "game-attention",
     },
     {
-      name: "Pattern Game",
-      detail: "Complete the pattern",
-      time: "5 min",
-      level: "Easy",
+      name: t("patternGame"),
+      detail: t("thinkingGame"),
+      time: t("minutes"),
+      level: t("easy"),
       gameId: "sequence",
       image:
         "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80",
@@ -48,12 +48,12 @@ function BrainActivity() {
 
           <div>
             <h2>{t("brainActivity")}</h2>
-            <p>Simple activities for a healthy mind</p>
+            <p>{t("simpleActivities")}</p>
           </div>
         </div>
 
         <span className="recommended-badge">
-          {t("recommended")}
+          {t("recommendedToday")}
         </span>
       </div>
 
@@ -61,7 +61,7 @@ function BrainActivity() {
         {games.map((game) => (
           <div
             className={`brain-game-item ${game.className}`}
-            key={game.name}
+            key={game.gameId}
           >
             <div className="brain-image-wrapper">
               <img

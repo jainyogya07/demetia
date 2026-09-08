@@ -24,11 +24,14 @@ import DailyRoutinePage from './pages/DailyRoutine';
 import MemoryProgressPage from './pages/MemoryProgress';
 import CareCirclePage from './pages/CareCircle';
 import HomeLanding from './pages/HomeLanding';
+import KeypadPhone from './pages/KeypadPhone';
 import CaregiverLayout from './pages/caregiver/CaregiverLayout';
+import CaregiverAssessment from './pages/caregiver/CaregiverAssessment';
 import {
   CgOverview, CgRoutine, CgSafety, CgProgress, CgCircle, CgDocuments, CgSettings,
   CgCalendar, CgProfile,
 } from './pages/caregiver/CaregiverPages';
+import TrainAiPage from './pages/caregiver/TrainAiPage';
 import DoctorLayout from './pages/doctor/DoctorLayout';
 import {
   DoctorPatients, DoctorPatient, DoctorAlerts, DoctorReports,
@@ -37,19 +40,23 @@ import {
 import BrandLogo from './components/BrandLogo';
 import Footer from './components/Footer';
 import MemoryBookPage from './pages/MemoryBookPage';
+import MemoryQuiz from './components/MemoryQuiz';
+import AlarmRuntime from './components/AlarmRuntime';
 import AuthFlow from './pages/AuthFlow';
 import { useAuth } from './context/AuthContext';
 import VoiceToggle from './components/VoiceToggle';
 import LanguageSwitcher from './components/LanguageSwitcher';
+import DashAurora from './components/bits/DashAurora';
 import SarthiAssistRuntime from './components/SarthiAssistModal';
 import './components/SarthiAssistModal.css';
 import { user } from './data/user';
-import { greetingForHour } from './data/patientDashboard';
 import { AppNavContext } from './AppNavContext';
 import { notifyCompanionOpen } from './lib/voiceBus';
 import { useI18n } from './I18nContext';
+import { DEMO_REGIONS, useLanguage } from './context/LanguageContext';
 import { usePrefs } from './PrefsContext';
 import { EMERGENCY_LINES } from './i18n';
+import { memoryQuizDoneToday, markMemoryQuizDay } from './lib/memoryQuiz';
 
 class TabErrorBoundary extends Component {
   constructor(props) {
@@ -162,8 +169,16 @@ function EmergencyPanel({ onClose }) {
   );
 }
 
+function greetingChromeKey() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'chrome.goodMorning';
+  if (hour < 17) return 'chrome.goodAfternoon';
+  return 'chrome.goodEvening';
+}
+
 function UserWorkspace({ boot }) {
   const { t } = useI18n();
+  const { setDemoRegion, isDemoLocation, detectedRegion, enableAutomaticLanguage, locationLoading } = useLanguage();
   const { prefs } = usePrefs();
   const { session, signOut, openAuth } = useAuth();
   const location = useLocation();
@@ -183,11 +198,12 @@ function UserWorkspace({ boot }) {
   const [assistMuted, setAssistMuted] = useState(false);
   const [, setAssistLive] = useState(false);
   const [activeGameId, setActiveGameId] = useState(null);
+  const [showMemoryQuiz, setShowMemoryQuiz] = useState(() => !memoryQuizDoneToday());
   const tabsRef = useRef([{ ...MODULES[0], instanceId: 'home-main' }]);
   tabsRef.current = tabs;
   const openEmergency = useCallback(() => setShowEmergency(true), []);
   const currentModuleId = tabs.find((tab) => tab.instanceId === activeTabId)?.id || 'home';
-  const greeting = greetingForHour();
+  const greeting = t(greetingChromeKey());
 
   const moduleTitle = (id) => t(`modules.${id}`);
   const showTabs = tabs.length > 1;
@@ -274,6 +290,8 @@ function UserWorkspace({ boot }) {
     setShowAssist(true);
   }, [assistPaused]);
 
+  const openMemoryQuiz = useCallback(() => setShowMemoryQuiz(true), []);
+
   useEffect(() => {
     if (location.state?.moduleId) {
       openModule(location.state.moduleId, location.state.options || {});
@@ -315,7 +333,7 @@ function UserWorkspace({ boot }) {
   };
 
   return (
-    <AppNavContext.Provider value={{ openModule, serviceFocus, aiIntent, gameIntent, openEmergency, currentModuleId, openAssist, setActiveGameId, activeGameId }}>
+    <AppNavContext.Provider value={{ openModule, serviceFocus, aiIntent, gameIntent, openEmergency, currentModuleId, openAssist, openMemoryQuiz, setActiveGameId, activeGameId }}>
     <div className={`app-container ss-theme ss-patient-shell${railCollapsed ? ' is-rail-collapsed' : ''}${railOpen ? ' is-rail-open' : ''}`}>
       {railOpen && (
         <button type="button" className="ss-rail-backdrop" aria-label="Close menu" onClick={() => setRailOpen(false)} />
@@ -360,19 +378,19 @@ function UserWorkspace({ boot }) {
           }}
         >
           <SquarePen size={16} />
-          <span className="ss-rail-label">New day</span>
+          <span className="ss-rail-label">{t('chrome.newDay')}</span>
         </button>
 
         <div className="ss-gpt-scroll">
-          <p className="ss-rail-kicker">Today</p>
+          <p className="ss-rail-kicker">{t('chrome.todayKicker')}</p>
           <nav className="sidebar-nav">
             {todayModules.map(renderNavItem)}
           </nav>
-          <p className="ss-rail-kicker">More</p>
+          <p className="ss-rail-kicker">{t('chrome.moreKicker')}</p>
           <nav className="sidebar-nav">
             {moreModules.map(renderNavItem)}
           </nav>
-          <p className="ss-rail-kicker">Open now</p>
+          <p className="ss-rail-kicker">{t('chrome.openNow')}</p>
           <nav className="sidebar-nav ss-gpt-recents">
             {tabs.map((tab) => (
               <a
@@ -399,38 +417,69 @@ function UserWorkspace({ boot }) {
           <button type="button" className="ss-emergency-nav" onClick={() => { openEmergency(); setRailOpen(false); }}>
             <ShieldAlert size={18} />
             <div className="help-now-content">
-              <span className="help-now-title">Emergency Help</span>
-              <span className="help-now-sub">Call for immediate support</span>
+              <span className="help-now-title">{t('chrome.emergencyHelp')}</span>
+              <span className="help-now-sub">{t('chrome.emergencySub')}</span>
             </div>
           </button>
         </div>
       </aside>
 
       <main className="main-content">
+        <DashAurora />
         <header className="top-bar ss-topbar">
           <div className="ss-greeting-block">
             <h1>{greeting}, {displayName}</h1>
-            <p>A quiet day. Medicine, a little game, a little talk.</p>
+            <p>{t('chrome.quietDay')}</p>
           </div>
           <div className="top-bar-right">
             <button type="button" className="ss-mobile-more-btn" onClick={() => setRailOpen(true)}>
               <Menu size={18} />
-              Menu
+              {t('chrome.menu')}
             </button>
             {session?.verified ? (
               <button type="button" className="ss-home-ghost" onClick={signOut}>
-                Sign out
+                {t('chrome.signOut')}
               </button>
             ) : (
               <button type="button" className="ss-home-ghost" onClick={() => openAuth('signup')}>
-                Sign in
+                {t('chrome.signIn')}
               </button>
             )}
             <VoiceToggle />
             <LanguageSwitcher />
+            <button
+              type="button"
+              className="ss-home-ghost"
+              onClick={() => enableAutomaticLanguage()}
+              disabled={locationLoading}
+            >
+              <MapPin size={14} />
+              {locationLoading ? 'Finding city…' : 'Use my region'}
+            </button>
+            {(detectedRegion || isDemoLocation) && (
+              <span className="ss-place-chip" title={detectedRegion}>
+                <MapPin size={14} />
+                {detectedRegion || 'Region'}
+              </span>
+            )}
+            <label className="ss-demo-loc">
+              <MapPin size={14} />
+              <select
+                aria-label="Demo location"
+                value={isDemoLocation ? detectedRegion : ""}
+                onChange={(event) => setDemoRegion(event.target.value)}
+              >
+                <option value="">Demo location</option>
+                {DEMO_REGIONS.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
             <div className="ss-offline-chip">
               <CloudOff size={16} />
-              <span>Offline Mode — Data will sync later.</span>
+              <span>{t('chrome.offlineChip')}</span>
             </div>
             <div className="top-action ss-bell">
               <Bell size={18} />
@@ -442,7 +491,7 @@ function UserWorkspace({ boot }) {
               ) : (
                 <span className="ss-profile-fallback"><User size={16} /></span>
               )}
-              <span>{displayName} — Patient</span>
+              <span>{displayName} — {t('chrome.patient')}</span>
             </div>
           </div>
         </header>
@@ -567,6 +616,16 @@ function UserWorkspace({ boot }) {
           Help
         </button>
       </nav>
+      {showMemoryQuiz && (
+        <MemoryQuiz
+          onComplete={() => setShowMemoryQuiz(false)}
+          onSkip={() => {
+            markMemoryQuizDay();
+            setShowMemoryQuiz(false);
+          }}
+        />
+      )}
+      <AlarmRuntime />
     </div>
     </AppNavContext.Provider>
   );
@@ -596,6 +655,7 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<HomeLanding />} />
+        <Route path="/keypad" element={<KeypadPhone />} />
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/user" element={<UserWorkspace />} />
         <Route path="/talk" element={<UserWorkspace boot="talk" />} />
@@ -611,6 +671,8 @@ function App() {
         <Route path="calendar" element={<CgCalendar />} />
         <Route path="profile" element={<CgProfile />} />
         <Route path="settings" element={<CgSettings />} />
+        <Route path="train-ai" element={<TrainAiPage />} />
+        <Route path="assessment" element={<CaregiverAssessment />} />
       </Route>
       <Route path="/doctor" element={<DoctorLayout />}>
         <Route index element={<DoctorPatients />} />

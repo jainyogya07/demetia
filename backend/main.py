@@ -7,6 +7,21 @@ import smtplib
 import time
 from email.mime.text import MIMEText
 from pathlib import Path
+from typing import Any
+
+try:
+    try:
+        from backend.detection.engine import DetectionEngine
+        from backend.detection.schema import DetectionInput
+    except ModuleNotFoundError:
+        from detection.engine import DetectionEngine
+        from detection.schema import DetectionInput
+    DETECTION_AVAILABLE = True
+    detection_engine = DetectionEngine()
+except Exception as _detection_err:
+    DETECTION_AVAILABLE = False
+    detection_engine = None
+    print("[detection] Detection module initialization notice:", _detection_err)
 
 app = FastAPI(title="Samveti Saarthi email OTP")
 
@@ -128,3 +143,26 @@ def signup(data: SignupRequest):
         raise HTTPException(status_code=403, detail="Email not verified")
     users.append(data.model_dump())
     return {"message": "User created successfully", "role": data.role}
+
+
+@app.post("/detection/evaluate")
+def evaluate_detection(payload: dict[str, Any]):
+    if not DETECTION_AVAILABLE or detection_engine is None:
+        raise HTTPException(status_code=503, detail="Detection pipeline not available.")
+    try:
+        input_obj = DetectionInput(**payload)
+        report = detection_engine.evaluate(input_obj, use_onnx=True)
+        return report.model_dump()
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@app.get("/detection/health")
+def detection_health():
+    return {
+        "ok": True,
+        "detection_available": DETECTION_AVAILABLE,
+        "onnx_model_ready": bool(
+            detection_engine and detection_engine.onnx_runner.model_path.exists()
+        ),
+    }

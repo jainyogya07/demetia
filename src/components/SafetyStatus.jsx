@@ -1,10 +1,12 @@
 import { ShieldCheck, MapPin, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAppNav } from "../AppNavContext";
+import { useLanguage } from "../context/LanguageContext";
 import { loadCheckIns, minutesSince, subscribeLive } from "../lib/liveState";
 
 function SafetyStatus() {
   const { openModule } = useAppNav();
+  const { t } = useLanguage();
   const [, setTick] = useState(0);
   useEffect(() => subscribeLive(() => setTick((n) => n + 1)), []);
   const last = loadCheckIns()[0];
@@ -16,29 +18,29 @@ function SafetyStatus() {
         <div className="title-icon">
           <ShieldCheck size={20} />
         </div>
-        <h2>Safety Status</h2>
+        <h2>{t("safetyStatus")}</h2>
       </div>
 
       <div className="safety-content">
         <div className="safety-item">
           <MapPin size={18} />
           <div>
-            <span className="safety-label">Safe Zone</span>
-            <strong>Home — Zoo Road</strong>
+            <span className="safety-label">{t("safeZone")}</span>
+            <strong>{t("homeZone")} — Zoo Road</strong>
           </div>
         </div>
 
         <div className="safety-item">
           <Clock size={18} />
           <div>
-            <span className="safety-label">Last Check-in</span>
-            <strong>{mins == null ? "Not yet today" : mins < 1 ? "Just now" : `${mins} min ago`}</strong>
+            <span className="safety-label">{t("lastCheckIn")}</span>
+            <strong>{mins == null ? t("notYetToday") : mins < 1 ? t("justNow") : `${mins} min`}</strong>
           </div>
         </div>
 
         <div className="safety-good">
           <span className="status-dot"></span>
-          <span>{mins != null && mins < 180 ? "All Good" : "Waiting for a check-in"}</span>
+          <span>{mins != null && mins < 180 ? t("allGood") : t("waitingCheckIn")}</span>
         </div>
 
         <button
@@ -47,7 +49,7 @@ function SafetyStatus() {
           onClick={() => openModule("safety")}
         >
           <MapPin size={16} />
-          Open Safety
+          {t("openSafety")}
         </button>
       </div>
     </div>

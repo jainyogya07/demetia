@@ -1,0 +1,9 @@
+{
+  "name": "Smriti Saarthi Keypad",
+  "short_name": "Smriti Keypad",
+  "start_url": "/keypad.html",
+  "display": "standalone",
+  "background_color": "#f4f7f5",
+  "theme_color": "#176b58",
+  "description": "Offline-first keypad care line for North-East India."
+}

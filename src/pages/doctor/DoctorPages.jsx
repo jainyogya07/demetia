@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, NavLink, useParams, Navigate, useSearchParams } from 'react-router-dom';
 import { Search, ExternalLink } from 'lucide-react';
 import AvatarSlot from '../../components/AvatarSlot';
+import CognitiveDetectionPanel from './CognitiveDetectionPanel';
 import {
   LiveDot, SyncBar, Stat, Badge, Panel, DataTable, TaskRow, TimelineRail, Spark, AppLink,
 } from '../../components/clinic/LiveChrome';
@@ -151,6 +152,7 @@ function ChartShell({ patient, children, rail }) {
 
 export function DoctorPatients() {
   const [q, setQ] = useState('');
+  const [pane, setPane] = useState('list');
   const [params] = useSearchParams();
   const focusAlert = params.get('alert');
   const list = DR_PATIENTS.filter((p) => {
@@ -169,7 +171,21 @@ export function DoctorPatients() {
         <Stat label="Open alerts" value={liveAlerts.length} hint="Watch + urgent" />
         <Stat label="Next slot" value="10:15" hint="Latveria Devi · review" />
       </div>
-      <div className="os-split">
+      <div className="ss-focus-bar ss-focus-bar-clinic" role="tablist" aria-label="Clinic today">
+        <button type="button" role="tab" aria-selected={pane === 'list'} className={pane === 'list' ? 'is-on' : ''} onClick={() => setPane('list')}>
+          <strong>Patients</strong>
+          <span>OPD list</span>
+        </button>
+        <button type="button" role="tab" aria-selected={pane === 'due'} className={pane === 'due' ? 'is-on' : ''} onClick={() => setPane('due')}>
+          <strong>Due</strong>
+          <span>Tasks today</span>
+        </button>
+        <button type="button" role="tab" aria-selected={pane === 'watch'} className={pane === 'watch' ? 'is-on' : ''} onClick={() => setPane('watch')}>
+          <strong>Watch</strong>
+          <span>Alerts and clinic day</span>
+        </button>
+      </div>
+      {pane === 'list' && (
         <Panel
           title="Patient list"
           action={(
@@ -210,10 +226,14 @@ export function DoctorPatients() {
             rows={list}
           />
         </Panel>
+      )}
+      {pane === 'due' && (
+        <Panel title="Due today" action={<Link to="/doctor/tasks">All tasks</Link>}>
+          <ClinicTasks compact />
+        </Panel>
+      )}
+      {pane === 'watch' && (
         <div className="os-rail-col">
-          <Panel title="Due today" action={<Link to="/doctor/tasks">All tasks</Link>}>
-            <ClinicTasks compact />
-          </Panel>
           <Panel title="Alert feed" action={<Link to="/doctor/alerts">Board</Link>}>
             <ul className="os-alert-feed">
               {liveAlerts.map((a) => (
@@ -235,7 +255,7 @@ export function DoctorPatients() {
             ))}
           </Panel>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -288,6 +308,7 @@ function CognitiveTab({ patient }) {
         </Panel>
       )}
     >
+      <CognitiveDetectionPanel patient={patient} />
       <Panel title="Four-week trend">
         <div className="os-kpis tight">
           <Stat label="Memory (W4)" value={last.memory} hint={<Spark rows={rows} field="memory" />} />

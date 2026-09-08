@@ -1,6 +1,7 @@
 import { Users, Phone, CheckCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAppNav } from "../AppNavContext";
+import { useLanguage } from "../context/LanguageContext";
 import { FAMILY_PHOTOS } from "../data/familyPhotos";
 import { getCircleStatus, subscribeLive } from "../lib/liveState";
 
@@ -12,6 +13,7 @@ const PHOTO = {
 
 function CareCircle() {
   const { openModule } = useAppNav();
+  const { t } = useLanguage();
   const [, setTick] = useState(0);
   useEffect(() => subscribeLive(() => setTick((n) => n + 1)), []);
   const members = getCircleStatus();
@@ -23,7 +25,7 @@ function CareCircle() {
           <div className="title-icon">
             <Users size={20} />
           </div>
-          <h2>My Care Circle</h2>
+          <h2>{t("myCareCircle")}</h2>
         </div>
       </div>
 
@@ -51,7 +53,7 @@ function CareCircle() {
         onClick={() => openModule("care-circle")}
       >
         <Phone size={16} />
-        View All Members
+        {t("viewAllMembers")}
       </button>
     </div>
   );

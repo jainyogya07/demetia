@@ -16,12 +16,20 @@
     "mailpit": "mailpit",
     "stack": "docker compose up -d",
     "db:setup": "node scripts/db.mjs migrate",
-    "auth": "uvicorn main:app --reload --app-dir backend --port 8000"
+    "auth": "uvicorn main:app --reload --app-dir backend --port 8000",
+    "keypad": "keypad-sms/.venv/bin/uvicorn app:app --app-dir keypad-sms --port 8010 --reload",
+    "android:sync": "npm run build && npx cap sync android",
+    "android:open": "npx cap open android"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.31.0",
+    "motion": "^13.2.0",
     "nodemailer": "^9.0.5",
+    "ogl": "^1.0.11",
     "pg": "^8.23.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

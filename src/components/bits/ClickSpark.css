@@ -1,0 +1,19 @@
+.ss-click-spark {
+  position: relative;
+}
+.ss-spark {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 8;
+  transform: translate(-50%, -50%);
+  animation: ss-spark-fly linear forwards;
+}
+@keyframes ss-spark-fly {
+  to {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) scale(0.2);
+  }
+}

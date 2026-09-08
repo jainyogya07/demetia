@@ -4,11 +4,37 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/smriti-saarthi-logo.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#176b58" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Smriti Saarthi" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <title>स्मृति सारथी — Smriti Saarthi</title>
+    <script>
+      (function () {
+        var local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+        if (!local || !('serviceWorker' in navigator)) return;
+        var already = sessionStorage.getItem('ss-sw-kill') === '1';
+        var controlled = !!navigator.serviceWorker.controller;
+        navigator.serviceWorker.getRegistrations().then(function (regs) {
+          return Promise.all(regs.map(function (reg) { return reg.unregister(); }));
+        }).then(function () {
+          if (!window.caches) return;
+          return caches.keys().then(function (keys) {
+            return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+          });
+        }).then(function () {
+          if (controlled && !already) {
+            sessionStorage.setItem('ss-sw-kill', '1');
+            location.reload();
+          }
+        }).catch(function () {});
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

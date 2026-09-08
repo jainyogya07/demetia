@@ -7,6 +7,7 @@ import {
   normalizeLang,
   translate,
 } from './i18n';
+import { detectAndResolveLang } from './lib/regionLanguage';
 
 const I18nContext = createContext({
   lang: DEFAULT_LANG,
@@ -41,6 +42,24 @@ export function I18nProvider({ children }) {
   useEffect(() => {
     document.documentElement.lang = lang;
   }, [lang]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        if (localStorage.getItem('smriti-auto-language') === 'false') return;
+        if (localStorage.getItem('smriti-lang-manual') === '1') return;
+        if (localStorage.getItem('smriti-region-applied')) return;
+      } catch {
+        return;
+      }
+      const found = await detectAndResolveLang();
+      if (cancelled || !found.lang) return;
+      setLang(found.lang);
+      try { localStorage.setItem('smriti-region-applied', '1'); } catch { /* ignore */ }
+    })();
+    return () => { cancelled = true; };
+  }, [setLang]);
 
   const t = useCallback((path, vars) => translate(lang, path, vars), [lang]);
 

@@ -11,12 +11,14 @@ import {
 
 import { useEffect, useMemo, useState } from "react";
 import { getProgressSnapshot, subscribeLive } from "../lib/liveState";
+import { loadMemoryQuizResult } from "../lib/memoryQuiz";
 import "./MemoryProgress.css";
 
 const MemoryProgress = () => {
   const [tick, setTick] = useState(0);
   useEffect(() => subscribeLive(() => setTick((n) => n + 1)), []);
   const snap = useMemo(() => getProgressSnapshot(), [tick]);
+  const quiz = useMemo(() => loadMemoryQuizResult(), [tick]);
   const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const labels = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
@@ -105,6 +107,19 @@ const MemoryProgress = () => {
           This Week
         </div>
       </div>
+
+      {quiz && (
+        <div className="overview-card" style={{ marginBottom: 18 }}>
+          <div className="overview-icon">
+            <Brain size={23} />
+          </div>
+          <div>
+            <p>Today’s memory check</p>
+            <h2>{quiz.percentage ?? Math.round(((quiz.score || 0) / (quiz.totalQuestions || 1)) * 100)}%</h2>
+            <span>{quiz.score}/{quiz.totalQuestions} · not a diagnosis</span>
+          </div>
+        </div>
+      )}
 
 
       {/* OVERVIEW CARDS */}

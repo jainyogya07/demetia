@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#176b58" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <link rel="manifest" href="/keypad-manifest.json" />
+  <title>Smriti Saarthi · Keypad</title>
+  <style>
+    :root { --ink:#214d42; --muted:#5c6f68; --line:rgba(23,107,88,.16); --sage:#176b58; --sand:#eef4f1; --card:#fff; --safe: env(safe-area-inset-bottom, 0px); }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--sand); color: var(--ink); }
+    .wrap { max-width: 430px; margin: 0 auto; min-height: 100dvh; padding: 12px 14px calc(96px + var(--safe)); }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    .brand { display: flex; gap: 10px; align-items: center; }
+    .mark { width: 40px; height: 40px; border-radius: 12px; background: #176b58; color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 18px; }
+    h1 { margin: 0; font-size: 17px; font-weight: 800; letter-spacing: -.02em; }
+    .sub { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+    .chip { font-size: 11px; font-weight: 700; padding: 6px 10px; border-radius: 999px; background: #e7f2ee; color: var(--sage); }
+    .chip.off { background: #f3eee4; color: #8a6a32; }
+    .screen {
+      background: var(--card); border: 1px solid var(--line); border-radius: 18px;
+      padding: 14px; min-height: 140px; box-shadow: 0 10px 30px rgba(33,77,66,.06);
+    }
+    .kicker { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--sage); margin: 0 0 8px; }
+    #screen { white-space: pre-wrap; font-size: 16px; line-height: 1.45; margin: 0; }
+    .links { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+    .links a {
+      display: inline-block; text-decoration: none; background: #176b58; color: #fff;
+      font-weight: 700; font-size: 13px; padding: 10px 12px; border-radius: 12px;
+    }
+    label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); margin: 10px 0 6px; }
+    input {
+      width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 14px;
+      font-size: 16px; background: #fff; color: var(--ink);
+    }
+    .pad { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 12px; }
+    .pad button {
+      min-height: 64px; border: 1px solid var(--line); border-radius: 16px; background: #fff;
+      color: var(--ink); font-weight: 700; cursor: pointer; padding: 8px 6px;
+      box-shadow: 0 1px 0 rgba(33,77,66,.06);
+    }
+    .pad button:active { background: #e7f2ee; transform: scale(0.98); }
+    .pad b { display: block; font-size: 22px; }
+    .pad span { display: block; font-size: 11px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+    .row { display: none; }
+    .go, .sos {
+      min-height: 52px; border: 0; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer;
+    }
+    .go { background: #176b58; color: #fff; }
+    .sos { background: #b42318; color: #fff; }
+    .sticky-actions {
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 8;
+      max-width: 430px; margin: 0 auto; padding: 10px 14px calc(12px + var(--safe));
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+      background: linear-gradient(180deg, transparent, var(--sand) 28%);
+    }
+    .meta { margin: 12px 0 0; font-size: 12px; color: var(--muted); }
+    .help { color: var(--muted); font-size: 13px; margin: 0 0 10px; line-height: 1.45; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 14px 16px; margin: 10px 0; }
+    .panel h2 { margin: 0 0 8px; font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--sage); }
+    .sim-card { background: linear-gradient(180deg, #f3faf7, #fff); border-color: rgba(23,107,88,.22); }
+    .sim-card .help { margin-bottom: 8px; }
+    .how { margin: 10px 0 0; padding: 0 0 0 18px; color: var(--ink); font-size: 13px; line-height: 1.5; }
+    .how li { margin: 0 0 6px; }
+    .link-note { margin: 8px 0 0; font-size: 12px; color: var(--sage); font-weight: 650; line-height: 1.4; }
+    #tasks { list-style: none; margin: 0; padding: 0; }
+    #tasks li { display: flex; justify-content: space-between; gap: 8px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 15px; }
+    #tasks li:last-child { border-bottom: 0; }
+    #tasks .due { font-weight: 700; cursor: pointer; }
+    #tasks .done { color: var(--muted); text-decoration: line-through; }
+    #helplines { display: flex; flex-wrap: wrap; gap: 8px; }
+    #helplines a { text-decoration: none; background: #fff; border: 1px solid var(--line); color: var(--ink); font-weight: 700; font-size: 12px; padding: 10px 12px; border-radius: 999px; min-height: 40px; display: inline-flex; align-items: center; }
+    @media (min-width: 520px) {
+      .pad button { min-height: 70px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="mark">स</div>
+        <div>
+          <h1>Smriti Saarthi</h1>
+          <p class="sub">Keypad · 2G phone · one house</p>
+        </div>
+      </div>
+      <div class="chip" id="net">Offline pack</div>
+    </header>
+    <section class="panel sim-card">
+      <h2>Elder’s phone</h2>
+      <p class="help">This is the number on the keypad phone. SMS from this SIM reaches the house. Same number as Sign in.</p>
+      <label for="phone">Registered mobile</label>
+      <input id="phone" value="9810112345" inputmode="numeric" autocomplete="tel" />
+      <p class="link-note" id="phone-link"></p>
+      <ol class="how">
+        <li>Type the SIM that is already in that phone.</li>
+        <li>From that phone, SMS <b>1</b> (today), <b>2</b> (done), <b>7</b> (SOS) — or tap the keys on this screen.</li>
+      </ol>
+    </section>
+    <p class="help">Today’s tasks stay here. 2 marks the next due item. Helplines work with no internet.</p>
+    <section class="panel">
+      <h2>Today’s tasks</h2>
+      <ul id="tasks"></ul>
+    </section>
+    <section class="screen" aria-live="polite">
+      <p class="kicker" id="kicker">Care line</p>
+      <p id="screen">Loading…</p>
+      <div class="links" id="links"></div>
+    </section>
+    <section class="panel">
+      <h2>Helplines</h2>
+      <div id="helplines"></div>
+    </section>
+    <div class="pad" id="pad"></div>
+    <label for="cmd">Or type a command</label>
+    <input id="cmd" placeholder="1  ·  LANG as  ·  GPS 26.75 94.21" />
+    <p class="meta" id="meta"></p>
+    <div class="sticky-actions">
+      <button class="go" type="button" id="send">Send</button>
+      <button class="sos" type="button" id="sos">SOS 112</button>
+    </div>
+  </div>
+  <script>
+    var KEY = 'ss-keypad-offline-v3';
+    var ROUTINE_KEY = 'ss-routine-done-v1';
+    var TASKS = [
+      { id: 'med-am', due: 450, en: '7:30 Morning medicine', hi: '7:30 सुबह दवाई', as: '7:30 ৰাতিপুৱা দৰব' },
+      { id: 'water', due: 540, en: '9:00 Drink water', hi: '9:00 पानी', as: '9:00 পানী' },
+      { id: 'brain', due: 660, en: '11:00 Brain activity', hi: '11:00 दिमाग का काम', as: '11:00 মগজৰ কাম' },
+      { id: 'lunch', due: 780, en: '1:00 Lunch', hi: '1:00 खाना', as: '1:00 খোৱা' },
+      { id: 'walk', due: 990, en: '4:30 Evening walk', hi: '4:30 सैर', as: '4:30 খোজ' },
+      { id: 'med-pm', due: 1230, en: '8:30 Night medicine', hi: '8:30 रात दवाई', as: '8:30 ৰাতিৰ দৰব' }
+    ];
+    var MED = { 'med-am': 1, 'med-pm': 1 };
+    var HELPLINES = [
+      { name: 'Emergency', phone: '112' },
+      { name: 'Ambulance', phone: '108' },
+      { name: 'Police', phone: '100' },
+      { name: 'Fire', phone: '101' },
+      { name: 'Ambulance 102', phone: '102' },
+      { name: 'Health', phone: '104' },
+      { name: 'Women 181', phone: '181' },
+      { name: 'Women 1091', phone: '1091' },
+      { name: 'Childline', phone: '1098' },
+      { name: 'Elderline', phone: '14567' },
+      { name: 'Tele-MANAS', phone: '14416' },
+      { name: 'Tele-MANAS TF', phone: '18008914416' },
+      { name: 'Legal aid', phone: '14490' },
+      { name: 'Senior 15100', phone: '15100' }
+    ];
+    var CALLS = [
+      { name: 'Rina', phone: '9435011820' },
+      { name: 'Doom', phone: '9864022118' },
+      { name: 'ASHA Anita', phone: '6001244890' },
+      { name: 'Dr Sharma', phone: '03762371040' }
+    ].concat(HELPLINES);
+    var KEYS = [
+      [1, 'Today'], [2, 'Done'], [3, 'Alerts'],
+      [4, 'Call'], [5, 'I am OK'], [6, 'Meds'],
+      [7, 'SOS'], [8, 'Lang'], [9, 'Home'],
+      ['H', 'Lines'], [0, 'Menu'], ['#', '112']
+    ];
+    var MENU = {
+      en: 'Smriti Saarthi\n1 Today  2 Next done\n3 Alerts  4 Call\n5 I am OK  6 Next med\n7 SOS  8 Language\n9 Safe zone  0 Help\nH Helplines',
+      hi: 'स्मृति सारथी\n1 आज  2 अगला हो गया\n3 खबर  4 कॉल\n5 मैं ठीक हूँ  6 दवाई\n7 SOS  8 भाषा\n9 घर  0 मदद\nH हेल्पलाइन',
+      as: 'স্মৃতি সাৰথী\n1 আজি  2 পৰৱৰ্তী\n3 খবৰ  4 কল\n5 মই ঠিক  6 দৰব\n7 SOS  8 ভাষা\n9 ঘৰ  0 সহায়\nH হেল্পলাইন'
+    };
+    var NAMES = { en: {}, hi: {}, as: {} };
+    TASKS.forEach(function (t) { NAMES.en[t.id] = t.en; NAMES.hi[t.id] = t.hi; NAMES.as[t.id] = t.as; });
+    function todayKey() {
+      var d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+    function appDone() {
+      try {
+        var all = JSON.parse(localStorage.getItem(ROUTINE_KEY) || '{}');
+        return all[todayKey()] || {};
+      } catch (e) { return {}; }
+    }
+    function setAppDone(id) {
+      var all = {};
+      try { all = JSON.parse(localStorage.getItem(ROUTINE_KEY) || '{}'); } catch (e) {}
+      var day = todayKey();
+      all[day] = all[day] || {};
+      all[day][id] = true;
+      try { localStorage.setItem(ROUTINE_KEY, JSON.stringify(all)); } catch (e) {}
+    }
+    function pendingTasks() {
+      var done = appDone();
+      return TASKS.filter(function (t) { return !done[t.id]; });
+    }
+    function renderTasks(lang) {
+      lang = lang || 'en';
+      var done = appDone();
+      document.getElementById('tasks').innerHTML = TASKS.map(function (t) {
+        var ok = !!done[t.id];
+        return '<li class="' + (ok ? 'done' : 'due') + '"><span>' + (ok ? '✓ ' : '○ ') + (t[lang] || t.en) + '</span></li>';
+      }).join('');
+    }
+    function renderHelplines() {
+      document.getElementById('helplines').innerHTML = HELPLINES.map(function (h) {
+        return '<a href="tel:' + h.phone + '">' + h.name + ' ' + h.phone + '</a>';
+      }).join('');
+    }
+    function heapPush(h, due, id) { h.push({ due: due, id: id }); h.sort(function (a, b) { return a.due - b.due; }); }
+    function heapPeek(h) { return h[0] || null; }
+    function heapRemove(h, id) {
+      for (var i = 0; i < h.length; i++) if (h[i].id === id) { h.splice(i, 1); return true; }
+      return false;
+    }
+    function linkedPhone() {
+      try {
+        var s = JSON.parse(localStorage.getItem('ss-auth-session') || 'null');
+        if (s && s.phone) return String(s.phone).replace(/\D/g, '').slice(-10);
+      } catch (e) {}
+      try {
+        var prefs = JSON.parse(localStorage.getItem('smriti-user-prefs') || '{}');
+        if (prefs.profile && prefs.profile.phone) return String(prefs.profile.phone).replace(/\D/g, '').slice(-10);
+      } catch (e) {}
+      try {
+        var saved = localStorage.getItem('ss-keypad-phone');
+        if (saved) return String(saved).replace(/\D/g, '').slice(-10);
+      } catch (e) {}
+      return '9810112345';
+    }
+    function paintPhoneLink() {
+      var el = document.getElementById('phone-link');
+      if (!el) return;
+      var p = String(document.getElementById('phone').value || '').replace(/\D/g, '').slice(-10);
+      var auth = '';
+      try {
+        var s = JSON.parse(localStorage.getItem('ss-auth-session') || 'null');
+        if (s && s.phone) auth = String(s.phone).replace(/\D/g, '').slice(-10);
+      } catch (e) {}
+      if (auth && auth === p) el.textContent = 'Linked to the signed-in account. SMS from this phone updates the same house.';
+      else if (auth) el.textContent = 'Signed-in number is ' + auth + '. Match this box so both stay one house.';
+      else el.textContent = 'No account yet — this number still keeps today’s tasks on this device.';
+    }
+    function rememberPhone(phone) {
+      var p = String(phone || '').replace(/\D/g, '').slice(-10);
+      try { localStorage.setItem('ss-keypad-phone', p); } catch (e) {}
+      return p || '9810112345';
+    }
+    function langFor(phone) {
+      var d = String(phone || '').replace(/\D/g, '').slice(-10);
+      if (/^981[018]|987[13]|9999|931[0-3]/.test(d)) return 'hi';
+      if (/^9435|995[47]|9864|970[67]|600[0-2]/.test(d)) return 'as';
+      return 'en';
+    }
+    function blank(phone) {
+      var heap = [];
+      pendingTasks().forEach(function (t) { heapPush(heap, t.due, t.id); });
+      return { phone: phone, lang: langFor(phone), state: 'menu', heap: heap, done: [], outbox: [], checkins: [] };
+    }
+    function load(phone) {
+      try {
+        var all = JSON.parse(localStorage.getItem(KEY) || '{}');
+        var row = all[phone] || blank(phone);
+        var pending = pendingTasks();
+        row.heap = [];
+        pending.forEach(function (t) { heapPush(row.heap, t.due, t.id); });
+        return row;
+      } catch (e) { return blank(phone); }
+    }
+    function save(row) {
+      var all = {};
+      try { all = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+      all[row.phone] = row;
+      try { localStorage.setItem(KEY, JSON.stringify(all)); } catch (e) {}
+    }
+    function nm(lang, id) { return (NAMES[lang] || NAMES.en)[id] || id; }
+    function markDone(row, id) {
+      heapRemove(row.heap, id);
+      row.done.push(id);
+      setAppDone(id);
+      row.outbox.push({ kind: 'ack', task: id, t: Date.now() });
+    }
+    function helplineText() {
+      return ['Helplines'].concat(HELPLINES.map(function (h) { return h.name + '  ' + h.phone; })).join('\n');
+    }
+    function reminders(row) {
+      var lang = row.lang;
+      if (!row.heap.length) return (lang === 'hi' ? 'सब हो गया।' : lang === 'as' ? 'সকলো হৈ গ’ল।' : 'All done for now.') + '\n\n' + MENU[lang];
+      var next = heapPeek(row.heap);
+      var lines = [lang === 'hi' ? 'आज' : lang === 'as' ? 'আজি' : 'Today', 'Next: ' + nm(lang, next.id), ''];
+      row.heap.forEach(function (x, i) { lines.push((i + 1) + '. ' + nm(lang, x.id)); });
+      lines.push('', 'Send a number to mark done.');
+      return lines.join('\n');
+    }
+    function calls() {
+      return CALLS.map(function (c, i) { return (i + 1) + '. ' + c.name + '  ' + c.phone; }).join('\n') + '\n\nThen press a number, or H for helplines.';
+    }
+    function handle(row, body) {
+      var t = String(body || '').trim();
+      var lang = row.lang || 'en';
+      var low = t.toLowerCase();
+      var m = t.match(/^lang\s*=?\s*([a-z]{2})$/i);
+      if (m) {
+        row.lang = (m[1] === 'hi' || m[1] === 'as') ? m[1].toLowerCase() : 'en';
+        row.state = 'menu';
+        return MENU[row.lang];
+      }
+      if (low === '0' || low === 'help' || low === '*' || t === '') { row.state = 'menu'; return MENU[lang]; }
+      if (low === '#' || low === '7' || low === 'sos') {
+        row.outbox.push({ kind: 'sos', t: Date.now() });
+        row.state = 'menu';
+        return lang === 'hi' ? 'SOS सेव। अभी 112 कॉल करें।' : lang === 'as' ? 'SOS সেভ। 112 কল কৰক।' : 'SOS saved offline. Call 112 now.';
+      }
+      if (low === '3') return lang === 'hi' ? 'घर सुरक्षित। आशा: BP 128/78, वही खुराक।' : lang === 'as' ? 'ঘৰ নিৰাপদ। আশা: BP ঠিক।' : 'Home zone safe.\nASHA: BP 128/78, same dose.';
+      if (low === '4') { row.state = 'call'; return calls(); }
+      if (row.state === 'call' && /^\d+$/.test(t)) {
+        var p = CALLS[parseInt(t, 10) - 1];
+        row.state = 'menu';
+        return p ? ('Call ' + p.name + '\n' + p.phone) : MENU[lang];
+      }
+      if (low === '5') {
+        row.checkins = row.checkins || [];
+        row.checkins.push(Date.now());
+        row.outbox.push({ kind: 'checkin', t: Date.now() });
+        row.state = 'menu';
+        return lang === 'hi' ? 'मैं ठीक हूँ — ऑफलाइन सेव।' : lang === 'as' ? 'মই ঠিক আছোঁ — অফলাইন সেভ।' : 'I am OK saved. Syncs when the tower is back.';
+      }
+      if (low === '6') {
+        var med = null;
+        for (var i = 0; i < row.heap.length; i++) if (MED[row.heap[i].id]) { med = row.heap[i].id; break; }
+        return med ? ('Next medicine: ' + nm(lang, med)) : (lang === 'hi' ? 'कतार में दवाई नहीं।' : 'No medicine due.');
+      }
+      if (low === '8') return 'LANG hi\nLANG as\nLANG en';
+      if (low === '9') return lang === 'hi' ? 'घर आंगन — सुरक्षित।' : lang === 'as' ? 'ঘৰৰ চোতাল — নিৰাপদ।' : 'Home courtyard — safe.';
+      if (low === 'h' || low === 'helpline' || low === 'helplines') {
+        row.state = 'menu';
+        return helplineText();
+      }
+      if (row.state === 'ack' && /^\d+$/.test(t)) {
+        var idx = parseInt(t, 10) - 1;
+        if (idx < 0 || idx >= row.heap.length) return 'Not found. Send 0 for menu.';
+        var id = row.heap[idx].id;
+        markDone(row, id);
+        row.state = 'menu';
+        return 'Done: ' + nm(lang, id) + '\n\n' + reminders(row);
+      }
+      if (low === '2') {
+        var nxt = heapPeek(row.heap);
+        if (!nxt) return reminders(row);
+        markDone(row, nxt.id);
+        row.state = 'menu';
+        return 'Done: ' + nm(lang, nxt.id) + '\n\n' + reminders(row);
+      }
+      if (low === '1') { row.state = 'ack'; return reminders(row); }
+      return MENU[lang];
+    }
+    function callLinks(text) {
+      var box = document.getElementById('links');
+      box.innerHTML = '';
+      var found = String(text).match(/(\+?\d[\d\s-]{7,}\d)/g) || [];
+      found.forEach(function (raw) {
+        var n = raw.replace(/\D/g, '');
+        if (n.length < 3) return;
+        var a = document.createElement('a');
+        a.href = 'tel:' + n;
+        a.textContent = 'Call ' + n;
+        box.appendChild(a);
+      });
+    }
+    function paint(text, lang) {
+      document.getElementById('screen').textContent = text;
+      document.getElementById('kicker').textContent = navigator.onLine ? 'Live line' : 'Offline pack';
+      callLinks(text);
+      renderTasks(lang || 'en');
+    }
+    function statusLine(row) {
+      document.getElementById('net').textContent = navigator.onLine ? 'Online' : 'Offline';
+      document.getElementById('net').className = 'chip' + (navigator.onLine ? '' : ' off');
+      document.getElementById('meta').textContent = row.heap.length + ' due · ' + row.outbox.length + ' queued · ' + (row.checkins || []).length + ' OK pings';
+    }
+    function go(body) {
+      var phone = rememberPhone(document.getElementById('phone').value || '9810112345');
+      document.getElementById('phone').value = phone;
+      var row = load(phone);
+      row.phone = phone;
+      var reply = handle(row, body);
+      save(row);
+      paint(reply, row.lang);
+      statusLine(row);
+      if (navigator.onLine) {
+        var payload = 'phone=' + encodeURIComponent(phone) + '&body=' + encodeURIComponent(body);
+        var opts = { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: payload };
+        fetch('/sim', opts).catch(function () { fetch('/keypad-api/sim', opts).catch(function () {}); });
+      }
+    }
+    document.getElementById('pad').innerHTML = KEYS.map(function (k) {
+      return '<button type="button" data-k="' + k[0] + '"><b>' + k[0] + '</b><span>' + k[1] + '</span></button>';
+    }).join('');
+    document.getElementById('pad').addEventListener('click', function (e) {
+      var btn = e.target.closest('button');
+      if (!btn) return;
+      go(String(btn.getAttribute('data-k')));
+    });
+    document.getElementById('send').onclick = function () {
+      go(document.getElementById('cmd').value);
+      document.getElementById('cmd').value = '';
+    };
+    document.getElementById('sos').onclick = function () { go('7'); };
+    document.getElementById('cmd').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') document.getElementById('send').click();
+    });
+    document.getElementById('tasks').addEventListener('click', function (e) {
+      var li = e.target.closest('li');
+      if (!li || li.classList.contains('done')) return;
+      var idx = Array.prototype.indexOf.call(li.parentNode.children, li);
+      var task = TASKS[idx];
+      if (!task || appDone()[task.id]) return;
+      var phone = rememberPhone(document.getElementById('phone').value || '9810112345');
+      document.getElementById('phone').value = phone;
+      var row = load(phone);
+      row.phone = phone;
+      markDone(row, task.id);
+      row.state = 'menu';
+      save(row);
+      paint('Done: ' + nm(row.lang, task.id) + '\n\n' + reminders(row), row.lang);
+      statusLine(row);
+    });
+    window.addEventListener('storage', function (e) {
+      if (e.key !== ROUTINE_KEY) return;
+      var phone = rememberPhone(document.getElementById('phone').value || '9810112345');
+      document.getElementById('phone').value = phone;
+      var row = load(phone);
+      renderTasks(row.lang);
+      statusLine(row);
+    });
+    document.getElementById('phone').value = linkedPhone();
+    paintPhoneLink();
+    document.getElementById('phone').addEventListener('change', function () {
+      this.value = rememberPhone(this.value);
+      paintPhoneLink();
+      go('');
+    });
+    document.getElementById('phone').addEventListener('blur', function () {
+      this.value = rememberPhone(this.value);
+      paintPhoneLink();
+    });
+    try {
+      renderHelplines();
+      go('');
+    } catch (err) {
+      var screen = document.getElementById('screen');
+      if (screen) screen.textContent = 'Keypad ready. Tap 1 for today.';
+      try { renderTasks('en'); renderHelplines(); } catch (e2) {}
+    }
+    if ('serviceWorker' in navigator && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    }
+  </script>
+</body>
+</html>

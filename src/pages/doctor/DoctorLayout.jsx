@@ -5,6 +5,8 @@ import LanguageSwitcher from '../../components/LanguageSwitcher';
 import AvatarSlot from '../../components/AvatarSlot';
 import { LiveDot } from '../../components/clinic/LiveChrome';
 import { DR_CLINIC, DR_LIVE, DR_PATIENTS } from '../../data/doctorPlaceholders';
+import DashAurora from '../../components/bits/DashAurora';
+import Reveal from '../../components/bits/Reveal';
 
 const NAV = [
   { to: '/doctor', end: true, icon: Users, label: 'Patients' },
@@ -76,6 +78,7 @@ export default function DoctorLayout() {
         </div>
       </aside>
       <main className="main-content">
+        <DashAurora />
         <header className="top-bar ss-topbar">
           <div className="ss-greeting-block">
             <h1>{title}</h1>
@@ -101,7 +104,9 @@ export default function DoctorLayout() {
           ))}
         </nav>
         <div className="dashboard-scroll">
-          <Outlet />
+          <Reveal>
+            <Outlet />
+          </Reveal>
         </div>
       </main>
     </div>

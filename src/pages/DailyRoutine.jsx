@@ -12,6 +12,8 @@ import {
   Check,
 } from 'lucide-react';
 import { getRoutineItems, markRoutineDone, pingLive, subscribeLive } from '../lib/liveState';
+import { enqueueOutbox } from '../lib/offlineStore';
+import PatientDailyCheckin from '../components/PatientDailyCheckin';
 import './DailyRoutine.css';
 
 const ICONS = {
@@ -31,6 +33,7 @@ const DailyRoutine = () => {
 
   const complete = (id) => {
     markRoutineDone(id);
+    enqueueOutbox('ack', { task: id, phone: 'local' });
     pingLive();
     setTick((n) => n + 1);
   };
@@ -170,6 +173,7 @@ const DailyRoutine = () => {
           </div>
         </div>
       </div>
+      <PatientDailyCheckin patientId="aita" />
     </div>
   );
 };

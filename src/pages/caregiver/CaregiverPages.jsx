@@ -8,6 +8,7 @@ import {
 import {
   CG_LIVE, CG_PROFILE, CG_PATIENT, CG_TODAY, CG_MEDS, CG_ROUTINE, CG_ENGAGEMENT, CG_CIRCLE,
   CG_MESSAGES, CG_DOCS, CG_CHECKINS, CG_CALENDAR, CG_REFILLS, CG_DOCTOR_NOTES,
+  getMemoryQuizResult,
 } from '../../data/caregiverPlaceholders';
 
 function medTone(status) {
@@ -104,6 +105,7 @@ function PersonStrip() {
 }
 
 export function CgOverview() {
+  const [pane, setPane] = useState('tasks');
   const open = CG_TODAY.filter((t) => !t.done).length;
   const today = CG_CALENDAR.find((d) => d.today);
   return (
@@ -116,16 +118,34 @@ export function CgOverview() {
         <Stat label="Voice this week" value={`${CG_ENGAGEMENT.voiceMinutes} min`} hint={`${CG_ENGAGEMENT.gamesThisWeek} games`} />
         <Stat label="Story beats" value={CG_ENGAGEMENT.storyBeats} hint="Held, not scored" />
       </div>
-      <div className="os-split">
+      <div className="ss-focus-bar ss-focus-bar-clinic" role="tablist" aria-label="Today sections">
+        <button type="button" role="tab" aria-selected={pane === 'tasks'} className={pane === 'tasks' ? 'is-on' : ''} onClick={() => setPane('tasks')}>
+          <strong>Checklist</strong>
+          <span>Today’s tasks</span>
+        </button>
+        <button type="button" role="tab" aria-selected={pane === 'week'} className={pane === 'week' ? 'is-on' : ''} onClick={() => setPane('week')}>
+          <strong>Week</strong>
+          <span>What is on today</span>
+        </button>
+        <button type="button" role="tab" aria-selected={pane === 'watch'} className={pane === 'watch' ? 'is-on' : ''} onClick={() => setPane('watch')}>
+          <strong>Watch</strong>
+          <span>Safety and clinic note</span>
+        </button>
+      </div>
+      {pane === 'tasks' && (
         <Panel title="Today’s checklist" action={<Link to="/caregiver/routine">Full routine</Link>}>
           <TodayTasks />
         </Panel>
+      )}
+      {pane === 'week' && (
+        <Panel title="Today on the week" action={<Link to="/caregiver/calendar">Calendar</Link>}>
+          {today?.items.map((item) => (
+            <p key={item.t} className="os-today-line"><strong>{item.t}</strong> {item.label}</p>
+          ))}
+        </Panel>
+      )}
+      {pane === 'watch' && (
         <div className="os-rail-col">
-          <Panel title="Today on the week" action={<Link to="/caregiver/calendar">Calendar</Link>}>
-            {today?.items.map((item) => (
-              <p key={item.t} className="os-today-line"><strong>{item.t}</strong> {item.label}</p>
-            ))}
-          </Panel>
           <Panel title="Safety live" action={<Link to="/caregiver/safety">Map</Link>}>
             <p className="os-safety-ok"><LiveDot label={CG_PATIENT.zone} /></p>
             <p className="os-meta">{CG_CHECKINS[0].rel} · {CG_CHECKINS[0].place}</p>
@@ -135,7 +155,7 @@ export function CgOverview() {
             <p className="os-meta">{CG_DOCTOR_NOTES[0].rel} · {CG_DOCTOR_NOTES[0].date}</p>
           </Panel>
         </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -235,6 +255,7 @@ export function CgSafety() {
 }
 
 export function CgProgress() {
+  const quiz = getMemoryQuizResult();
   return (
     <div className="os-page">
       <SyncBar asOf={`${CG_LIVE.asOf} · ${CG_LIVE.clock}`} lastSync={CG_LIVE.lastSync} extra="Week engagement" />
@@ -242,6 +263,13 @@ export function CgProgress() {
         <Stat label="Games" value={CG_ENGAGEMENT.gamesThisWeek} hint="This week" />
         <Stat label="Voice" value={`${CG_ENGAGEMENT.voiceMinutes} min`} hint="Companion + stories" />
         <Stat label="Story beats" value={CG_ENGAGEMENT.storyBeats} hint="Held kindly" />
+        {quiz && (
+          <Stat
+            label="Memory check"
+            value={`${quiz.percentage ?? Math.round(((quiz.score || 0) / (quiz.totalQuestions || 1)) * 100)}%`}
+            hint="Not a diagnosis"
+          />
+        )}
       </div>
       <div className="os-split">
         <Panel title="How the days felt">

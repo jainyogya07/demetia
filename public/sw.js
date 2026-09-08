@@ -1,4 +1,4 @@
-const CACHE = 'smriti-app-offline-v5';
+const CACHE = 'smriti-app-offline-v6';
 const CORE = [
   '/',
   '/index.html',

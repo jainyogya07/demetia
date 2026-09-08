@@ -312,7 +312,7 @@ function UserWorkspace({ boot }) {
     );
   };
 
-  const assistPaused = currentModuleId === 'ai' || (currentModuleId === 'games' && activeGameId === 'story-solver');
+  const assistPaused = showMemoryQuiz || currentModuleId === 'ai' || (currentModuleId === 'games' && activeGameId === 'story-solver');
   const assistReady = Boolean(session?.verified);
 
   useEffect(() => {

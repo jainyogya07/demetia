@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import "./MemoryQuiz.css";
+import { useGameSpeech } from "../hooks/useGameSpeech";
+import { notifyGameVoiceStart, notifyGameVoiceStop } from "../lib/voiceBus";
 
 import {
   PATIENT,
@@ -367,6 +369,7 @@ function MemoryQuiz({ onComplete, onSkip }) {
   const [microphoneError, setMicrophoneError] = useState("");
 
   const recognitionRef = useRef(null);
+  const { speak, stop: stopSpeech } = useGameSpeech({ lang: language });
 
   const patientName = PATIENT?.name || "";
 
@@ -813,66 +816,34 @@ function MemoryQuiz({ onComplete, onSkip }) {
     setIsListening(false);
   };
 
-const speakQuestion = () => {
-  if (!question?.text) return;
-
-  if (!("speechSynthesis" in window)) {
-    setMicrophoneError(
-      "Speech is not supported in this browser."
-    );
-    return;
-  }
-
-  const synth = window.speechSynthesis;
-  synth.cancel();
-  try {
-    synth.resume();
-  } catch {
-    /* ignore */
-  }
-
-  const fire = () => {
-    const utterance = new SpeechSynthesisUtterance(question.text);
-    utterance.lang = quizVoiceLang(language);
-    utterance.rate = 0.82;
-    utterance.pitch = 1;
-    utterance.volume = 1;
-
-    const voices = synth.getVoices() || [];
-    const want = utterance.lang.toLowerCase();
-    const prefix = want.split("-")[0];
-    const selectedVoice =
-      voices.find((voice) => String(voice.lang || "").toLowerCase() === want) ||
-      voices.find((voice) => String(voice.lang || "").toLowerCase().startsWith(prefix)) ||
-      voices.find((voice) => /en-IN|hi-IN|en-GB|en-US/i.test(String(voice.lang || ""))) ||
-      voices[0];
-
-    if (selectedVoice) utterance.voice = selectedVoice;
-
-    utterance.onerror = (event) => {
-      console.error("Speech synthesis error:", event);
+  useEffect(() => {
+    notifyGameVoiceStart();
+    if (typeof window !== "undefined" && window.speechSynthesis) {
+      window.speechSynthesis.getVoices();
+    }
+    return () => {
+      try {
+        recognitionRef.current?.stop();
+      } catch {
+        /* ignore */
+      }
+      notifyGameVoiceStop();
     };
+  }, []);
 
-    synth.speak(utterance);
+  const speakQuestion = () => {
+    if (!question?.text) return;
+    notifyGameVoiceStart();
+    stopListening();
+    speak(question.text, { pauseMs: 80 });
   };
-
-  const voices = synth.getVoices() || [];
-  if (!voices.length) {
-    const once = () => {
-      synth.removeEventListener("voiceschanged", once);
-      fire();
-    };
-    synth.addEventListener("voiceschanged", once);
-    setTimeout(fire, 280);
-    return;
-  }
-  fire();
-};
 
   const startListening = () => {
     setMicrophoneError("");
     setFeedback("");
     setFeedbackType("");
+    stopSpeech();
+    notifyGameVoiceStart();
 
     const SpeechRecognition =
       window.SpeechRecognition ||
@@ -884,31 +855,30 @@ const speakQuestion = () => {
     }
 
     try {
+      recognitionRef.current?.abort?.();
       recognitionRef.current?.stop();
     } catch (error) {
       // Ignore
     }
 
     const recognition = new SpeechRecognition();
-
     recognition.lang = quizVoiceLang(language);
-    recognition.interimResults = false;
+    recognition.interimResults = true;
     recognition.continuous = false;
     recognition.maxAlternatives = 3;
 
     recognition.onstart = () => {
       setIsListening(true);
       setMicrophoneError("");
-      setSpokenAnswer("");
     };
 
     recognition.onresult = (event) => {
-      const transcript =
-        event.results?.[0]?.[0]?.transcript?.trim() || "";
-
+      const last = event.results?.[event.results.length - 1];
+      const transcript = last?.[0]?.transcript?.trim() || "";
+      if (!transcript) return;
       setSpokenAnswer(transcript);
       setMicrophoneError("");
-      setIsListening(false);
+      if (last.isFinal) setIsListening(false);
     };
 
     recognition.onerror = (event) => {
@@ -917,9 +887,8 @@ const speakQuestion = () => {
         event.error,
         event.message || ""
       );
-
       setIsListening(false);
-
+      if (event.error === "aborted") return;
       if (
         event.error === "not-allowed" ||
         event.error === "service-not-allowed"
@@ -929,7 +898,7 @@ const speakQuestion = () => {
         setMicrophoneError(t.noSpeech);
       } else if (event.error === "network") {
         setMicrophoneError(
-          "Speech could not reach Chrome's voice service. Check internet and try Google Chrome."
+          "Chrome voice service needs internet. Check Wi-Fi, then tap again — or type the answer below."
         );
       } else if (event.error === "audio-capture") {
         setMicrophoneError(t.microphoneError);
@@ -1245,8 +1214,10 @@ const speakQuestion = () => {
             className={`memory-mic-button ${
               isListening ? "listening" : ""
             }`}
-            onClick={startListening}
-            disabled={isListening}
+            onClick={() => {
+              if (isListening) stopListening();
+              else startListening();
+            }}
             aria-label={t.tapSpeak}
           >
             🎤
@@ -1260,6 +1231,17 @@ const speakQuestion = () => {
 
           <p>{t.speakNaturally}</p>
         </div>
+
+        <label className="memory-type-wrap">
+          <span>Or type your answer</span>
+          <input
+            className="memory-type-answer"
+            value={spokenAnswer}
+            onChange={(event) => setSpokenAnswer(event.target.value)}
+            placeholder="Type here if the mic does not hear you"
+            autoComplete="off"
+          />
+        </label>
 
         {/* RECOGNIZED ANSWER */}
         {spokenAnswer && (

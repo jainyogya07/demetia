@@ -829,82 +829,98 @@ const speakQuestion = () => {
 };
 
   const startListening = () => {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert(
+      "Speech recognition is not supported in this browser. Please use Google Chrome."
+    );
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+
+  // IMPORTANT:
+  // Browser SpeechRecognition needs BCP-47 language codes,
+  // NOT "English", "Hindi", etc.
+  const languageMap = {
+    en: "en-IN",
+    hi: "hi-IN",
+    as: "as-IN",
+    bn: "bn-IN",
+    mr: "mr-IN",
+    gu: "gu-IN",
+    ta: "ta-IN",
+    te: "te-IN",
+    kn: "kn-IN",
+    ml: "ml-IN",
+    pa: "pa-IN",
+  };
+
+  const selectedLanguage =
+    languageMap[language] ||
+    languageMap[language?.split("-")[0]] ||
+    "en-IN";
+
+  recognition.lang = selectedLanguage;
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 3;
+
+  recognition.onstart = () => {
+    console.log("🎤 Speech recognition started");
+    setIsListening(true);
+  };
+
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript.trim();
+
+    console.log("🎤 User said:", transcript);
+
+    setSpokenAnswer(transcript);
     setMicrophoneError("");
-    setFeedback("");
-    setFeedbackType("");
+    setIsListening(false);
+  };
 
-    const SpeechRecognition =
-      window.SpeechRecognition ||
-      window.webkitSpeechRecognition;
+  recognition.onerror = (event) => {
+    console.error(
+      "Speech recognition error:",
+      event.error,
+      event.message || ""
+    );
 
-    if (!SpeechRecognition) {
-      setMicrophoneError(t.unsupported);
-      return;
-    }
+    setIsListening(false);
 
-    try {
-      recognitionRef.current?.stop();
-    } catch (error) {
-      // Ignore
-    }
-
-    const recognition = new SpeechRecognition();
-
-    recognition.lang =
-      SPEECH_LANGUAGES[language] || "en-IN";
-
-    recognition.interimResults = false;
-    recognition.continuous = false;
-    recognition.maxAlternatives = 3;
-
-    recognition.onstart = () => {
-      setIsListening(true);
-      setMicrophoneError("");
-      setSpokenAnswer("");
-    };
-
-    recognition.onresult = (event) => {
-      const transcript =
-        event.results?.[0]?.[0]?.transcript || "";
-
-      setSpokenAnswer(transcript);
-      setIsListening(false);
-    };
-
-    recognition.onerror = (event) => {
-      console.error(
-        "Speech recognition error:",
-        event.error
+    if (event.error === "not-allowed") {
+      alert(
+        "Microphone permission was denied. Please allow microphone access for this website."
       );
-
-      setIsListening(false);
-
-      if (
-        event.error === "not-allowed" ||
-        event.error === "service-not-allowed"
-      ) {
-        setMicrophoneError(t.microphoneError);
-      } else if (event.error === "no-speech") {
-        setMicrophoneError(t.noSpeech);
-      } else {
-        setMicrophoneError(t.microphoneError);
-      }
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognitionRef.current = recognition;
-
-    try {
-      recognition.start();
-    } catch (error) {
-      console.error(error);
-      setIsListening(false);
-      setMicrophoneError(t.microphoneError);
+    } else if (event.error === "no-speech") {
+      console.log("No speech detected.");
+    } else if (event.error === "network") {
+      alert(
+        "Speech recognition could not connect to the browser speech service. Please check your internet connection and try again in Google Chrome."
+      );
+    } else if (event.error === "audio-capture") {
+      alert(
+        "No microphone was detected. Please check your microphone settings."
+      );
     }
   };
+
+  recognition.onend = () => {
+    console.log("🎤 Speech recognition ended");
+    setIsListening(false);
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    console.error("Could not start speech recognition:", error);
+    setIsListening(false);
+  }
+};
 
   const checkAnswer = () => {
     if (!spokenAnswer.trim()) {

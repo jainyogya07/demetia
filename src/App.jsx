@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 import Sidebar from "./components/Sidebar";
 import Topbar from "./components/Topbar";
 import Tabs from "./components/Tabs";
+import Guide from "./components/Guide";
 
 import PagePlaceholder from "./components/PagePlaceholder";
 import DailyRoutineDashboard from "./components/DailyRoutineDashboard";
@@ -21,9 +22,15 @@ import CareCircle from "./components/CareCircle";
 import MemoryBook from "./components/MemoryBook";
 import BottomStatus from "./components/BottomStatus";
 
+
+/* =========================================
+   DASHBOARD
+   ========================================= */
+
 function Dashboard() {
   return (
     <div className="dashboard">
+
       <div className="top-grid">
         <VoiceCompanion />
         <DailyRoutineDashboard />
@@ -41,11 +48,22 @@ function Dashboard() {
       </div>
 
       <BottomStatus />
+
     </div>
   );
 }
 
+
+/* =========================================
+   APP
+   ========================================= */
+
 function App() {
+
+  /* =========================================
+     OPEN TABS
+     ========================================= */
+
   const [openTabs, setOpenTabs] = useState([
     {
       name: "Home",
@@ -53,12 +71,33 @@ function App() {
     },
   ]);
 
-  // Memory Quiz states
+
+  /* =========================================
+     MEMORY QUIZ STATES
+     ========================================= */
+
   const [showMemoryQuiz, setShowMemoryQuiz] = useState(false);
+
   const [memoryResult, setMemoryResult] = useState(null);
 
-  // Show Memory Quiz once per day
+
+  /* =========================================
+     HOW TO USE GUIDE
+     ========================================= */
+
+  const [showGuide, setShowGuide] = useState(() => {
+    return (
+      localStorage.getItem("smritiGuideCompleted") !== "true"
+    );
+  });
+
+
+  /* =========================================
+     MEMORY QUIZ - SHOW ONCE PER DAY
+     ========================================= */
+
   useEffect(() => {
+
     const today = new Date().toDateString();
 
     const quizDate = localStorage.getItem(
@@ -69,117 +108,284 @@ function App() {
       "smritiSaarthiMemoryResult"
     );
 
-    // Load previous result if available
+
+    /* -----------------------------------------
+       Load previous result
+       ----------------------------------------- */
+
     if (savedResult) {
+
       try {
-        setMemoryResult(JSON.parse(savedResult));
+
+        setMemoryResult(
+          JSON.parse(savedResult)
+        );
+
       } catch (error) {
-        console.error("Could not load memory result:", error);
+
+        console.error(
+          "Could not load memory result:",
+          error
+        );
+
       }
+
     }
 
-    // Show quiz if it has not been completed today
-    if (quizDate !== today) {
+
+    /* -----------------------------------------
+       Show quiz only after guide is completed
+       ----------------------------------------- */
+
+    if (
+      quizDate !== today &&
+      localStorage.getItem("smritiGuideCompleted") === "true"
+    ) {
+
       setShowMemoryQuiz(true);
+
     }
+
   }, []);
 
-  // Called when Memory Quiz is completed
+
+  /* =========================================
+     MEMORY QUIZ COMPLETE
+     ========================================= */
+
   const handleMemoryQuizComplete = (result) => {
+
     setMemoryResult(result);
+
     setShowMemoryQuiz(false);
+
   };
+
+
+  /* =========================================
+     GUIDE CLOSE
+     ========================================= */
+
+  const handleGuideClose = () => {
+
+    setShowGuide(false);
+
+  };
+
+
+  /* =========================================
+     RETURN
+     ========================================= */
 
   return (
     <>
+
+      {/* =====================================
+          HOW TO USE GUIDE
+          ===================================== */}
+
+      {showGuide && (
+        <Guide
+          onClose={handleGuideClose}
+        />
+      )}
+
+
+      {/* =====================================
+          MAIN APPLICATION
+          ===================================== */}
+
       <div className="app">
+
+        {/* SIDEBAR */}
+
         <Sidebar
           openTabs={openTabs}
           setOpenTabs={setOpenTabs}
         />
 
+
+        {/* MAIN CONTENT */}
+
         <main className="main-content">
+
+          {/* TOPBAR */}
+
           <Topbar />
+
+
+          {/* TABS */}
 
           <Tabs
             openTabs={openTabs}
             setOpenTabs={setOpenTabs}
           />
 
+
           {/* CONTENT + FOOTER */}
+
           <div className="page-scroll-area">
+
             <Routes>
-              <Route path="/" element={<Dashboard />} />
+
+              {/* HOME */}
+
+              <Route
+                path="/"
+                element={<Dashboard />}
+              />
+
+
+              {/* BRAIN GAMES */}
 
               <Route
                 path="/brain-games"
-                element={<PagePlaceholder title="Brain Games" />}
+                element={
+                  <PagePlaceholder
+                    title="Brain Games"
+                  />
+                }
               />
+
+
+              {/* TALK TO SMRITI */}
 
               <Route
                 path="/talk-to-smriti"
-                element={<PagePlaceholder title="Talk to Smriti" />}
+                element={
+                  <PagePlaceholder
+                    title="Talk to Smriti"
+                  />
+                }
               />
+
+
+              {/* DAILY ROUTINE */}
 
               <Route
                 path="/daily-routine"
                 element={<DailyRoutine />}
               />
 
+
+              {/* MEDICINE & HEALTH */}
+
               <Route
                 path="/medicine-health"
-                element={<PagePlaceholder title="Medicine & Health" />}
+                element={
+                  <PagePlaceholder
+                    title="Medicine & Health"
+                  />
+                }
               />
+
+
+              {/* MEMORY PROGRESS */}
 
               <Route
                 path="/memory-progress"
                 element={<MemoryProgress />}
               />
 
+
+              {/* CARE CIRCLE */}
+
               <Route
                 path="/care-circle"
-                element={<PagePlaceholder title="My Care Circle" />}
+                element={
+                  <PagePlaceholder
+                    title="My Care Circle"
+                  />
+                }
               />
+
+
+              {/* SAFETY & LOCATION */}
 
               <Route
                 path="/safety-location"
-                element={<PagePlaceholder title="Safety & Location" />}
+                element={
+                  <PagePlaceholder
+                    title="Safety & Location"
+                  />
+                }
               />
+
+
+              {/* MEMORY BOOK */}
 
               <Route
                 path="/memory-book"
-                element={<PagePlaceholder title="Memory Book" />}
+                element={
+                  <PagePlaceholder
+                    title="Memory Book"
+                  />
+                }
               />
+
+
+              {/* LANGUAGE */}
 
               <Route
                 path="/language"
-                element={<PagePlaceholder title="Language" />}
+                element={
+                  <PagePlaceholder
+                    title="Language"
+                  />
+                }
               />
+
+
+              {/* HELP & SUPPORT */}
 
               <Route
                 path="/help-support"
-                element={<PagePlaceholder title="Help & Support" />}
+                element={
+                  <PagePlaceholder
+                    title="Help & Support"
+                  />
+                }
               />
+
+
+              {/* SETTINGS */}
 
               <Route
                 path="/settings"
-                element={<PagePlaceholder title="Settings" />}
+                element={
+                  <PagePlaceholder
+                    title="Settings"
+                  />
+                }
               />
+
             </Routes>
 
+
+            {/* FOOTER */}
+
             <Footer />
+
           </div>
+
         </main>
+
       </div>
 
-      {/* MEMORY QUIZ MODAL */}
+
+      {/* =====================================
+          MEMORY QUIZ MODAL
+          ===================================== */}
+
       {showMemoryQuiz && (
         <MemoryQuiz
           onComplete={handleMemoryQuizComplete}
         />
       )}
+
     </>
   );
 }
+
 
 export default App;

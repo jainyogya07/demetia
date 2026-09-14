@@ -34,6 +34,14 @@ export const BRAIN_GAMES = [
     moduleId: 'games',
     gameId: 'faces',
   },
+
+  {
+  id: 'memory-journey',
+  title: 'Memory Journey',
+  meta: 'Calm route recall · 5 min',
+  moduleId: 'games',
+  gameId: 'memory-journey',
+  },
 ];
 
 export const WEEK_PROGRESS = {

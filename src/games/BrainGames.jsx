@@ -6,6 +6,7 @@ import BalloonPop from './BalloonPop';
 import SequenceMemory from './SequenceMemory';
 import FamiliarFaces from './FamiliarFaces';
 import ObjectFind from './ObjectFind';
+import MemoryJourney from './MemoryJourney';
 import StorySolver from './StorySolver';
 import { useAppNav } from '../AppNavContext';
 import './BrainGames.css';
@@ -61,6 +62,13 @@ const GAME_LIST = [
     difficulty: 'Easy · 4 min',
     icon: Search,
   },
+  {
+  id: 'memory-journey',
+  title: 'Memory Journey',
+  description: 'Follow a calm familiar route and remember the directions and landmarks.',
+  difficulty: 'Calm · 5 min',
+  icon: Wind,
+  },
 ];
 
 const GAME_COMPONENTS = {
@@ -71,9 +79,10 @@ const GAME_COMPONENTS = {
   sequence: SequenceMemory,
   faces: FamiliarFaces,
   'object-find': ObjectFind,
+  'memory-journey': MemoryJourney,
 };
 
-export default function BrainGames() {
+export default function BrainGames({patientId = 'aita'}) {
   const { gameIntent } = useAppNav();
   const [activeGame, setActiveGame] = useState(null);
 
@@ -97,7 +106,10 @@ export default function BrainGames() {
             All Games
           </button>
         </div>
-        <GameComponent onBack={() => setActiveGame(null)} />
+        <GameComponent
+          patientId= {patientId}
+          onBack ={() => setActiveGame(null)} 
+        />
       </div>
     );
   }

@@ -1,0 +1,911 @@
+/* =========================================================
+   SMRITI SAARTHI - MEMORY JOURNEY STYLING
+   State-of-the-Art Accessible Cognitive Route Navigation
+   ========================================================= */
+
+.mj-wrapper {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  background: radial-gradient(circle at 50% 20%, rgba(35, 115, 102, 0.08), transparent 70%), #f7faf9;
+  font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #173b37;
+}
+
+.mj-card {
+  width: min(720px, 100%);
+  background: #ffffff;
+  border: 1px solid rgba(35, 115, 102, 0.14);
+  border-radius: 28px;
+  padding: 40px 36px;
+  box-shadow: 0 16px 48px -12px rgba(23, 59, 55, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+  text-align: center;
+  box-sizing: border-box;
+  animation: mjFadeUp 0.35s ease-out;
+}
+
+@keyframes mjFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------------------------------------
+   Badge Pills & Hero Elements
+------------------------------------------------------------- */
+.mj-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(35, 115, 102, 0.1);
+  color: #1a574d;
+  font-size: 13px;
+  font-weight: 700;
+  border-radius: 999px;
+  margin-bottom: 20px;
+  letter-spacing: 0.02em;
+}
+
+.mj-hero-icon-wrap {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #e4f3f0, #cde7e2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a574d;
+  box-shadow: 0 8px 24px rgba(26, 87, 77, 0.15);
+}
+
+.mj-title {
+  font-size: 30px;
+  font-weight: 800;
+  color: #173b37;
+  margin: 0 0 12px;
+  line-height: 1.25;
+}
+
+.mj-subtitle {
+  font-size: 16px;
+  color: #4b6763;
+  margin: 0 0 28px;
+  line-height: 1.6;
+}
+
+/* -------------------------------------------------------------
+   Highlights Row
+------------------------------------------------------------- */
+.mj-highlights-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.mj-highlight-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: #f0f7f5;
+  border: 1px solid #d8ebe7;
+  border-radius: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #24524b;
+}
+
+.mj-chip-emoji {
+  font-size: 18px;
+}
+
+.mj-notice-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  background: #fbf6ec;
+  border: 1px solid #f1e0be;
+  border-radius: 14px;
+  font-size: 13px;
+  color: #825e1a;
+  text-align: left;
+  margin-bottom: 28px;
+  line-height: 1.45;
+}
+
+/* -------------------------------------------------------------
+   Buttons & Actions
+------------------------------------------------------------- */
+.mj-btn-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.mj-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #1f6e62, #144e45);
+  color: #ffffff;
+  border: none;
+  padding: 15px 32px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -4px rgba(20, 78, 69, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mj-btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -4px rgba(20, 78, 69, 0.45);
+}
+
+.mj-btn-primary:active {
+  transform: translateY(1px);
+}
+
+.mj-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #eaf3f1;
+  color: #174a42;
+  border: 1px solid #cee3de;
+  padding: 14px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.mj-btn-secondary:hover {
+  background: #ddead6;
+}
+
+.mj-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: transparent;
+  color: #55726e;
+  border: none;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mj-btn-ghost:hover {
+  color: #1a453f;
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------------------
+   Phase: Briefing Screen
+------------------------------------------------------------- */
+.mj-audio-avatar {
+  margin: 10px auto 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.mj-sound-ring {
+  width: 90px;
+  height: 90px;
+  background: #e6f4f1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b6357;
+  transition: all 0.25s ease;
+}
+
+.mj-sound-ring.is-pulsing {
+  animation: mjSoundPulse 1.2s infinite ease-in-out;
+  color: #0c9e78;
+  background: #d3f3e9;
+}
+
+@keyframes mjSoundPulse {
+  0% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(27, 99, 87, 0.4); }
+  70% { transform: scale(1.06); box-shadow: 0 0 0 20px rgba(27, 99, 87, 0); }
+  100% { transform: scale(0.96); box-shadow: 0 0 0 0 rgba(27, 99, 87, 0); }
+}
+
+.mj-speech-bubble {
+  background: #f4fbf9;
+  border: 1px solid #d4ece6;
+  border-radius: 20px;
+  padding: 22px 26px;
+  margin: 18px 0 28px;
+  text-align: left;
+}
+
+.mj-speech-text {
+  font-size: 19px;
+  font-weight: 600;
+  color: #164740;
+  line-height: 1.55;
+  margin: 0;
+}
+
+.mj-waypoints-preview {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+.mj-preview-label {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64817d;
+  letter-spacing: 0.04em;
+  margin: 0 0 10px;
+}
+
+.mj-waypoints-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+
+.mj-waypoint-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8fbfa;
+  border: 1px solid #e0ece9;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e4b44;
+}
+
+.mj-wp-idx {
+  width: 22px;
+  height: 22px;
+  background: #d4ede7;
+  color: #164f45;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* -------------------------------------------------------------
+   Phase: Active Gameplay Stage
+------------------------------------------------------------- */
+.mj-gameplay-wrapper {
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 12px 16px 24px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.mj-hud-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: #ffffff;
+  border: 1px solid rgba(35, 115, 102, 0.16);
+  border-radius: 20px;
+  padding: 12px 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.mj-hud-exit {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f6f5;
+  border: 1px solid #d4e5e1;
+  color: #2c5952;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mj-hud-progress {
+  flex: 1;
+  max-width: 380px;
+  text-align: center;
+}
+
+.mj-hud-step-text {
+  font-size: 13px;
+  color: #4b6763;
+  margin-bottom: 6px;
+}
+
+.mj-progress-track {
+  width: 100%;
+  height: 8px;
+  background: #e5f0ed;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.mj-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2d9484, #196357);
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.mj-hud-voice {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid #d4e5e1;
+  background: #f1f6f5;
+  color: #1d574e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.mj-hud-voice.is-muted {
+  background: #fbeee8;
+  color: #ad3d20;
+  border-color: #f1cfc4;
+}
+
+/* -------------------------------------------------------------
+   2.5D Animated Road Viewport
+------------------------------------------------------------- */
+.mj-stage-viewport {
+  width: 100%;
+  min-height: 280px;
+  background: linear-gradient(180deg, #d3eff6 0%, #b8e2ec 40%, #8ac082 40%, #689e60 100%);
+  border-radius: 28px;
+  border: 2px solid #ffffff;
+  box-shadow: 0 16px 40px -10px rgba(22, 60, 54, 0.16);
+  position: relative;
+  overflow: hidden;
+}
+
+.mj-skyline {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  overflow: hidden;
+}
+
+.mj-cloud {
+  position: absolute;
+  font-size: 28px;
+  animation: mjCloudDrift 24s linear infinite;
+}
+
+.mj-cloud.c1 { top: 12px; left: -10%; animation-duration: 22s; }
+.mj-cloud.c2 { top: 38px; left: 45%; animation-duration: 28s; }
+
+@keyframes mjCloudDrift {
+  0% { transform: translateX(-50px); }
+  100% { transform: translateX(950px); }
+}
+
+.mj-sun {
+  position: absolute;
+  top: 14px;
+  right: 32px;
+  font-size: 32px;
+  filter: drop-shadow(0 0 12px rgba(255, 204, 0, 0.6));
+}
+
+.mj-landmark-billboard {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+}
+
+.mj-billboard-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border: 2px solid #237366;
+  border-radius: 18px;
+  padding: 10px 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.mj-billboard-icon {
+  font-size: 36px;
+}
+
+.mj-billboard-copy {
+  text-align: left;
+}
+
+.mj-billboard-tag {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: #237366;
+  letter-spacing: 0.05em;
+}
+
+.mj-billboard-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #173b37;
+}
+
+.mj-billboard-desc {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: #4b6763;
+}
+
+/* Perspective Road */
+.mj-road-canvas {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 320px;
+  height: 60%;
+  background: linear-gradient(180deg, #53595b 0%, #3a3f41 100%);
+  clip-path: polygon(35% 0%, 65% 0%, 100% 100%, 0% 100%);
+}
+
+.mj-road-stripes {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 6px;
+  transform: translateX(-50%);
+  background: repeating-linear-gradient(
+    180deg,
+    #ffffff 0px,
+    #ffffff 20px,
+    transparent 20px,
+    transparent 40px
+  );
+  animation: mjRoadMove 0.8s linear infinite;
+}
+
+@keyframes mjRoadMove {
+  0% { transform: translateX(-50%) translateY(0); }
+  100% { transform: translateX(-50%) translateY(40px); }
+}
+
+.mj-fork-guide {
+  position: absolute;
+  top: 15%;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fce899;
+}
+
+.mj-walker-avatar {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.mj-walker-sprite {
+  font-size: 52px;
+  animation: mjWalkerBob 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes mjWalkerBob {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-8px); }
+}
+
+.mj-walker-shadow {
+  width: 44px;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.28);
+  border-radius: 50%;
+  margin-top: -6px;
+}
+
+/* Feedback Splash */
+.mj-feedback-splash {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 20px;
+  font-weight: 800;
+  z-index: 50;
+  animation: mjSplashPop 0.3s ease-out;
+}
+
+.mj-feedback-splash.is-success {
+  background: rgba(26, 128, 97, 0.88);
+  color: #ffffff;
+}
+
+.mj-feedback-splash.is-warning {
+  background: rgba(189, 78, 41, 0.88);
+  color: #ffffff;
+}
+
+@keyframes mjSplashPop {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* -------------------------------------------------------------
+   Controls & Instruction Panel
+------------------------------------------------------------- */
+.mj-controls-panel {
+  width: 100%;
+  margin-top: 18px;
+}
+
+.mj-instruction-strip {
+  background: #ffffff;
+  border: 1px solid rgba(35, 115, 102, 0.14);
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.mj-instruction-text {
+  font-size: 18px;
+  font-weight: 600;
+  color: #173b37;
+  line-height: 1.45;
+}
+
+.mj-repeat-voice-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #eef7f5;
+  color: #1a574d;
+  border: 1px solid #cce5df;
+  padding: 9px 15px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mj-directions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+}
+
+.mj-dir-btn {
+  background: #ffffff;
+  border: 2px solid #cce3de;
+  border-radius: 24px;
+  padding: 22px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  cursor: pointer;
+  box-shadow: 0 8px 24px -6px rgba(22, 60, 54, 0.08);
+  transition: transform 0.12s ease, border-color 0.15s ease, background 0.15s ease;
+}
+
+.mj-dir-btn:hover {
+  transform: translateY(-3px);
+  border-color: #237366;
+  background: #f6fcfb;
+}
+
+.mj-dir-btn:active {
+  transform: translateY(1px);
+}
+
+.mj-dir-arrow {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #e4f3f0, #cde7e2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1a574d;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.mj-dir-btn:hover .mj-dir-arrow {
+  background: #1a574d;
+  color: #ffffff;
+}
+
+.mj-dir-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.mj-dir-label strong {
+  font-size: 17px;
+  color: #173b37;
+}
+
+.mj-dir-label span {
+  font-size: 13px;
+  color: #55726e;
+}
+
+/* -------------------------------------------------------------
+   Landmark Recall Phase
+------------------------------------------------------------- */
+.mj-recall-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #173b37;
+  margin: 0 0 6px;
+}
+
+.mj-recall-subtitle {
+  font-size: 15px;
+  color: #55726e;
+  margin: 0 0 24px;
+}
+
+.mj-recall-target-box {
+  background: #f4fbf9;
+  border: 2px dashed #b8ddd5;
+  border-radius: 24px;
+  padding: 28px 20px;
+  margin-bottom: 28px;
+}
+
+.mj-target-icon {
+  font-size: 64px;
+  margin-bottom: 10px;
+}
+
+.mj-target-name {
+  font-size: 22px;
+  font-weight: 800;
+  color: #173b37;
+  margin: 0 0 6px;
+}
+
+.mj-target-desc {
+  font-size: 14px;
+  color: #55726e;
+  margin: 0;
+}
+
+.mj-recall-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.mj-recall-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 20px 24px;
+  border-radius: 20px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.mj-recall-btn div {
+  display: flex;
+  flex-direction: column;
+}
+
+.mj-recall-btn strong {
+  font-size: 18px;
+}
+
+.mj-recall-btn span {
+  font-size: 13px;
+}
+
+.mj-recall-btn.btn-yes {
+  background: #e8f7f2;
+  border-color: #b0e5d4;
+  color: #115945;
+}
+
+.mj-recall-btn.btn-no {
+  background: #fbf0ec;
+  border-color: #f3d1c5;
+  color: #923a1f;
+}
+
+.mj-recall-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.mj-recall-btn.is-selected {
+  transform: scale(0.97);
+  filter: brightness(0.95);
+}
+
+/* -------------------------------------------------------------
+   Complete & Clinical Metrics
+------------------------------------------------------------- */
+.mj-complete-trophy {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: #fbf5e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 18px;
+  color: #d69818;
+}
+
+.mj-complete-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #173b37;
+  margin: 0 0 8px;
+}
+
+.mj-complete-lead {
+  font-size: 16px;
+  color: #55726e;
+  margin: 0 0 28px;
+}
+
+.mj-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.mj-metric-card {
+  background: #f8fbfa;
+  border: 1px solid #dcece8;
+  border-radius: 18px;
+  padding: 18px 14px;
+  text-align: center;
+}
+
+.mj-metric-card.primary {
+  background: #edf7f5;
+  border-color: #bfe5dc;
+}
+
+.mj-metric-val {
+  font-size: 28px;
+  font-weight: 800;
+  color: #173b37;
+  margin-bottom: 4px;
+}
+
+.mj-metric-lbl {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #237366;
+  margin-bottom: 4px;
+}
+
+.mj-metric-sub {
+  font-size: 11px;
+  color: #6a8884;
+}
+
+.mj-clinical-sync-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #eef7f5;
+  border: 1px solid #cde8e1;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #185a4e;
+  margin-bottom: 24px;
+}
+
+/* -------------------------------------------------------------
+   Responsive Mobile Adjustments
+------------------------------------------------------------- */
+@media (max-width: 640px) {
+  .mj-card {
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .mj-title {
+    font-size: 24px;
+  }
+
+  .mj-directions-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .mj-dir-btn {
+    flex-direction: row;
+    padding: 14px 18px;
+    justify-content: flex-start;
+  }
+
+  .mj-dir-arrow {
+    width: 44px;
+    height: 44px;
+  }
+
+  .mj-dir-label {
+    align-items: flex-start;
+  }
+
+  .mj-recall-choices {
+    grid-template-columns: 1fr;
+  }
+}

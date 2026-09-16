@@ -11,9 +11,10 @@ import {
   Clock3,
   Check,
 } from 'lucide-react';
-import { getRoutineItems, markRoutineDone, pingLive, subscribeLive } from '../lib/liveState';
+import { getRoutineItems, markRoutineDone, unmarkRoutineDone, pingLive, subscribeLive } from '../lib/liveState';
 import { enqueueOutbox } from '../lib/offlineStore';
 import PatientDailyCheckin from '../components/PatientDailyCheckin';
+import { useI18n } from '../I18nContext';
 import './DailyRoutine.css';
 
 const ICONS = {
@@ -25,18 +26,25 @@ const ICONS = {
 };
 
 const DailyRoutine = () => {
+  const { t } = useI18n();
   const [tick, setTick] = useState(0);
   const schedule = useMemo(() => getRoutineItems(), [tick]);
   const completed = schedule.filter((item) => item.completed).length;
   const next = schedule.find((item) => !item.completed);
   const pct = Math.round((completed / schedule.length) * 100);
 
-  const complete = (id) => {
-    markRoutineDone(id);
-    enqueueOutbox('ack', { task: id, phone: 'local' });
+  const toggle = (id, isCurrentlyDone) => {
+    if (isCurrentlyDone) {
+      unmarkRoutineDone(id);
+    } else {
+      markRoutineDone(id);
+      enqueueOutbox('ack', { task: id, phone: 'local' });
+    }
     pingLive();
     setTick((n) => n + 1);
   };
+
+  const complete = (id) => toggle(id, false);
 
   useEffect(() => subscribeLive(() => setTick((n) => n + 1)), []);
 
@@ -50,15 +58,15 @@ const DailyRoutine = () => {
   }, []);
 
   return (
-    <div className="daily-routine-page">
+    <div className="daily-routine-page ss-lakeside-page">
       <div className="routine-header">
         <div>
           <div className="routine-label">
             <CalendarDays size={15} />
-            TODAY&apos;S SCHEDULE
+            {t('routinePage.label')}
           </div>
-          <h1>Daily Routine</h1>
-          <p>Times follow this house clock. Mark what is done — morning items stay due until you confirm them.</p>
+          <h1>{t('routinePage.title')}</h1>
+          <p>{t('routinePage.lead')}</p>
         </div>
       </div>
 
@@ -66,22 +74,22 @@ const DailyRoutine = () => {
         <div className="routine-stat">
           <div className="stat-icon"><CheckCircle2 size={22} /></div>
           <div>
-            <p>Completed Today</p>
+            <p>{t('routinePage.completed')}</p>
             <h3>{completed} / {schedule.length}</h3>
           </div>
         </div>
         <div className="routine-stat">
           <div className="stat-icon time-icon"><Clock3 size={22} /></div>
           <div>
-            <p>Next Activity</p>
-            <h3>{next ? next.time : 'Done'}</h3>
+            <p>{t('routinePage.nextUp')}</p>
+            <h3>{next ? next.time : t('routinePage.allDone')}</h3>
           </div>
         </div>
         <div className="routine-stat">
           <div className="stat-icon"><Brain size={22} /></div>
           <div>
-            <p>Today&apos;s Progress</p>
-            <h3>{pct}% Complete</h3>
+            <p>{t('routinePage.progress')}</p>
+            <h3>{pct}%</h3>
           </div>
         </div>
       </div>
@@ -115,9 +123,11 @@ const DailyRoutine = () => {
                 </div>
                 <div className="schedule-status">
                   {item.completed ? (
-                    <span className="completed-text">Completed</span>
+                    <button type="button" className="mark-btn completed" style={{ background: '#e6f4ea', color: '#137333', border: '1px solid #ceead6' }} onClick={() => toggle(item.id, true)}>
+                      <CheckCircle2 size={15} style={{ marginRight: 4 }} /> Completed
+                    </button>
                   ) : (
-                    <button type="button" className="mark-btn" onClick={() => complete(item.id)}>
+                    <button type="button" className="mark-btn" onClick={() => toggle(item.id, false)}>
                       Mark Complete
                     </button>
                   )}
@@ -131,13 +141,13 @@ const DailyRoutine = () => {
           <div className="up-next-card">
             <div className="up-next-top"><Clock3 size={14} /> UP NEXT</div>
             <div className="up-next-icon">{next ? ICONS[next.type] : <Check size={28} />}</div>
-            <h2>{next ? next.title : 'All done for now'}</h2>
+            <h2>{next ? next.title : t('routinePage.allDone')}</h2>
             <p>{next ? next.subtitle : 'A quiet remainder of the day.'}</p>
             {next && <h3>{next.time}</h3>}
             {next && (
               <button type="button" onClick={() => complete(next.id)}>
                 <Check size={17} />
-                Mark Complete
+                {t('routinePage.markDone')}
               </button>
             )}
           </div>

@@ -9,11 +9,46 @@
   overflow-x: hidden;
   color: #1a3d34;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: #eef4f0;
+}
+
+/* Full-bleed lakeside scene — text sits on glass, not busy foliage/sun */
+.hl-scene {
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(112vh, 980px);
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hl-scene-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 58% 42%;
+  display: block;
+  transform: scale(1.02);
+}
+.hl-scene-scrim {
+  position: absolute;
+  inset: 0;
   background:
-    radial-gradient(ellipse 900px 450px at 8% -5%, rgba(23, 107, 88, 0.18), transparent 55%),
-    radial-gradient(ellipse 700px 400px at 95% 5%, rgba(33, 77, 66, 0.10), transparent 50%),
-    radial-gradient(ellipse 600px 600px at 50% 100%, rgba(23, 107, 88, 0.06), transparent 50%),
-    linear-gradient(180deg, #f8faf9 0%, #f2f7f4 50%, #edf3f0 100%);
+    linear-gradient(105deg, rgba(246, 250, 247, 0.88) 0%, rgba(246, 250, 247, 0.62) 34%, rgba(246, 250, 247, 0.28) 58%, rgba(20, 48, 42, 0.12) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, transparent 42%, rgba(238, 244, 240, 0.92) 88%, #eef4f0 100%);
+}
+.hl-glass-panel {
+  padding: 22px 24px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow:
+    0 18px 40px rgba(26, 61, 52, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.hl-glass-panel .hl-guide {
+  background: rgba(255, 255, 255, 0.55);
 }
 
 .hl-prarthana { position: relative; z-index: 1; max-width: 1180px; margin: 26px auto 0; padding: 20px 32px; border: 1px solid rgba(23,107,88,.13); border-radius: 22px; background: rgba(255,255,255,.52); }
@@ -830,12 +865,26 @@ button.hl-btn-ghost {
 }
 
 .hl-aurora {
-  position: fixed;
-  inset: 0;
+  position: absolute;
+  inset: 0 0 auto;
+  height: min(112vh, 980px);
   z-index: 0;
-  opacity: 0.55;
+  opacity: 0.28;
   pointer-events: none;
   overflow: hidden;
+  mix-blend-mode: soft-light;
+}
+.hl-hero,
+.hl-flow-band,
+.hl-stage,
+.hl-footer {
+  position: relative;
+  z-index: 1;
+}
+.hl-role-card-front {
+  background: rgba(255, 255, 255, 0.82) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 .hl-hero-simple {
   display: block;
@@ -1064,6 +1113,21 @@ button.hl-btn-ghost {
 }
 
 @media (max-width: 900px) {
+  .hl-scene,
+  .hl-aurora {
+    height: min(100vh, 820px);
+  }
+  .hl-scene-img {
+    object-position: 48% 35%;
+  }
+  .hl-scene-scrim {
+    background:
+      linear-gradient(180deg, rgba(246, 250, 247, 0.86) 0%, rgba(246, 250, 247, 0.55) 48%, rgba(238, 244, 240, 0.95) 100%);
+  }
+  .hl-glass-panel {
+    padding: 16px 16px;
+    border-radius: 18px;
+  }
   .hl-hero-visual {
     padding-top: 8px;
     order: 2;

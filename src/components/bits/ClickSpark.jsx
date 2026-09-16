@@ -8,6 +8,7 @@ export default function ClickSpark({
   sparkRadius = 18,
   duration = 420,
   className = '',
+  style,
 }) {
   const rootRef = useRef(null);
 
@@ -33,7 +34,7 @@ export default function ClickSpark({
   }, [duration, sparkColor, sparkCount, sparkRadius]);
 
   return (
-    <div ref={rootRef} className={`ss-click-spark ${className}`.trim()} onClick={spark}>
+    <div ref={rootRef} className={`ss-click-spark ${className}`.trim()} style={style} onClick={spark}>
       {children}
     </div>
   );

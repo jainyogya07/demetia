@@ -1,0 +1,137 @@
+.connected-care-widget {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.connected-care-header {
+  flex: 1;
+  min-width: 200px;
+}
+
+.connected-care-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a332b;
+  margin-bottom: 4px;
+}
+
+.connected-care-subtitle {
+  font-size: 13px;
+  color: rgba(26, 51, 43, 0.6);
+  line-height: 1.4;
+}
+
+.connected-care-pipeline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 2;
+  min-width: 300px;
+}
+
+.cc-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.cc-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border: 2px solid white;
+}
+
+.patient-avatar {
+  background: #c47a6d; /* Peach */
+}
+
+.caregiver-avatar {
+  background: #2a7c6a; /* Green */
+}
+
+.doctor-avatar {
+  background: #2f74c0; /* Blue */
+}
+
+.cc-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.cc-label strong {
+  font-size: 13px;
+  color: #1a332b;
+  font-weight: 600;
+}
+
+.cc-label span {
+  font-size: 11px;
+  color: rgba(26, 51, 43, 0.6);
+}
+
+.cc-line {
+  flex: 1;
+  height: 2px;
+  background: rgba(42, 124, 106, 0.2);
+  position: relative;
+  top: -15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cc-line-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2a7c6a;
+}
+
+.connected-care-action {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 150px;
+}
+
+.cc-message-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid rgba(42, 124, 106, 0.2);
+  color: #2a7c6a;
+  padding: 10px 16px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.cc-message-btn:hover {
+  background: #f0f7f5;
+  transform: translateY(-1px);
+}

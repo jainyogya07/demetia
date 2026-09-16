@@ -299,6 +299,46 @@ export function getLatestEvaluation(patientId = 'aita') {
   return readJson(`${LATEST_EVAL_KEY_PREFIX}${patientId}`, null);
 }
 
+/**
+ * Patient-facing severity summary (friendly wording + wellness %).
+ * Same underlying band/score as caregiver/doctor views; softer labels only.
+ */
+export function getFriendlySeverity(patientId = 'aita') {
+  const report = getLatestEvaluation(patientId);
+  if (!report) {
+    return {
+      band: null,
+      label: 'Checking in',
+      shortLabel: '—',
+      tone: 'neutral',
+      wellnessPercent: null,
+      riskScore: null,
+    };
+  }
+
+  const risk = Number(report.calibrated_risk_score);
+  const safeRisk = Number.isFinite(risk) ? Math.max(0, Math.min(1, risk)) : 0;
+  const wellnessPercent = Math.round((1 - safeRisk) * 100);
+  const band = report.severity_band;
+
+  const map = {
+    NORMAL: { label: 'Doing well', shortLabel: 'Well', tone: 'good' },
+    MILD_COGNITIVE_CONCERN: { label: 'Mild concern', shortLabel: 'Mild', tone: 'mild' },
+    MODERATE_IMPAIRMENT: { label: 'Needs support', shortLabel: 'Support', tone: 'moderate' },
+    SEVERE_IMPAIRMENT: { label: 'Extra care', shortLabel: 'Care', tone: 'severe' },
+  };
+
+  const info = map[band] || { label: 'Checking in', shortLabel: '—', tone: 'neutral' };
+  return {
+    band,
+    label: info.label,
+    shortLabel: info.shortLabel,
+    tone: info.tone,
+    wellnessPercent,
+    riskScore: safeRisk,
+  };
+}
+
 export function quizPercentToFaqScore(percentage) {
   const pct = Number(percentage);
   if (!Number.isFinite(pct)) return 1;
@@ -558,4 +598,356 @@ export function subscribeAssessmentChange(onChange) {
     window.removeEventListener('ss-assessment-updated', handler);
     window.removeEventListener('storage', handler);
   };
+}
+
+/**
+ * Converts Memory Journey telemetry into assessment metrics
+ * and sends the combined assessment to the detection engine.
+ *
+ * IMPORTANT:
+ * This is an assessment-support signal, not a medical diagnosis.
+ */
+export function applyMemoryJourneyToAssessment(
+  telemetryData,
+  patientId = 'aita'
+) {
+  const id = patientId || 'aita';
+
+  const telemetry = telemetryData || {};
+
+  const turns = Array.isArray(telemetry.turns)
+    ? telemetry.turns
+    : [];
+
+  const landmarks = Array.isArray(telemetry.landmarks)
+    ? telemetry.landmarks
+    : [];
+
+  const obstacles = Array.isArray(telemetry.obstacles)
+    ? telemetry.obstacles
+    : [];
+
+  // ---------------------------------------------------------
+  // ROUTE / SPATIAL NAVIGATION
+  // ---------------------------------------------------------
+
+  const validTurns = turns.filter(
+    (turn) =>
+      turn &&
+      typeof turn.correct === 'boolean'
+  );
+
+  const correctTurns = validTurns.filter(
+    (turn) => turn.correct
+  ).length;
+
+  const wrongTurns = validTurns.filter(
+    (turn) => !turn.correct
+  ).length;
+
+  const routeAccuracy =
+    validTurns.length > 0
+      ? Math.round(
+          (correctTurns / validTurns.length) * 100
+        )
+      : 0;
+
+  // ---------------------------------------------------------
+  // DECISION / HESITATION TIME
+  // ---------------------------------------------------------
+
+  const decisionTimes = validTurns
+    .map((turn) => Number(turn.decisionTimeMs))
+    .filter(
+      (value) =>
+        Number.isFinite(value) && value > 0
+    );
+
+  const median = (values) => {
+    if (!values.length) return null;
+
+    const sorted = [...values].sort(
+      (a, b) => a - b
+    );
+
+    const middle = Math.floor(
+      sorted.length / 2
+    );
+
+    if (sorted.length % 2 === 0) {
+      return (
+        (sorted[middle - 1] +
+          sorted[middle]) /
+        2
+      );
+    }
+
+    return sorted[middle];
+  };
+
+  const medianDecisionTimeMs =
+    median(decisionTimes);
+
+  // ---------------------------------------------------------
+  // MOTOR RESPONSE
+  // ---------------------------------------------------------
+
+  const motorTimes = [
+    ...validTurns
+      .map((turn) => Number(turn.motorResponseMs))
+      .filter(
+        (value) =>
+          Number.isFinite(value) && value > 0
+      ),
+
+    ...obstacles
+      .map((obstacle) =>
+        Number(obstacle.responseTimeMs)
+      )
+      .filter(
+        (value) =>
+          Number.isFinite(value) && value > 0
+      ),
+  ];
+
+  const medianMotorResponseMs =
+    median(motorTimes);
+
+  // ---------------------------------------------------------
+  // LANDMARK RECOGNITION
+  // ---------------------------------------------------------
+
+  const validLandmarks = landmarks.filter(
+    (item) =>
+      item &&
+      typeof item.recognized === 'boolean'
+  );
+
+  const recognizedLandmarks =
+    validLandmarks.filter(
+      (item) => item.recognized
+    ).length;
+
+  const landmarkAccuracy =
+    validLandmarks.length > 0
+      ? Math.round(
+          (recognizedLandmarks /
+            validLandmarks.length) *
+            100
+        )
+      : 0;
+
+  // ---------------------------------------------------------
+  // ASSISTANCE / REPEATED INSTRUCTIONS
+  // ---------------------------------------------------------
+
+  const assistanceCount = turns.filter(
+    (turn) => turn.assistanceUsed
+  ).length;
+
+  const repeatedInstructionCount =
+    turns.filter(
+      (turn) => turn.repeatedInstruction
+    ).length;
+
+  // ---------------------------------------------------------
+  // SPATIAL RISK
+  // ---------------------------------------------------------
+
+  let spatialRisk = 'LOW';
+
+  if (
+    routeAccuracy < 50 ||
+    wrongTurns >= 3
+  ) {
+    spatialRisk = 'HIGH';
+  } else if (
+    routeAccuracy < 75 ||
+    wrongTurns >= 2
+  ) {
+    spatialRisk = 'MODERATE';
+  }
+
+  // ---------------------------------------------------------
+  // MOTOR RISK
+  //
+  // Do NOT call this medically "normal".
+  // It is a game-task performance category.
+  // ---------------------------------------------------------
+
+  let motorRisk = 'LOW';
+
+  if (
+    medianMotorResponseMs !== null &&
+    medianMotorResponseMs > 700
+  ) {
+    motorRisk = 'HIGH';
+  } else if (
+    medianMotorResponseMs !== null &&
+    medianMotorResponseMs > 450
+  ) {
+    motorRisk = 'MODERATE';
+  }
+
+  // ---------------------------------------------------------
+  // MEMORY / LANDMARK RISK
+  // ---------------------------------------------------------
+
+  let landmarkRisk = 'LOW';
+
+  if (landmarkAccuracy < 50) {
+    landmarkRisk = 'HIGH';
+  } else if (landmarkAccuracy < 75) {
+    landmarkRisk = 'MODERATE';
+  }
+
+  // ---------------------------------------------------------
+  // SAVE RAW MEMORY JOURNEY RESULT
+  // ---------------------------------------------------------
+
+  const journeyResult = {
+    sessionId:
+      telemetry.sessionId ||
+      `mj-${Date.now()}`,
+
+    patientId: id,
+
+    completedAt:
+      telemetry.completedAt ||
+      new Date().toISOString(),
+
+    language:
+      telemetry.language || '',
+
+    routeId:
+      telemetry.routeId || '',
+
+    difficulty:
+      telemetry.difficulty || 1,
+
+    routeAccuracy,
+
+    correctTurns,
+
+    wrongTurns,
+
+    medianDecisionTimeMs,
+
+    medianMotorResponseMs,
+
+    landmarkAccuracy,
+
+    recognizedLandmarks,
+
+    totalLandmarks:
+      validLandmarks.length,
+
+    assistanceCount,
+
+    repeatedInstructionCount,
+
+    spatialRisk,
+
+    motorRisk,
+
+    landmarkRisk,
+
+    completed:
+      telemetry.completed !== false,
+  };
+
+  // ---------------------------------------------------------
+  // MAP GAME DATA TO EXISTING FAQ
+  //
+  // This affects the existing spatial-orientation domain.
+  // ---------------------------------------------------------
+
+  let spatialFaqScore = 0;
+
+  if (
+    routeAccuracy < 50 ||
+    wrongTurns >= 3
+  ) {
+    spatialFaqScore = 3;
+  } else if (
+    routeAccuracy < 75 ||
+    wrongTurns >= 2
+  ) {
+    spatialFaqScore = 2;
+  } else if (
+    routeAccuracy < 90 ||
+    assistanceCount >= 1
+  ) {
+    spatialFaqScore = 1;
+  }
+
+  const current =
+    getAssessmentForPatient(id);
+
+  const currentSpatialScore = Number(
+    current.functional
+      ?.faq_orientation_time_space || 0
+  );
+
+  const mergedSpatialScore = Math.max(
+    currentSpatialScore,
+    spatialFaqScore
+  );
+
+  // ---------------------------------------------------------
+  // SAVE INTO ASSESSMENT
+  // ---------------------------------------------------------
+
+  const updated =
+    saveAssessmentForPatient(id, {
+      memoryJourney: journeyResult,
+
+      functional: {
+        faq_orientation_time_space:
+          mergedSpatialScore,
+      },
+
+      motor: {
+        ...(current.motor || {}),
+
+        // Only update if we actually measured motor response.
+        ...(medianMotorResponseMs !== null
+          ? {
+              memoryJourney_median_motor_response_ms:
+                medianMotorResponseMs,
+            }
+          : {}),
+      },
+    });
+
+  // ---------------------------------------------------------
+  // SEND COMBINED DATA TO DETECTION ENGINE
+  // ---------------------------------------------------------
+
+  evaluateTelemetry({
+    patient_id: id,
+
+    demographics: {
+      age: updated.age,
+      education_years:
+        updated.education_years,
+    },
+
+    motor: updated.motor,
+
+    functional:
+      updated.functional,
+
+    memoryQuiz:
+      updated.memoryQuiz,
+
+    memoryJourney: journeyResult,
+  }).catch((error) => {
+    console.warn(
+      '[MemoryJourney] Evaluation failed:',
+      error
+    );
+  });
+
+  return updated;
 }

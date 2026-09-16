@@ -1,12 +1,48 @@
 .af {
+  position: relative;
+  isolation: isolate;
   min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px 16px 40px;
-  background:
-    radial-gradient(720px 280px at 50% -10%, rgba(23, 107, 88, 0.12), transparent 60%),
-    #f6f3ee;
+  background-image:
+    linear-gradient(105deg, rgba(246, 250, 247, 0.82) 0%, rgba(246, 250, 247, 0.55) 45%, rgba(20, 48, 42, 0.22) 100%),
+    url('../assets/hero-calm-lake.png');
+  background-size: cover;
+  background-position: 52% 38%;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.af-bits {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+}
+
+.af-card {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 100%);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid #e6dfd4;
+  border-radius: 16px;
+  padding: 28px 24px 20px;
+  box-shadow: 0 12px 40px rgba(28, 36, 32, 0.06);
+}
+
+.af-card h1,
+.af-title {
+  font-size: 22px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  margin: 12px 0 6px;
+  color: #1c2420;
 }
 
 .af-overlay {
@@ -32,23 +68,6 @@
   z-index: 1;
   max-height: min(92vh, 720px);
   overflow: auto;
-}
-
-.af-card {
-  width: min(420px, 100%);
-  background: #fff;
-  border: 1px solid #e6dfd4;
-  border-radius: 16px;
-  padding: 28px 24px 20px;
-  box-shadow: 0 12px 40px rgba(28, 36, 32, 0.06);
-}
-
-.af-card h1 {
-  font-size: 22px;
-  font-weight: 650;
-  letter-spacing: -0.03em;
-  margin: 12px 0 6px;
-  color: #1c2420;
 }
 
 .af-kicker {

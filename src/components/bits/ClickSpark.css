@@ -1,6 +1,13 @@
 .ss-click-spark {
   position: relative;
 }
+.ss-click-spark.app-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
 .ss-spark {
   position: absolute;
   width: 6px;

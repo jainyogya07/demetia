@@ -1,0 +1,396 @@
+/* Movable Saarthi nav + live wellness widget — dementia-friendly */
+
+.saarthi-radial-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(23, 50, 42, 0.26);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 990;
+}
+
+.saarthi-widget {
+  --widget-sage: #176b58;
+  --widget-teal: #214d42;
+  --widget-mist: rgba(248, 250, 249, 0.88);
+  --widget-glass: rgba(255, 255, 255, 0.82);
+  --tone: #176b58;
+
+  position: fixed;
+  z-index: 999;
+  width: 96px;
+  height: 96px;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.saarthi-widget.tone-good { --tone: #176b58; }
+.saarthi-widget.tone-mild { --tone: #c18429; }
+.saarthi-widget.tone-moderate { --tone: #c45c26; }
+.saarthi-widget.tone-severe { --tone: #b42318; }
+.saarthi-widget.tone-neutral { --tone: #60716b; }
+
+.saarthi-widget.is-dragging {
+  cursor: grabbing;
+  z-index: 1002;
+}
+
+.saarthi-widget.is-dragging .saarthi-widget-handle {
+  box-shadow:
+    0 16px 40px rgba(33, 77, 66, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+}
+
+.saarthi-widget-spark {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.saarthi-widget-handle {
+  position: relative;
+  z-index: 1000;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(23, 107, 88, 0.3);
+  background:
+    linear-gradient(160deg, rgba(255, 255, 255, 0.96) 0%, var(--widget-mist) 55%, rgba(216, 229, 223, 0.8) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 10px 32px rgba(33, 77, 66, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  cursor: grab;
+  padding: 0;
+  outline: none;
+  color: var(--widget-teal);
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.saarthi-widget-handle:focus-visible {
+  outline: 3px solid rgba(23, 107, 88, 0.45);
+  outline-offset: 4px;
+}
+
+.saarthi-widget-handle.is-open {
+  background: linear-gradient(160deg, #1f8570 0%, var(--widget-sage) 65%, #145a4a 100%);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 12px 34px rgba(23, 107, 88, 0.38);
+}
+
+.widget-severity-ring {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2.5px solid color-mix(in srgb, var(--tone) 58%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--tone) 20%, transparent);
+  pointer-events: none;
+  animation: severityPulse 3.6s ease-in-out infinite;
+}
+
+.is-open .widget-severity-ring {
+  display: none;
+}
+
+@keyframes severityPulse {
+  0%, 100% { transform: scale(0.98); opacity: 0.88; }
+  50% { transform: scale(1.05); opacity: 0.42; }
+}
+
+.widget-drag-hint {
+  position: absolute;
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: color-mix(in srgb, var(--widget-teal) 42%, transparent);
+  opacity: 0.75;
+  pointer-events: none;
+  line-height: 0;
+}
+
+.is-open .widget-drag-hint {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.widget-core {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  margin-top: 8px;
+}
+
+.widget-core-closed,
+.widget-core-open {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.widget-core-open {
+  position: relative;
+}
+
+.widget-logo {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 1px 4px rgba(33, 77, 66, 0.12);
+  pointer-events: none;
+}
+
+.widget-logo--open {
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+}
+
+.widget-close-badge {
+  position: absolute;
+  right: -10px;
+  bottom: -2px;
+  width: 22px;
+  height: 22px;
+  padding: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--widget-sage);
+  box-shadow: 0 2px 8px rgba(20, 60, 48, 0.25);
+}
+
+.widget-score {
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--tone);
+  font-variant-numeric: tabular-nums;
+}
+
+.widget-caption {
+  max-width: 86px;
+  margin-top: 1px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--widget-teal);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.is-open .widget-caption {
+  color: rgba(255, 255, 255, 0.96);
+  font-size: 12px;
+}
+
+/* Soft confirmation toast — lands the message */
+.saarthi-soft-toast {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 14px);
+  z-index: 1005;
+  min-width: 140px;
+  max-width: 220px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(23, 107, 88, 0.22);
+  box-shadow: 0 10px 28px rgba(33, 77, 66, 0.18);
+  color: var(--widget-teal);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.saarthi-radial-satellites {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  z-index: 995;
+}
+
+.saarthi-radial-nodes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+}
+
+.saarthi-orbit-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(23, 107, 88, 0.22);
+  pointer-events: none;
+}
+
+.saarthi-orbit-ring--inner {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  left: -150px;
+  border-color: rgba(23, 107, 88, 0.28);
+}
+
+.saarthi-orbit-ring--outer {
+  width: 500px;
+  height: 500px;
+  top: -250px;
+  left: -250px;
+  border-color: rgba(33, 77, 66, 0.16);
+}
+
+.radial-node {
+  position: absolute;
+  top: -36px;
+  left: -36px;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--widget-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 2px solid color-mix(in srgb, var(--node-color, #176b58) 48%, rgba(216, 229, 223, 0.95));
+  box-shadow:
+    0 10px 26px rgba(33, 77, 66, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  cursor: pointer;
+  color: var(--node-color, #176b58);
+  padding: 0;
+  /* Never transition transform — Motion owns x/y/scale */
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform, opacity;
+}
+
+.radial-node.is-outer {
+  top: -32px;
+  left: -32px;
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.radial-node-glow {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--node-color, #176b58) 22%, transparent) 0%,
+    transparent 70%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.radial-node:hover .radial-node-glow,
+.radial-node:focus-visible .radial-node-glow,
+.radial-node.is-current .radial-node-glow {
+  opacity: 1;
+}
+
+.radial-node:hover,
+.radial-node:focus-visible {
+  background: color-mix(in srgb, var(--node-color, #176b58) 90%, #fff);
+  color: #fff;
+  border-color: transparent;
+  outline: none;
+}
+
+.radial-node.is-current {
+  background: var(--node-color, #176b58);
+  color: #fff;
+  border-color: transparent;
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--node-color, #176b58) 30%, transparent),
+    0 10px 26px rgba(33, 77, 66, 0.22);
+}
+
+.radial-node-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.radial-node-label {
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.radial-node.is-outer .radial-node-label {
+  font-size: 11px;
+}
+
+@media (max-width: 860px) {
+  .radial-node {
+    width: 74px;
+    height: 74px;
+    top: -37px;
+    left: -37px;
+  }
+
+  .radial-node.is-outer {
+    width: 66px;
+    height: 66px;
+    top: -33px;
+    left: -33px;
+  }
+
+  .radial-node-label {
+    font-size: 12px;
+  }
+
+  .saarthi-soft-toast {
+    font-size: 15px;
+    padding: 12px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .widget-severity-ring {
+    animation: none;
+  }
+
+  .radial-node,
+  .saarthi-widget-handle,
+  .saarthi-soft-toast {
+    transition: none !important;
+  }
+}

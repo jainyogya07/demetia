@@ -1,5 +1,6 @@
 // More languages later via the same dictionary + LANGUAGES list.
 import { PAGE_STRINGS, mergePageStrings, servicesEn, settingsEn } from './i18nPages';
+import { APP_UI, mergeAppUi } from './i18n/appUiCatalog';
 
 export const LANGUAGES = [
   { code: 'as', englishName: 'Assamese', nativeLabel: 'অসমীয়া' },
@@ -1333,9 +1334,15 @@ const pa = {
 export const DICTIONARIES = Object.fromEntries(
   Object.entries({ en, hi, bn, ta, te, mr, gu, kn, ml, pa, as: en, kha: en, lus: en, mni: en, brx: en }).map(([code, dict]) => [
     code,
-    mergePageStrings(dict, PAGE_STRINGS[code]),
+    mergeAppUi(mergePageStrings(dict, PAGE_STRINGS[code]), APP_UI[code] || APP_UI.en),
   ]),
 );
+
+// Languages without a dedicated catalogue still get English UI namespaces (fallback for missing keys).
+Object.keys(DICTIONARIES).forEach((code) => {
+  if (APP_UI[code]) return;
+  DICTIONARIES[code] = mergeAppUi(DICTIONARIES[code], APP_UI.en);
+});
 
 // English chrome must never inherit Hindi page strings from a bad merge/fallback.
 DICTIONARIES.en = mergePageStrings(DICTIONARIES.en, {

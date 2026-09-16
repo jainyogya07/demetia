@@ -1,0 +1,377 @@
+/* Lakeside glass theme — shared across patient / caregiver / doctor shells */
+
+.ss-lakeside,
+.is-home-route {
+  position: relative;
+  isolation: isolate;
+}
+
+.ss-lakeside::before,
+.is-home-route::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(105deg, rgba(246, 250, 247, 0.78) 0%, rgba(246, 250, 247, 0.42) 38%, rgba(20, 48, 42, 0.18) 72%, rgba(20, 48, 42, 0.28) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28) 0%, transparent 28%, rgba(15, 40, 34, 0.22) 100%);
+}
+
+.ss-lakeside > *,
+.is-home-route > * {
+  position: relative;
+  z-index: 1;
+}
+
+.ss-lakeside .sidebar,
+.is-home-route .sidebar {
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(22px) saturate(1.2);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  border-right: 1px solid rgba(255, 255, 255, 0.45);
+}
+
+.ss-lakeside .ss-topbar,
+.is-home-route .ss-topbar {
+  background: rgba(255, 255, 255, 0.42) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+}
+
+.ss-lakeside .ss-home-shell,
+.ss-lakeside .dashboard,
+.ss-lakeside .main-content,
+.ss-lakeside .dashboard-scroll,
+.ss-lakeside .daily-routine-page,
+.ss-lakeside .care-circle-page,
+.ss-lakeside .memory-progress-page,
+.ss-lakeside .ss-lakeside-page,
+.ss-lakeside .bg-hub,
+.ss-lakeside .ss-page-stack,
+.is-home-route .ss-home-shell,
+.is-home-route .dashboard,
+.is-home-route .main-content {
+  background: transparent !important;
+}
+
+.ss-lakeside .routine-stat,
+.ss-lakeside .schedule-card,
+.ss-lakeside .up-next-card,
+.ss-lakeside .reminders-card,
+.ss-lakeside .wellness-card,
+.ss-lakeside .care-overview-card,
+.ss-lakeside .care-card,
+.ss-lakeside .primary-care-card,
+.ss-lakeside .shared-card,
+.ss-lakeside .clinic-panel,
+.ss-lakeside .os-card,
+.ss-lakeside .settings-section,
+.ss-lakeside .granth-card {
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Header language control (visible, not only in profile menu) */
+.ss-header-lang {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ss-header-lang-btn,
+.ss-header-region-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #214d42;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ss-header-lang-btn:hover,
+.ss-header-region-btn:hover {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.ss-header-region-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.ss-header-lang-label {
+  max-width: 7.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .ss-header-region-label {
+    display: none;
+  }
+
+  .ss-header-lang-btn {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ss-header-lang-label {
+    display: none;
+  }
+}
+
+.ss-transparent-header {
+  background: transparent !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.ss-new-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.ss-sidebar-brand-block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.ss-new-brand-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #0b0b0b;
+  border: 1px solid rgba(28, 36, 32, 0.16);
+}
+
+.ss-new-brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.ss-new-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.ss-new-brand-text strong {
+  font-size: 16px;
+  color: #1a332b;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.ss-new-brand-text span {
+  font-size: 11px;
+  color: rgba(26, 51, 43, 0.6);
+}
+
+.ss-about-us-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(23, 107, 88, 0.28);
+  background: rgba(255, 255, 255, 0.72);
+  color: #176b58;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(33, 77, 66, 0.08);
+}
+
+.ss-about-us-btn:hover,
+.ss-about-us-btn:focus-visible {
+  background: #176b58;
+  color: #fff;
+  border-color: transparent;
+  outline: none;
+}
+
+/* Glass cards over the photo */
+.ss-lakeside .ss-bit-card,
+.is-home-route .ss-bit-card {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow:
+    0 10px 28px rgba(26, 61, 52, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
+  overflow: hidden;
+}
+
+.ss-home-focus .ss-bit-card .daily-routine-dashboard,
+.ss-home-focus .ss-bit-card .voice-companion-card,
+.ss-home-focus .ss-bit-card > div,
+.ss-home-focus .ss-bit-card > section {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.ss-lakeside .ss-dash-greeting,
+.is-home-route .ss-dash-greeting {
+  display: inline-block;
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8px 24px rgba(26, 61, 52, 0.08);
+}
+
+.ss-lakeside .ss-dash-greet-title,
+.is-home-route .ss-dash-greet-title {
+  color: #1a3d34;
+  text-shadow: none;
+}
+
+.ss-lakeside .ss-dash-greet-sub,
+.is-home-route .ss-dash-greet-sub {
+  color: #3d5c52;
+  text-shadow: none;
+}
+
+.ss-lakeside .jain-quote-carousel,
+.ss-lakeside .dash-quick-links,
+.is-home-route .jain-quote-carousel,
+.is-home-route .dash-quick-links {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.ss-lakeside .dash-quick-links,
+.is-home-route .dash-quick-links {
+  border-radius: 18px;
+  padding: 4px;
+}
+
+/* Compact role shells (caregiver / doctor) */
+.ss-role-shell .ss-greeting-block h1,
+.ss-role-shell .ss-greeting-block .ss-bits-title {
+  font-size: clamp(18px, 1.8vw, 22px) !important;
+  font-weight: 650;
+}
+
+.ss-role-shell .ss-greeting-block p {
+  font-size: 13px;
+  color: #5c736a;
+  margin: 4px 0 0;
+  max-width: 42ch;
+}
+
+.ss-role-shell .sidebar-nav {
+  gap: 2px;
+}
+
+.ss-role-shell .ss-rail-kicker {
+  margin: 14px 12px 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(26, 51, 43, 0.45);
+  font-weight: 700;
+}
+
+.ss-role-shell .os-header-live {
+  display: none;
+}
+
+.ss-role-patient-link {
+  text-decoration: none;
+  padding: 8px 14px;
+}
+
+.ss-header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0 8px;
+}
+
+.ss-header-center .jain-quote-carousel {
+  margin: 0;
+}
+
+.todays-tip-magnet {
+  display: block !important;
+  width: 100%;
+}
+
+.calming-moments-card {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}
+
+/* Landing preview embeds dashboard without photo — keep solid cards readable */
+.hl-dash-preview .ss-dash-greet-title {
+  color: #1a3d34;
+  text-shadow: none;
+}
+.hl-dash-preview .ss-dash-greet-sub {
+  color: #3d5c52;
+  text-shadow: none;
+}
+.hl-dash-preview .ss-bit-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(23, 107, 88, 0.12) !important;
+}
+
+@media (max-width: 860px) {
+  .ss-lakeside,
+  .is-home-route {
+    background-attachment: scroll !important;
+  }
+
+  .ss-lakeside::before,
+  .is-home-route::before {
+    background:
+      linear-gradient(180deg, rgba(246, 250, 247, 0.82) 0%, rgba(246, 250, 247, 0.55) 45%, rgba(20, 48, 42, 0.2) 100%);
+  }
+
+  .ss-header-center {
+    display: none;
+  }
+}

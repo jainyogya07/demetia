@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Heart, Brain, Shield, Users, Mic, Gamepad2, ArrowRight, Globe, Pause, Play, Download } from 'lucide-react';
 import logoMark from '../assets/smriti-saarthi-logo.png';
+import heroCalmLake from '../assets/hero-calm-lake.png';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useI18n } from '../I18nContext';
 import { AppNavContext } from '../AppNavContext';
@@ -12,6 +13,7 @@ import SpotlightCard from '../components/bits/SpotlightCard';
 import Particles from '../components/bits/Particles';
 import ClickSpark from '../components/bits/ClickSpark';
 import Magnet from '../components/bits/Magnet';
+import Reveal from '../components/bits/Reveal';
 import { landingCopyFor } from '../i18n/landingCopy';
 import './HomeLanding.css';
 
@@ -207,10 +209,14 @@ function HomeLanding() {
 
   return (
     <ClickSpark className="hl">
+      <div className="hl-scene" aria-hidden>
+        <img src={heroCalmLake} alt="" className="hl-scene-img" />
+        <div className="hl-scene-scrim" />
+      </div>
       {!narrow && (
         <div className="hl-aurora" aria-hidden>
-          <Aurora colorStops={['#176b58', '#2a9d8f', '#d7ebe4']} amplitude={0.8} blend={0.6} lightMode speed={0.55} />
-          <Particles particleCount={80} particleSpread={10} speed={0.14} />
+          <Aurora colorStops={['#176b58', '#2a9d8f', '#d7ebe4']} amplitude={0.55} blend={0.45} lightMode speed={0.4} />
+          <Particles particleCount={48} particleSpread={11} speed={0.1} />
         </div>
       )}
 
@@ -231,7 +237,7 @@ function HomeLanding() {
       </nav>
 
       <section className="hl-hero" ref={heroRef}>
-        <div className="hl-hero-copy">
+        <div className="hl-hero-copy hl-glass-panel">
           <p className="hl-eyebrow">
             <span className="hl-eyebrow-dot" />
             {copy.eyebrow}
@@ -272,126 +278,134 @@ function HomeLanding() {
           {copy.roles.slice(1).map((role, i) => {
             const meta = ROLE_META[i + 1];
             return (
-              <SpotlightCard key={role.title} className="hl-role-card hl-role-card-front">
-                <Link to={meta.path} className="hl-role-wide-link">
-                  <div className="hl-role-header" style={{ background: meta.gradient }}>
-                    <span className="hl-role-emoji">{meta.emoji}</span>
-                    <span className="hl-role-kicker">{role.kicker}</span>
-                  </div>
-                  <div className="hl-role-body">
-                    <strong>{role.title}</strong>
-                    <p>{role.lead}</p>
-                    <p className="hl-role-how">{i === 0 ? copy.familyHow : copy.clinicHow}</p>
-                    <span className="hl-role-arrow">{copy.open} <ArrowRight size={14} /></span>
-                  </div>
-                </Link>
-              </SpotlightCard>
+              <Reveal key={role.title} delay={0.08 + i * 0.08}>
+                <SpotlightCard className="hl-role-card hl-role-card-front">
+                  <Link to={meta.path} className="hl-role-wide-link">
+                    <div className="hl-role-header" style={{ background: meta.gradient }}>
+                      <span className="hl-role-emoji">{meta.emoji}</span>
+                      <span className="hl-role-kicker">{role.kicker}</span>
+                    </div>
+                    <div className="hl-role-body">
+                      <strong>{role.title}</strong>
+                      <p>{role.lead}</p>
+                      <p className="hl-role-how">{i === 0 ? copy.familyHow : copy.clinicHow}</p>
+                      <span className="hl-role-arrow">{copy.open} <ArrowRight size={14} /></span>
+                    </div>
+                  </Link>
+                </SpotlightCard>
+              </Reveal>
             );
           })}
         </div>
       </section>
 
-      <section className="hl-flow-band" aria-label={copy.flowCaption}>
-        <p className="hl-eyebrow"><span className="hl-eyebrow-dot" />{copy.flowCaption}</p>
-        <iframe
-          key={flowLang}
-          className="hl-hero-flow hl-hero-flow-below"
-          src={`/hero-flow.html?lang=${flowLang}`}
-          title="Smriti Saathi app flow"
-        />
-      </section>
+      <Reveal>
+        <section className="hl-flow-band" aria-label={copy.flowCaption}>
+          <p className="hl-eyebrow"><span className="hl-eyebrow-dot" />{copy.flowCaption}</p>
+          <iframe
+            key={flowLang}
+            className="hl-hero-flow hl-hero-flow-below"
+            src={`/hero-flow.html?lang=${flowLang}`}
+            title="Smriti Saathi app flow"
+          />
+        </section>
+      </Reveal>
 
-      <section id="stage" className="hl-stage">
-        <div className="hl-stage-tabs" role="tablist">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={stage === tab.id}
-              className={stage === tab.id ? 'is-on' : ''}
-              onClick={() => setStage(tab.id)}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {stage === 'day' && (
-          <div className="hl-stage-panel">
-            <div className="hl-dash-toolbar">
-              <p>{copy.lede}</p>
-              <Link className="hl-btn-primary" to="/user">{copy.tryDash} <ArrowRight size={16} /></Link>
-            </div>
-            <div className="hl-dash-preview ss-theme">
-              <AppNavContext.Provider value={previewNav}>
-                <UserDashboard />
-              </AppNavContext.Provider>
-            </div>
+      <Reveal delay={0.05}>
+        <section id="stage" className="hl-stage">
+          <div className="hl-stage-tabs" role="tablist">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                role="tab"
+                aria-selected={stage === tab.id}
+                className={stage === tab.id ? 'is-on' : ''}
+                onClick={() => setStage(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
-        )}
 
-        {stage === 'does' && (
-          <div className="hl-stage-panel hl-does-grid">
-            {copy.features.map((f, i) => {
-              const Icon = FEATURE_META[i].icon;
-              return (
-                <SpotlightCard key={f.title} className="hl-feature-card">
-                  <div className="hl-feature-icon" style={{ background: FEATURE_META[i].color }}>
-                    <Icon size={20} color="#fff" />
+          {stage === 'day' && (
+            <div className="hl-stage-panel">
+              <div className="hl-dash-toolbar">
+                <p>{copy.lede}</p>
+                <Link className="hl-btn-primary" to="/user">{copy.tryDash} <ArrowRight size={16} /></Link>
+              </div>
+              <div className="hl-dash-preview ss-theme">
+                <AppNavContext.Provider value={previewNav}>
+                  <UserDashboard />
+                </AppNavContext.Provider>
+              </div>
+            </div>
+          )}
+
+          {stage === 'does' && (
+            <div className="hl-stage-panel hl-does-grid">
+              {copy.features.map((f, i) => {
+                const Icon = FEATURE_META[i].icon;
+                return (
+                  <Reveal key={f.title} delay={0.04 * i}>
+                    <SpotlightCard className="hl-feature-card">
+                      <div className="hl-feature-icon" style={{ background: FEATURE_META[i].color }}>
+                        <Icon size={20} color="#fff" />
+                      </div>
+                      <h3>{f.title}</h3>
+                      <p>{f.desc}</p>
+                    </SpotlightCard>
+                  </Reveal>
+                );
+              })}
+            </div>
+          )}
+
+          {stage === 'music' && (
+            <div className="hl-stage-panel hl-music-stage">
+              <div className="hl-music hl-music-quiet">
+                <p className="hl-music-off-note">{copy.musicHint}</p>
+                <div className="hl-music-tabs" role="tablist">
+                  {MUSIC_TABS.map((tab) => (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={musicTab === tab.id}
+                      className={musicTab === tab.id ? 'is-active' : ''}
+                      onClick={() => { setMusicTab(tab.id); setTrackIndex(0); }}
+                    >
+                      {tab.label}
+                    </button>
+                  ))}
+                </div>
+                <div className="hl-track-picker" role="list">
+                  {musicTracks.map((track, index) => (
+                    <button
+                      key={track.id}
+                      type="button"
+                      className={index === trackIndex ? 'is-active' : ''}
+                      onClick={() => playTrack(index)}
+                    >
+                      <span>{track.title}</span>
+                      <small>{track.artist}</small>
+                    </button>
+                  ))}
+                </div>
+                <div className="hl-now-playing">
+                  <button type="button" className="hl-now-btn" onClick={toggleMusic} aria-label={musicOn ? 'Pause music' : 'Play music'}>
+                    {musicOn ? <Pause size={16} /> : <Play size={16} />}
+                  </button>
+                  <div>
+                    <strong>{currentTrack.title}</strong>
+                    <small>{currentTrack.artist}{musicOn ? ' · playing' : ' · off'}</small>
                   </div>
-                  <h3>{f.title}</h3>
-                  <p>{f.desc}</p>
-                </SpotlightCard>
-              );
-            })}
-          </div>
-        )}
-
-        {stage === 'music' && (
-          <div className="hl-stage-panel hl-music-stage">
-            <div className="hl-music hl-music-quiet">
-              <p className="hl-music-off-note">{copy.musicHint}</p>
-              <div className="hl-music-tabs" role="tablist">
-                {MUSIC_TABS.map((tab) => (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={musicTab === tab.id}
-                    className={musicTab === tab.id ? 'is-active' : ''}
-                    onClick={() => { setMusicTab(tab.id); setTrackIndex(0); }}
-                  >
-                    {tab.label}
-                  </button>
-                ))}
-              </div>
-              <div className="hl-track-picker" role="list">
-                {musicTracks.map((track, index) => (
-                  <button
-                    key={track.id}
-                    type="button"
-                    className={index === trackIndex ? 'is-active' : ''}
-                    onClick={() => playTrack(index)}
-                  >
-                    <span>{track.title}</span>
-                    <small>{track.artist}</small>
-                  </button>
-                ))}
-              </div>
-              <div className="hl-now-playing">
-                <button type="button" className="hl-now-btn" onClick={toggleMusic} aria-label={musicOn ? 'Pause music' : 'Play music'}>
-                  {musicOn ? <Pause size={16} /> : <Play size={16} />}
-                </button>
-                <div>
-                  <strong>{currentTrack.title}</strong>
-                  <small>{currentTrack.artist}{musicOn ? ' · playing' : ' · off'}</small>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </section>
+          )}
+        </section>
+      </Reveal>
 
       <footer className="hl-footer">
         <div className="hl-footer-brand">

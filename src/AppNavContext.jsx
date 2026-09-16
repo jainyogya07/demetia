@@ -9,6 +9,7 @@ export const AppNavContext = createContext({
   currentModuleId: 'home',
   openAssist: () => {},
   openMemoryQuiz: () => {},
+  openGuide: () => {},
   setActiveGameId: () => {},
   activeGameId: null,
 });

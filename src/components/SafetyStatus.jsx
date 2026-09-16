@@ -13,34 +13,37 @@ function SafetyStatus() {
   const mins = minutesSince(last?.at);
 
   return (
-    <div className="safety-status-card">
+    <div className="safety-status-card ss-calm-safety-card">
       <div className="section-title">
-        <div className="title-icon">
-          <ShieldCheck size={20} />
+        <div className="title-icon ss-calm-safety-icon">
+          <ShieldCheck size={22} />
         </div>
-        <h2>{t("safetyStatus")}</h2>
+        <div>
+          <h2>You&apos;re safe</h2>
+          <p className="ss-safety-subtitle">Care circle connected &amp; watching gently</p>
+        </div>
       </div>
 
       <div className="safety-content">
         <div className="safety-item">
           <MapPin size={18} />
           <div>
-            <span className="safety-label">{t("safeZone")}</span>
-            <strong>{t("homeZone")} — Zoo Road</strong>
+            <span className="safety-label">Home Sanctuary</span>
+            <strong>Home Zone — Zoo Road</strong>
           </div>
         </div>
 
         <div className="safety-item">
           <Clock size={18} />
           <div>
-            <span className="safety-label">{t("lastCheckIn")}</span>
-            <strong>{mins == null ? t("notYetToday") : mins < 1 ? t("justNow") : `${mins} min`}</strong>
+            <span className="safety-label">Last check-in</span>
+            <strong>{mins == null ? 'Just now' : mins < 1 ? 'Just now' : `${mins} min ago`}</strong>
           </div>
         </div>
 
-        <div className="safety-good">
-          <span className="status-dot"></span>
-          <span>{mins != null && mins < 180 ? t("allGood") : t("waitingCheckIn")}</span>
+        <div className="safety-good ss-calm-safe-good">
+          <span className="status-dot ss-safe-green-dot"></span>
+          <span>All calm &amp; secure</span>
         </div>
 
         <button

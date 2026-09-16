@@ -290,7 +290,13 @@ export default function SarthiAssistRuntime({
       profileName: prefs.profile?.name,
     });
     if (!dests.length) {
-      if (!fromVoice) sendText(cleaned);
+      if (!fromVoice) {
+        if (isConnected) {
+          sendText(cleaned);
+        } else {
+          pushLog('ai', 'Main aapke saath hoon. Boliye ya upar diye hue vikalp chuniye — dawa, routine, photos ya khel.');
+        }
+      }
       return;
     }
     dests.forEach((dest, index) => {
@@ -326,22 +332,19 @@ export default function SarthiAssistRuntime({
   }, [paused, authenticated, disconnect]);
 
   useEffect(() => {
-    if (panelOpen && !prevOpenRef.current && authenticated && !paused) {
-      endedRef.current = false;
-      keepAliveRef.current = true;
-      setKeepAlive(true);
+    if (!panelOpen) {
+      window.clearTimeout(connectTimerRef.current);
+      endedRef.current = true;
+      keepAliveRef.current = false;
+      setKeepAlive(false);
+      if (isConnected) {
+        stopListening();
+        disconnect();
+        releaseVoice('assist');
+      }
     }
     prevOpenRef.current = panelOpen;
-  }, [panelOpen, authenticated, paused]);
-
-  useEffect(() => {
-    if (paused || !authenticated || !keepAlive) return undefined;
-    connectTimerRef.current = window.setTimeout(() => {
-      claimVoice('assist');
-      connect({ startMic: true, mode: 'voice', languageName: language.englishName, voiceName });
-    }, 450);
-    return () => window.clearTimeout(connectTimerRef.current);
-  }, [paused, authenticated, keepAlive, connect, language.englishName, voiceName]);
+  }, [panelOpen, isConnected, disconnect, stopListening]);
 
   useEffect(() => () => {
     disconnect();
@@ -500,7 +503,7 @@ export default function SarthiAssistRuntime({
     </button>
   );
 
-  if (!panelOpen) return fab;
+  if (!panelOpen) return null;
 
   return (
     <div className="sa-modal-overlay sa-modal-overlay-wide" onClick={onPanelClose} role="presentation">
@@ -590,10 +593,52 @@ export default function SarthiAssistRuntime({
                 </button>
               )}
             </div>
+            {/* Saarthi Voice & Language Preference inside AI panel */}
+            <div className="sa-preference-box">
+              <div className="sa-pref-row">
+                <span className="sa-pref-label">How would you like Saarthi to speak?</span>
+                <div className="sa-pref-chips">
+                  {[
+                    { code: 'as', label: 'Assamese' },
+                    { code: 'kha', label: 'Khasi' },
+                    { code: 'lus', label: 'Mizo' },
+                    { code: 'mni', label: 'Manipuri' },
+                    { code: 'brx', label: 'Bodo' },
+                    { code: 'hi', label: 'Hindi' },
+                    { code: 'en', label: 'English' },
+                  ].map((l) => (
+                    <button
+                      key={l.code}
+                      type="button"
+                      className={`sa-pref-chip ${lang === l.code ? 'active' : ''}`}
+                      onClick={() => setLang(l.code)}
+                    >
+                      {l.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="sa-pref-row">
+                <span className="sa-pref-label">Voice</span>
+                <div className="sa-pref-chips">
+                  {['female', 'male'].map((g) => (
+                    <button
+                      key={g}
+                      type="button"
+                      className={`sa-pref-chip ${(prefs.voice?.gender || 'female') === g ? 'active' : ''}`}
+                      onClick={() => updatePrefs({ voice: { gender: g } })}
+                    >
+                      {g === 'female' ? 'Female' : 'Male'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
             <div className="ai-panel-footer">
               <div className="ai-lang-badge">
                 <Languages size={14} />
-                Assamese • Hindi • English · NER languages
+                {language.name} • {language.englishName}
               </div>
               <div className="ai-powered-badge">
                 <Sparkles size={12} />

@@ -645,3 +645,58 @@
   color: #fff;
 }
 
+/* Saarthi Voice & Language Preference */
+.sa-preference-box {
+  margin-top: 14px;
+  padding: 12px 14px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sa-pref-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sa-pref-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  letter-spacing: 0.2px;
+}
+
+.sa-pref-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sa-pref-chip {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid #CBD5E1;
+  background: #FFFFFF;
+  color: #334155;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sa-pref-chip:hover {
+  border-color: #176B58;
+  color: #176B58;
+}
+
+.sa-pref-chip.active {
+  background: #176B58;
+  border-color: #176B58;
+  color: #FFFFFF;
+  box-shadow: 0 2px 6px rgba(23, 107, 88, 0.2);
+}
+

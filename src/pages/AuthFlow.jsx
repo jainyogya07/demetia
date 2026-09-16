@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BrandLogo from '../components/BrandLogo';
 import { useAuth } from '../context/AuthContext';
+import ClickSpark from '../components/bits/ClickSpark';
+import Reveal from '../components/bits/Reveal';
+import BlurText from '../components/bits/BlurText';
+import Particles from '../components/bits/Particles';
 import './AuthFlow.css';
 
 const PENDING_KEY = 'ss-auth-pending';
@@ -298,12 +302,22 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
   };
 
   return (
-    <div className={`af ${variant === 'modal' ? 'af-modal' : ''}`}>
-      <div className="af-card">
+    <ClickSpark className={`af ${variant === 'modal' ? 'af-modal' : ''}`}>
+      {variant !== 'modal' && (
+        <div className="af-bits" aria-hidden>
+          <Particles particleCount={36} particleSpread={10} speed={0.08} />
+        </div>
+      )}
+      <Reveal className="af-card">
         <BrandLogo />
         {pane !== 'otp' && (
           <>
-            <h1>{pane === 'login' ? 'Log in' : 'Create account'}</h1>
+            <BlurText
+              text={pane === 'login' ? 'Log in' : 'Create account'}
+              className="af-title"
+              tag="h1"
+              delay={50}
+            />
             <p className="af-lead">
               {pane === 'login'
                 ? 'Name and mobile. A 6-digit code goes to your email — if mail is unavailable, the code shows on the next screen.'
@@ -410,7 +424,7 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
             Continue without an account
           </button>
         )}
-      </div>
-    </div>
+      </Reveal>
+    </ClickSpark>
   );
 }

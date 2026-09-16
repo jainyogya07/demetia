@@ -39,21 +39,21 @@ function BrainActivity() {
   ];
 
   return (
-    <div className="brain-activity-card">
+    <div className="brain-activity-card ss-calm-brain-card">
       <div className="brain-activity-header">
         <div className="section-title">
-          <div className="title-icon">
-            <Brain size={21} />
+          <div className="title-icon ss-calm-brain-icon">
+            <Brain size={22} />
           </div>
 
           <div>
-            <h2>{t("brainActivity")}</h2>
-            <p>{t("simpleActivities")}</p>
+            <h2>Let&apos;s exercise your memory</h2>
+            <p>Gentle puzzles to keep your mind bright and peaceful.</p>
           </div>
         </div>
 
-        <span className="recommended-badge">
-          {t("recommendedToday")}
+        <span className="recommended-badge ss-calm-rec-badge">
+          Peaceful Pace
         </span>
       </div>
 

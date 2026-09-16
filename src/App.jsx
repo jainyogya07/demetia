@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect, useRef, Component } from 'react';
-import { Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, MessageSquare, Puzzle, CalendarDays, HeartPulse, LineChart,
   Users, MapPin, BookOpen, Languages, Settings, Bell, User,
-  ShieldAlert, X, Plus, CloudOff, FileText, PanelLeft, PanelLeftClose, Menu, SquarePen,
+  ShieldAlert, X, Plus, CloudOff, FileText, PanelLeft, PanelLeftClose, Menu, SquarePen, HelpCircle, Info,
 } from 'lucide-react';
 import SafetyLocation from './pages/SafetyLocation';
 import BrainGames from './games/BrainGames';
@@ -14,6 +14,9 @@ import './granth-home-extras.css';
 import './smriti-dashboard.css';
 import './editorial-theme.css';
 import './patient-mobile.css';
+import './components/NewLayout.css';
+import heroCalmLake from './assets/hero-calm-lake.png';
+import logoMark from './assets/smriti-saarthi-logo.png';
 import ServicesCredits from './ServicesCredits';
 import MyDocuments from './MyDocuments';
 import AICompanion from './AICompanion';
@@ -27,6 +30,7 @@ import HomeLanding from './pages/HomeLanding';
 import KeypadPhone from './pages/KeypadPhone';
 import CaregiverLayout from './pages/caregiver/CaregiverLayout';
 import CaregiverAssessment from './pages/caregiver/CaregiverAssessment';
+import CaregiverMemorySetup from './pages/caregiver/CaregiverMemorySetup';
 import {
   CgOverview, CgRoutine, CgSafety, CgProgress, CgCircle, CgDocuments, CgSettings,
   CgCalendar, CgProfile,
@@ -37,28 +41,33 @@ import {
   DoctorPatients, DoctorPatient, DoctorAlerts, DoctorReports,
   DoctorTasks, DoctorCalendar, DoctorProfile,
 } from './pages/doctor/DoctorPages';
-import BrandLogo from './components/BrandLogo';
 import Footer from './components/Footer';
 import MemoryBookPage from './pages/MemoryBookPage';
 import MemoryQuiz from './components/MemoryQuiz';
+import Guide from './components/Guide';
 import AlarmRuntime from './components/AlarmRuntime';
 import AuthFlow from './pages/AuthFlow';
 import { useAuth } from './context/AuthContext';
-import VoiceToggle from './components/VoiceToggle';
-import LanguageSwitcher from './components/LanguageSwitcher';
-import DashAurora from './components/bits/DashAurora';
+import { motion } from 'motion/react';
+import SaarthiRadialMenu from './components/SaarthiRadialMenu';
+import AboutUsModal from './components/AboutUsModal';
+import companionPortrait from './assets/infinity_pfp.jpg';
 import SarthiAssistRuntime from './components/SarthiAssistModal';
 import './components/SarthiAssistModal.css';
 import { user } from './data/user';
 import { AppNavContext } from './AppNavContext';
 import { notifyCompanionOpen } from './lib/voiceBus';
 import { useI18n } from './I18nContext';
-import { DEMO_REGIONS, useLanguage } from './context/LanguageContext';
 import { usePrefs } from './PrefsContext';
 import { EMERGENCY_LINES } from './i18n';
 import { memoryQuizDoneToday, markMemoryQuizDay, saveMemoryQuizResult } from './lib/memoryQuiz';
 import { applyMemoryQuizToAssessment } from './lib/assessmentStore';
-
+import JainQuoteCarousel from './components/JainQuoteCarousel';
+import HeaderProfileMenu from './components/HeaderProfileMenu';
+import HeaderLanguageControl from './components/HeaderLanguageControl';
+import DashAurora from './components/bits/DashAurora';
+import Magnet from './components/bits/Magnet';
+import ClickSpark from './components/bits/ClickSpark';
 class QuizErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -133,28 +142,39 @@ const MODULES = [
   { id: 'games', icon: Puzzle, component: BrainGames, closable: true },
   { id: 'ai', icon: MessageSquare, component: AICompanion, closable: true },
   { id: 'routine', icon: CalendarDays, component: DailyRoutinePage, closable: true },
-  { id: 'medicine', icon: HeartPulse, component: ServicesCredits, closable: true },
-  { id: 'progress', icon: LineChart, component: MemoryProgressPage, closable: true },
+  { id: 'memory-book', icon: BookOpen, component: MemoryBookPage, closable: true },
   { id: 'care-circle', icon: Users, component: CareCirclePage, closable: true },
   { id: 'safety', icon: MapPin, component: SafetyLocation, closable: true },
-  { id: 'memory-book', icon: BookOpen, component: MemoryBookPage, closable: true },
-  { id: 'language', icon: Languages, component: () => (
-    <SmritiPlaceholder
-      title="Language & Accessibility"
-      description="Assamese, Khasi, Mizo, Manipuri, Bodo, Hindi, and English — plus large type and high contrast. Use the header language menu and Settings for now."
-    />
-  ), closable: true },
-  { id: 'services', icon: HeartPulse, component: ServicesCredits, closable: true },
-  { id: 'support-credits', icon: HeartPulse, component: SupportCreditsPage, closable: true },
+  { id: 'progress', icon: LineChart, component: MemoryProgressPage, closable: true },
   { id: 'documents', icon: FileText, component: MyDocuments, closable: true },
   { id: 'settings', icon: Settings, component: SettingsPage, closable: true },
-  { id: 'help', icon: ShieldAlert, component: () => (
-    <SmritiPlaceholder
-      title="Emergency Help"
-      description="Use the red Emergency Help button in the sidebar to call 112, Elderline, or Tele-MANAS."
-    />
-  ), closable: true, isSpecial: true },
 ];
+
+function LiveNetworkStatus() {
+  const [online, setOnline] = useState(() => (typeof navigator !== 'undefined' ? navigator.onLine : true));
+
+  useEffect(() => {
+    const handleOnline = () => setOnline(true);
+    const handleOffline = () => setOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  return (
+    <div
+      className={`ss-live-badge ${online ? 'is-live' : 'is-offline'}`}
+      role="status"
+      title={online ? 'System: Connected & syncing live' : 'System: Offline mode active'}
+    >
+      <span className="ss-pulse-dot" />
+      <span className="ss-live-text">{online ? 'Live' : 'Offline'}</span>
+    </div>
+  );
+}
 
 function EmergencyPanel({ onClose }) {
   const { t } = useI18n();
@@ -205,19 +225,43 @@ function EmergencyPanel({ onClose }) {
   );
 }
 
-function greetingChromeKey() {
-  const hour = new Date().getHours();
-  if (hour < 12) return 'chrome.goodMorning';
-  if (hour < 17) return 'chrome.goodAfternoon';
-  return 'chrome.goodEvening';
-}
+const SIDEBAR_GROUPS = [
+  {
+    title: 'TODAY',
+    items: [
+      { id: 'home', label: 'Home', icon: Home },
+      { id: 'routine', label: 'My Day', icon: CalendarDays },
+    ],
+  },
+  {
+    title: 'MEMORY',
+    items: [
+      { id: 'memory-book', label: 'Memory Book', icon: BookOpen },
+      { id: 'games', label: 'Brain Games', icon: Puzzle },
+    ],
+  },
+  {
+    title: 'CARE',
+    items: [
+      { id: 'care-circle', label: 'Care Circle', icon: Users },
+      { id: 'safety', label: 'Safety', icon: MapPin },
+    ],
+  },
+  {
+    title: 'SUPPORT',
+    items: [
+      { id: 'documents', label: 'Documents', icon: FileText },
+      { id: 'progress', label: 'Progress', icon: LineChart },
+    ],
+  },
+];
 
 function UserWorkspace({ boot }) {
   const { t } = useI18n();
-  const { setDemoRegion, isDemoLocation, detectedRegion, enableAutomaticLanguage, locationLoading } = useLanguage();
   const { prefs } = usePrefs();
-  const { session, signOut, openAuth } = useAuth();
+  const { session, openAuth } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const bootRef = useRef(false);
   const displayName = session?.name || prefs.profile.name || user.name;
   const [tabs, setTabs] = useState([{ ...MODULES[0], instanceId: 'home-main' }]);
@@ -235,31 +279,35 @@ function UserWorkspace({ boot }) {
   const [, setAssistLive] = useState(false);
   const [activeGameId, setActiveGameId] = useState(null);
   const [showMemoryQuiz, setShowMemoryQuiz] = useState(() => !memoryQuizDoneToday());
+  const [showGuide, setShowGuide] = useState(false);
+  const [showAboutUs, setShowAboutUs] = useState(false);
   const tabsRef = useRef([{ ...MODULES[0], instanceId: 'home-main' }]);
   tabsRef.current = tabs;
+  const activeTabIdRef = useRef(activeTabId);
+  activeTabIdRef.current = activeTabId;
+  const skipHistoryRef = useRef(false);
+  const seededHistoryRef = useRef(false);
   const openEmergency = useCallback(() => setShowEmergency(true), []);
   const currentModuleId = tabs.find((tab) => tab.instanceId === activeTabId)?.id || 'home';
-  const greeting = t(greetingChromeKey());
 
   const moduleTitle = (id) => t(`modules.${id}`);
   const showTabs = tabs.length > 1;
-  const navModules = MODULES.filter((mod) => !SIDEBAR_HIDDEN.has(mod.id) && !mod.isSpecial);
-  const todayModules = navModules.slice(0, 6);
-  const moreModules = navModules.slice(6);
 
-  const openModule = useCallback((moduleId, options = {}) => {
+  const activateModule = useCallback((moduleId, options = {}) => {
     const moduleItem = MODULES.find((mod) => mod.id === moduleId);
-    if (!moduleItem) return;
+    if (!moduleItem) return null;
 
     const existingTab = tabsRef.current.find((tab) => tab.id === moduleItem.id);
+    let instanceId;
     if (existingTab) {
+      instanceId = existingTab.instanceId;
       setActiveTabId(existingTab.instanceId);
     } else {
-      const newInstanceId = `${moduleItem.id}-${Date.now()}`;
-      const next = [...tabsRef.current, { ...moduleItem, instanceId: newInstanceId }];
+      instanceId = `${moduleItem.id}-${Date.now()}`;
+      const next = [...tabsRef.current, { ...moduleItem, instanceId }];
       tabsRef.current = next;
       setTabs(next);
-      setActiveTabId(newInstanceId);
+      setActiveTabId(instanceId);
     }
 
     if (moduleId === 'services') {
@@ -284,36 +332,42 @@ function UserWorkspace({ boot }) {
         ts: Date.now(),
       });
     }
+
+    return instanceId;
   }, []);
+
+  const openModule = useCallback((moduleId, options = {}) => {
+    const moduleItem = MODULES.find((mod) => mod.id === moduleId);
+    if (!moduleItem) return;
+
+    const prevId = tabsRef.current.find((tab) => tab.instanceId === activeTabIdRef.current)?.id || 'home';
+    activateModule(moduleId, options);
+
+    if (skipHistoryRef.current) return;
+
+    const sameModule = prevId === moduleId && location.state?.moduleId === moduleId;
+    const onlyIntentRefresh = sameModule && (options.startVoice || options.gameId || options.serviceId || options.initialQuery);
+    if (sameModule && !onlyIntentRefresh) return;
+
+    navigate('/user', {
+      state: {
+        moduleId,
+        options: {
+          startVoice: options.startVoice || false,
+          gameId: options.gameId || null,
+          serviceId: options.serviceId || null,
+        },
+      },
+      replace: sameModule,
+    });
+  }, [activateModule, navigate, location.state?.moduleId]);
 
   const handleOpenModule = (moduleItem) => {
     openModule(moduleItem.id, moduleItem.id === 'ai' ? { startVoice: true } : {});
   };
 
-  const renderNavItem = (mod) => {
-    const isActive = tabs.find((tab) => tab.id === mod.id && tab.instanceId === activeTabId);
-    return (
-      <a
-        key={mod.id}
-        href="#"
-        className={`nav-item ${isActive ? 'active' : ''}`}
-        title={moduleTitle(mod.id)}
-        onClick={(e) => {
-          e.preventDefault();
-          handleOpenModule(mod);
-          setRailOpen(false);
-        }}
-      >
-        <mod.icon size={18} />
-        <span className="ss-rail-copy">
-          <span className="ss-rail-label">{moduleTitle(mod.id)}</span>
-        </span>
-      </a>
-    );
-  };
-
   const assistPaused = showMemoryQuiz || currentModuleId === 'ai' || (currentModuleId === 'games' && activeGameId === 'story-solver');
-  const assistReady = Boolean(session?.verified);
+  const assistReady = true;
 
   useEffect(() => {
     if (!session?.verified || !pendingAssistRef.current) return;
@@ -327,12 +381,29 @@ function UserWorkspace({ boot }) {
   }, [assistPaused]);
 
   const openMemoryQuiz = useCallback(() => setShowMemoryQuiz(true), []);
+  const openGuide = useCallback(() => setShowGuide(true), []);
 
+  // Seed history so the first Back from a module returns to Home (not landing).
   useEffect(() => {
-    if (location.state?.moduleId) {
-      openModule(location.state.moduleId, location.state.options || {});
+    if (seededHistoryRef.current) return;
+    if (location.pathname !== '/user' && location.pathname !== '/talk' && location.pathname !== '/assist' && location.pathname !== '/stories') return;
+    seededHistoryRef.current = true;
+    if (!location.state?.moduleId) {
+      navigate(location.pathname || '/user', {
+        replace: true,
+        state: { moduleId: 'home', options: {} },
+      });
     }
-  }, [location.state, openModule]);
+  }, [location.pathname, location.state?.moduleId, navigate]);
+
+  // Browser Back / Forward restores the previous module tab inside /user.
+  useEffect(() => {
+    const moduleId = location.state?.moduleId;
+    if (!moduleId) return;
+    skipHistoryRef.current = true;
+    activateModule(moduleId, location.state.options || {});
+    skipHistoryRef.current = false;
+  }, [location.key, location.state, activateModule]);
 
   useEffect(() => {
     if (bootRef.current) return;
@@ -359,18 +430,38 @@ function UserWorkspace({ boot }) {
     const newTabs = tabs.filter((tab) => tab.instanceId !== instanceId);
     tabsRef.current = newTabs;
 
+    let nextModuleId = 'home';
     if (activeTabId === instanceId) {
       const closingIndex = tabs.findIndex((tab) => tab.instanceId === instanceId);
       const nextActiveIndex = closingIndex > 0 ? closingIndex - 1 : 0;
-      setActiveTabId(newTabs[nextActiveIndex]?.instanceId || 'home-main');
+      const nextTab = newTabs[nextActiveIndex];
+      setActiveTabId(nextTab?.instanceId || 'home-main');
+      nextModuleId = nextTab?.id || 'home';
+    } else {
+      nextModuleId = tabs.find((tab) => tab.instanceId === activeTabId)?.id || 'home';
     }
 
     setTabs(newTabs);
+    navigate('/user', {
+      replace: true,
+      state: { moduleId: nextModuleId, options: {} },
+    });
+  };
+
+  const lakesideStyle = {
+    backgroundImage: `url(${heroCalmLake})`,
+    backgroundSize: 'cover',
+    backgroundPosition: '52% 38%',
+    backgroundAttachment: 'fixed',
+    backgroundRepeat: 'no-repeat',
   };
 
   return (
-    <AppNavContext.Provider value={{ openModule, serviceFocus, aiIntent, gameIntent, openEmergency, currentModuleId, openAssist, openMemoryQuiz, setActiveGameId, activeGameId }}>
-    <div className={`app-container ss-theme ss-patient-shell${railCollapsed ? ' is-rail-collapsed' : ''}${railOpen ? ' is-rail-open' : ''}`}>
+    <AppNavContext.Provider value={{ openModule, serviceFocus, aiIntent, gameIntent, openEmergency, currentModuleId, openAssist, openMemoryQuiz, openGuide, setActiveGameId, activeGameId }}>
+    <ClickSpark
+      className={`app-container ss-theme ss-patient-shell ss-lakeside ${currentModuleId === 'home' ? 'is-home-route' : ''} ${railCollapsed ? ' is-rail-collapsed' : ''}${railOpen ? ' is-rail-open' : ''}`}
+      style={lakesideStyle}
+    >
       {railOpen && (
         <button type="button" className="ss-rail-backdrop" aria-label="Close menu" onClick={() => setRailOpen(false)} />
       )}
@@ -387,9 +478,43 @@ function UserWorkspace({ boot }) {
             </button>
           ) : (
             <>
-              <Link to="/" className="ss-brand-link" title="Smriti Saarthi">
-                <BrandLogo rail compact={false} />
-              </Link>
+              <motion.div
+                className="ss-sidebar-brand-block"
+                initial={{ opacity: 0, y: -8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 340, damping: 24 }}
+              >
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Link to="/" className="ss-brand-link ss-new-brand-link" title="Smriti Saarthi">
+                    <div className="ss-new-brand-icon">
+                      <img
+                        src={logoMark}
+                        alt=""
+                        className="ss-new-brand-logo"
+                        draggable={false}
+                      />
+                    </div>
+                    <div className="ss-new-brand-text">
+                      <strong>Smriti Saarthi</strong>
+                      <span>Always With You</span>
+                    </div>
+                  </Link>
+                </motion.div>
+                <motion.button
+                  type="button"
+                  className="ss-about-us-btn"
+                  onClick={() => setShowAboutUs(true)}
+                  whileHover={{ scale: 1.04, y: -1 }}
+                  whileTap={{ scale: 0.97 }}
+                  initial={{ opacity: 0, x: -6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ type: 'spring', stiffness: 360, damping: 22, delay: 0.08 }}
+                  aria-label="About Us"
+                >
+                  <Info size={14} aria-hidden="true" />
+                  About Us
+                </motion.button>
+              </motion.div>
               <button
                 type="button"
                 className="ss-rail-toggle"
@@ -418,38 +543,51 @@ function UserWorkspace({ boot }) {
         </button>
 
         <div className="ss-gpt-scroll">
-          <p className="ss-rail-kicker">{t('chrome.todayKicker')}</p>
-          <nav className="sidebar-nav">
-            {todayModules.map(renderNavItem)}
-          </nav>
-          <p className="ss-rail-kicker">{t('chrome.moreKicker')}</p>
-          <nav className="sidebar-nav">
-            {moreModules.map(renderNavItem)}
-          </nav>
-          <p className="ss-rail-kicker">{t('chrome.openNow')}</p>
-          <nav className="sidebar-nav ss-gpt-recents">
-            {tabs.map((tab) => (
-              <a
-                key={tab.instanceId}
-                href="#"
-                className={`nav-item ${tab.instanceId === activeTabId ? 'active' : ''}`}
-                title={moduleTitle(tab.id)}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setActiveTabId(tab.instanceId);
-                  setRailOpen(false);
-                }}
-              >
-                <tab.icon size={16} />
-                <span className="ss-rail-copy">
-                  <span className="ss-rail-label">{moduleTitle(tab.id)}</span>
-                </span>
-              </a>
-            ))}
-          </nav>
+          {SIDEBAR_GROUPS.map((group) => (
+            <div key={group.title} className="sidebar-group-block">
+              <p className="ss-rail-kicker">{group.title}</p>
+              <nav className="sidebar-nav">
+                {group.items.map((item) => {
+                  const isActive = (activeTabId === item.id) || (item.id === 'home' && activeTabId === 'home-main');
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`nav-item ${isActive ? 'active' : ''}`}
+                      onClick={() => {
+                        openModule(item.id);
+                        setRailOpen(false);
+                      }}
+                      title={item.label}
+                    >
+                      <Icon size={20} />
+                      <span className="ss-rail-copy">
+                        <span className="ss-rail-label">{item.label}</span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+          ))}
         </div>
 
         <div className="sidebar-footer">
+          <button
+            type="button"
+            className="nav-item ss-settings-nav"
+            onClick={() => {
+              openModule('settings');
+              setRailOpen(false);
+            }}
+            title="Settings"
+          >
+            <Settings size={18} />
+            <span className="ss-rail-copy">
+              <span className="ss-rail-label">Settings</span>
+            </span>
+          </button>
           <button type="button" className="ss-emergency-nav" onClick={() => { openEmergency(); setRailOpen(false); }}>
             <ShieldAlert size={18} />
             <div className="help-now-content">
@@ -462,76 +600,54 @@ function UserWorkspace({ boot }) {
 
       <main className="main-content">
         <DashAurora />
-        <header className="top-bar ss-topbar">
-          <div className="ss-greeting-block">
-            <h1>{greeting}, {displayName}</h1>
-            <p>{t('chrome.quietDay')}</p>
-          </div>
-          <div className="top-bar-right">
-            <button type="button" className="ss-mobile-more-btn" onClick={() => setRailOpen(true)}>
-              <Menu size={18} />
-              {t('chrome.menu')}
-            </button>
-            {session?.verified ? (
-              <button type="button" className="ss-home-ghost" onClick={signOut}>
-                {t('chrome.signOut')}
-              </button>
-            ) : (
-              <button type="button" className="ss-home-ghost" onClick={() => openAuth('signup')}>
-                {t('chrome.signIn')}
-              </button>
-            )}
-            <VoiceToggle />
-            <LanguageSwitcher />
+        <SaarthiRadialMenu />
+        <header className="top-bar ss-topbar ss-transparent-header">
+          <div className="ss-header-left">
             <button
               type="button"
-              className="ss-home-ghost"
-              onClick={() => enableAutomaticLanguage()}
-              disabled={locationLoading}
+              className="ss-mobile-more-btn"
+              onClick={() => setRailOpen(true)}
+              aria-label={t('chrome.openMenu')}
             >
-              <MapPin size={14} />
-              {locationLoading ? 'Finding city…' : 'Use my region'}
+              <Menu size={22} />
             </button>
-            {(detectedRegion || isDemoLocation) && (
-              <span className="ss-place-chip" title={detectedRegion}>
-                <MapPin size={14} />
-                {detectedRegion || 'Region'}
-              </span>
-            )}
-            <label className="ss-demo-loc">
-              <MapPin size={14} />
-              <select
-                aria-label="Demo location"
-                value={isDemoLocation ? detectedRegion : ""}
-                onChange={(event) => setDemoRegion(event.target.value)}
+          </div>
+
+          <div className="ss-header-center">
+            <JainQuoteCarousel compact />
+          </div>
+
+          <div className="ss-header-right">
+            <HeaderLanguageControl />
+            <Magnet>
+              <motion.button
+                type="button"
+                className="ss-ask-saarthi-hero-btn"
+                onClick={openAssist}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                aria-label={t('chrome.askSaarthi')}
               >
-                <option value="">Demo location</option>
-                {DEMO_REGIONS.map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="ss-offline-chip">
-              <CloudOff size={16} />
-              <span>{t('chrome.offlineChip')}</span>
-            </div>
-            <div className="top-action ss-bell">
-              <Bell size={18} />
-              <span className="notification-badge">3</span>
-            </div>
-            <div className="top-action profile ss-profile">
-              {prefs.profile.photoDataUrl ? (
-                <img className="top-profile-photo" src={prefs.profile.photoDataUrl} alt="" />
-              ) : (
-                <span className="ss-profile-fallback"><User size={16} /></span>
-              )}
-              <span>{displayName} — {t('chrome.patient')}</span>
-            </div>
+                <div className="ss-saarthi-avatar-wrap">
+                  <img src={companionPortrait} alt="" className="ss-saarthi-avatar-img" />
+                  <span className="ss-saarthi-breath-ring" />
+                </div>
+                <div className="ss-saarthi-btn-copy">
+                  <span className="ss-saarthi-btn-main">{t('chrome.askSaarthi')}</span>
+                  <span className="ss-saarthi-btn-sub">{t('chrome.askSaarthiSub')}</span>
+                </div>
+              </motion.button>
+            </Magnet>
+
+            <HeaderProfileMenu
+              name={displayName}
+              onOpenSettings={() => openModule('settings')}
+              onOpenAccount={() => openModule('settings')}
+            />
           </div>
         </header>
         {showEmergency && <EmergencyPanel onClose={() => setShowEmergency(false)} />}
+        <AboutUsModal open={showAboutUs} onClose={() => setShowAboutUs(false)} />
         <SarthiAssistRuntime
           panelOpen={showAssist}
           onPanelOpen={() => setShowAssist(true)}
@@ -553,20 +669,40 @@ function UserWorkspace({ boot }) {
               <div
                 key={tab.instanceId}
                 className={`tab ${activeTabId === tab.instanceId ? 'active' : ''}`}
-                onClick={() => setActiveTabId(tab.instanceId)}
+                onClick={() => {
+                  setActiveTabId(tab.instanceId);
+                  navigate('/user', {
+                    state: { moduleId: tab.id, options: {} },
+                  });
+                }}
               >
                 <tab.icon size={14} className="tab-icon" />
                 {moduleTitle(tab.id)}
                 {tab.closable && (
-                  <div className="tab-close" onClick={(e) => handleCloseTab(e, tab.instanceId)}>
+                  <div className="tab-close" title="Close this tab" onClick={(e) => handleCloseTab(e, tab.instanceId)}>
                     <X size={14} />
                   </div>
                 )}
               </div>
             ))}
-            <div className="tab-add" title="Open new tab">
-              <Plus size={16} />
-            </div>
+            {tabs.length > 2 && (
+              <button
+                type="button"
+                className="tab-clear-others"
+                title="Close all extra tabs"
+                onClick={() => {
+                  const activeTab = tabs.find((t) => t.instanceId === activeTabId);
+                  const keep = [
+                    tabs[0],
+                    ...(activeTab && activeTab.id !== tabs[0].id ? [activeTab] : []),
+                  ];
+                  tabsRef.current = keep;
+                  setTabs(keep);
+                }}
+              >
+                Clear extra tabs
+              </button>
+            )}
           </div>
         )}
 
@@ -633,23 +769,23 @@ function UserWorkspace({ boot }) {
       <nav className="ss-mobile-dock" aria-label="Quick actions">
         <button type="button" className={tabs.find((tab) => tab.id === 'home' && tab.instanceId === activeTabId) ? 'is-on' : ''} onClick={() => handleOpenModule(MODULES[0])}>
           <Home size={22} />
-          Home
+          {t('chrome.dockHome')}
         </button>
         <button type="button" className={tabs.find((tab) => tab.id === 'ai' && tab.instanceId === activeTabId) ? 'is-on' : ''} onClick={() => handleOpenModule(MODULES.find((m) => m.id === 'ai'))}>
           <MessageSquare size={22} />
-          Speak
+          {t('chrome.dockSpeak')}
         </button>
         <button type="button" className={tabs.find((tab) => tab.id === 'games' && tab.instanceId === activeTabId) ? 'is-on' : ''} onClick={() => handleOpenModule(MODULES.find((m) => m.id === 'games'))}>
           <Puzzle size={22} />
-          Games
+          {t('chrome.dockGames')}
         </button>
         <button type="button" className={tabs.find((tab) => tab.id === 'routine' && tab.instanceId === activeTabId) ? 'is-on' : ''} onClick={() => handleOpenModule(MODULES.find((m) => m.id === 'routine'))}>
           <CalendarDays size={22} />
-          Routine
+          {t('chrome.dockRoutine')}
         </button>
         <button type="button" className="dock-emergency" onClick={openEmergency}>
           <ShieldAlert size={22} />
-          Help
+          {t('chrome.dockHelp')}
         </button>
       </nav>
       {showMemoryQuiz && (
@@ -681,7 +817,10 @@ function UserWorkspace({ boot }) {
         </QuizErrorBoundary>
       )}
       <AlarmRuntime />
-    </div>
+      {showGuide && (
+        <Guide onClose={() => setShowGuide(false)} />
+      )}
+    </ClickSpark>
     </AppNavContext.Provider>
   );
 }
@@ -728,6 +867,7 @@ function App() {
         <Route path="settings" element={<CgSettings />} />
         <Route path="train-ai" element={<TrainAiPage />} />
         <Route path="assessment" element={<CaregiverAssessment />} />
+        <Route path="memory-journey" element={<CaregiverMemorySetup />} />
       </Route>
       <Route path="/doctor" element={<DoctorLayout />}>
         <Route index element={<DoctorPatients />} />

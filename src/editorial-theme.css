@@ -32,7 +32,7 @@
 .daily-routine-page,
 .memory-progress-page,
 .care-circle-page {
-  background: #f4f7f5;
+  background: transparent;
 }
 
 .routine-header h1,

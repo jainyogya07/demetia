@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { FAMILY_PHOTOS } from "../data/familyPhotos";
 import { getCircleStatus, loadCheckIns, subscribeLive } from "../lib/liveState";
+import { useI18n } from "../I18nContext";
 import "./CareCircle.css";
 
 const PHOTO = {
@@ -24,6 +25,7 @@ const PHOTO = {
 };
 
 const CareCircle = () => {
+  const { t } = useI18n();
   const [, setTick] = useState(0);
   const [familyOpen, setFamilyOpen] = useState(true);
   const [familyDraft, setFamilyDraft] = useState('');
@@ -64,20 +66,20 @@ const CareCircle = () => {
   }, [lastCheck, members, primary]);
 
   return (
-    <div className="care-circle-page">
+    <div className="care-circle-page ss-lakeside-page">
 
       {/* HEADER */}
       <div className="care-circle-header">
         <div>
           <div className="care-circle-label">
             <Users size={15} />
-            FAMILY & CARE SUPPORT
+            {t('careCirclePage.label')}
           </div>
 
-          <h1>My Care Circle</h1>
+          <h1>{t('careCirclePage.title')}</h1>
 
           <p>
-            Stay connected with the people who support your everyday wellbeing.
+            {t('careCirclePage.lead')}
           </p>
         </div>
 

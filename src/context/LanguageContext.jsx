@@ -961,6 +961,18 @@ export const LanguageProvider = ({ children }) => {
       return "";
     }
   });
+  const [regionExplicit, setRegionExplicit] = useState(() => {
+    try {
+      // Manual language choice wins over leftover region locks from prior sessions.
+      if (localStorage.getItem("smriti-lang-manual") === "1") return false;
+      return (
+        localStorage.getItem("smriti-region-pick") === "1"
+        || localStorage.getItem("smriti-demo-location") === "true"
+      );
+    } catch {
+      return false;
+    }
+  });
   const [locationLoading, setLocationLoading] = useState(false);
   const [isDemoLocation, setIsDemoLocation] = useState(() => {
     try {
@@ -974,15 +986,46 @@ export const LanguageProvider = ({ children }) => {
     setLanguageState(dashboardLang(i18nLang));
   }, [i18nLang]);
 
+  // Drop leftover region-pick flags when the user already chose a language manually.
+  useEffect(() => {
+    try {
+      if (localStorage.getItem("smriti-lang-manual") !== "1") return;
+      localStorage.removeItem("smriti-region-pick");
+      localStorage.setItem("smriti-demo-location", "false");
+    } catch {
+      /* ignore */
+    }
+  }, []);
+
+  const markRegionPick = (region) => {
+    setRegionExplicit(Boolean(region));
+    try {
+      if (region) localStorage.setItem("smriti-region-pick", "1");
+      else localStorage.removeItem("smriti-region-pick");
+    } catch {
+      /* ignore */
+    }
+  };
+
+  // Manual language pick drives scenery; release any prior region lock (regionExplicit).
+  // Detect / setDemoRegion sets the lock so region scenery wins until the next manual pick.
+  // Always push the *i18n* code into I18nContext so t() stays in sync (do not round-trip
+  // through dashboardLang first — collapsing an unknown dash code to "en" would freeze UI copy).
   const setLanguage = (newLanguage, manual = true) => {
-    const dash = dashboardLang(newLanguage);
+    const raw = typeof newLanguage === "string" ? newLanguage.trim() : "";
+    const dash = dashboardLang(raw || newLanguage);
     setLanguageState(dash);
-    const i18nMap = { kh: "kha", mz: "lus", mn: "mni", bd: "brx" };
-    setI18nLang(i18nMap[dash] || dash);
+    const dashToI18n = { kh: "kha", mz: "lus", mn: "mni", bd: "brx" };
+    const i18nCode = dashToI18n[raw] || raw || dashToI18n[dash] || dash;
+    setI18nLang(i18nCode);
     if (manual) {
+      // Manual language pick drives scenery; release any prior region lock.
+      markRegionPick("");
+      setIsDemoLocation(false);
       try {
         localStorage.setItem("smriti-lang-manual", "1");
         localStorage.setItem("smriti-auto-language", "false");
+        localStorage.setItem("smriti-demo-location", "false");
       } catch {
         /* ignore */
       }
@@ -996,6 +1039,7 @@ export const LanguageProvider = ({ children }) => {
   const setDemoRegion = (region) => {
     if (!region) {
       setIsDemoLocation(false);
+      markRegionPick("");
       try {
         localStorage.setItem("smriti-demo-location", "false");
       } catch {
@@ -1006,6 +1050,7 @@ export const LanguageProvider = ({ children }) => {
     const demoLanguage = REGION_LANGUAGE_MAP[region] || "en";
     setIsDemoLocation(true);
     setDetectedRegion(region);
+    markRegionPick(region);
     try {
       localStorage.setItem("smriti-demo-location", "true");
       localStorage.setItem("smriti-region", region);
@@ -1027,7 +1072,10 @@ export const LanguageProvider = ({ children }) => {
     }
     const found = await detectAndResolveLang();
     setLocationLoading(false);
-    if (found.region) setDetectedRegion(found.region);
+    if (found.region) {
+      setDetectedRegion(found.region);
+      markRegionPick(found.region);
+    }
     if (found.lang) setLanguage(found.lang, false);
     return found;
   };
@@ -1042,6 +1090,7 @@ export const LanguageProvider = ({ children }) => {
         setDemoRegion,
         isDemoLocation,
         detectedRegion,
+        regionExplicit,
         enableAutomaticLanguage,
         locationLoading,
       }}

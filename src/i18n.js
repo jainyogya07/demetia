@@ -1382,35 +1382,60 @@ const EVERYDAY_MODULES = {
   te: { home: 'హోమ్', games: 'మెదడు ఆటలు', ai: 'కేర్ ఏజెంట్', routine: 'రోజువారీ పని', medicine: 'మందు & ఆరోగ్యం', progress: 'మెమరీ పురోగతి', 'care-circle': 'కేర్ సర్కిల్', safety: 'భద్రత', 'memory-book': 'మెమరీ బుక్', settings: 'సెట్టింగ్స్', help: 'అత్యవసర సహాయం' },
   bn: { home: 'হোম', games: 'মস্তিষ্কের খেলা', ai: 'কেয়ার এজেন্ট', routine: 'আজকের কাজ', medicine: 'ওষুধ ও স্বাস্থ্য', progress: 'স্মৃতির অগ্রগতি', 'care-circle': 'যত্ন চক্র', safety: 'নিরাপত্তা', 'memory-book': 'স্মৃতির খাতা', settings: 'সেটিংস', help: 'জরুরি সাহায্য' },
   mr: { home: 'होम', games: 'मेंदूचे खेळ', ai: 'केअर एजंट', routine: 'आजचे काम', medicine: 'औषध आणि आरोग्य', progress: 'स्मृती प्रगती', settings: 'सेटिंग्ज', help: 'आपत्कालीन मदत' },
-  gu: { home: 'હોમ', games: 'મગજની રમતો', ai: 'કેર એજન્ટ', routine: 'આજનું કામ', medicine: 'દવા અને સ્વાસ્થ્ય', progress: 'સ્મૃતિ પ્રગતિ', settings: 'સેટિંગ્સ', help: 'કટોકટી મદદ' },
-  kn: { home: 'ಹೋಮ್', games: 'ಮೆದುಳಿನ ಆಟಗಳು', ai: 'ಕೇರ್ ಏಜೆಂಟ್', routine: 'ಇಂದಿನ ಕೆಲಸ', medicine: 'ಔಷಧ ಮತ್ತು ಆರೋಗ್ಯ', settings: 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು', help: 'ತುರ್ತು ಸಹಾಯ' },
-  ml: { home: 'ഹോം', games: 'മസ്തിഷ്ക കളികൾ', ai: 'കെയർ ഏജന്റ്', routine: 'ഇന്നത്തെ ജോലി', medicine: 'മരുന്ന്', settings: 'ക്രമീകരണം', help: 'അടിയന്തര സഹായം' },
-  pa: { home: 'ਹੋਮ', games: 'ਦਿਮਾਗ ਦੀਆਂ ਖੇਡਾਂ', ai: 'ਕੇਅਰ ਏਜੰਟ', routine: 'ਅੱਜ ਦਾ ਕੰਮ', medicine: 'ਦਵਾਈ', settings: 'ਸੈਟਿੰਗਾਂ', help: 'ਐਮਰਜੈਂਸੀ ਮਦਦ' },
-  kha: { home: 'Ïing', games: 'Ki game pyrkhat', ai: 'Care Agent', routine: 'Ka kam mynta', medicine: 'Dawai', settings: 'Settings', help: 'Jingiarap kyrkieh' },
-  lus: { home: 'In', games: 'Rilru game', ai: 'Care Agent', routine: 'Vawiin hna', medicine: 'Damdawi', settings: 'Settings', help: 'Ṭanpui rang' },
-  mni: { home: 'হোম', games: 'মীং গেম', ai: 'কেয়ার এজেন্ট', routine: 'ঙসিগী থবক', medicine: 'হীদাক', settings: 'সেটিংস', help: 'অথুবা মতেং' },
-  brx: { home: 'ह्म', games: 'गोसो गेम', ai: 'केयार एजेन्ट', routine: 'दिनैनि खामानि', medicine: 'मुलि', settings: 'सेटिंग', help: 'गोख्रै मदद' },
+  gu: { home: 'હોમ', games: 'મગજની રમતો', ai: 'કેર એજન્ટ', routine: 'આજનું કામ', medicine: 'દવા અને સ્વાસ્થ્ય', progress: 'સ્મૃતિ પ્રગતિ', 'care-circle': 'કેર સર્કલ', safety: 'સલામતી', 'memory-book': 'મેમરી બુક', documents: 'દસ્તાવેજો', settings: 'સેટિંગ્સ', help: 'કટોકટી મદદ' },
+  kn: { home: 'ಹೋಮ್', games: 'ಮೆದುಳಿನ ಆಟಗಳು', ai: 'ಕೇರ್ ಏಜೆಂಟ್', routine: 'ಇಂದಿನ ಕೆಲಸ', medicine: 'ಔಷಧ ಮತ್ತು ಆರೋಗ್ಯ', progress: 'ಸ್ಮೃತಿ ಪ್ರಗತಿ', 'care-circle': 'ಕೇರ್ ಸರ್ಕಲ್', safety: 'ಸುರಕ್ಷತೆ', 'memory-book': 'ಮೆಮೊರಿ ಬುಕ್', documents: 'ದಾಖಲೆಗಳು', settings: 'ಸೆಟ್ಟಿಂಗ್‌ಗಳು', help: 'ತುರ್ತು ಸಹಾಯ' },
+  ml: { home: 'ഹോം', games: 'മസ്തിഷ്ക കളികൾ', ai: 'കെയർ ഏജന്റ്', routine: 'ഇന്നത്തെ ജോലി', medicine: 'മരുന്ന്', progress: 'സ്മൃതി പുരോഗതി', 'care-circle': 'കെയർ സർക്കിൾ', safety: 'സുരക്ഷ', 'memory-book': 'മെമ്മറി ബുക്ക്', documents: 'രേഖകൾ', settings: 'ക്രമീകരണം', help: 'അടിയന്തര സഹായം' },
+  pa: { home: 'ਹੋਮ', games: 'ਦਿਮਾਗ ਦੀਆਂ ਖੇਡਾਂ', ai: 'ਕੇਅਰ ਏਜੰਟ', routine: 'ਅੱਜ ਦਾ ਕੰਮ', medicine: 'ਦਵਾਈ', progress: 'ਯਾਦ ਤਰੱਕੀ', 'care-circle': 'ਕੇਅਰ ਸਰਕਲ', safety: 'ਸੁਰੱਖਿਆ', 'memory-book': 'ਯਾਦ ਪੁਸਤਕ', documents: 'ਦਸਤਾਵੇਜ਼', settings: 'ਸੈਟਿੰਗਾਂ', help: 'ਐਮਰਜੈਂਸੀ ਮਦਦ' },
+  kha: { home: 'Ïing', games: 'Ki game pyrkhat', ai: 'Care Agent', routine: 'Ka kam mynta', medicine: 'Dawai', progress: 'Ka jingstad', 'care-circle': 'Care Circle', safety: 'Jingban', 'memory-book': 'Kot jingkynmaw', documents: 'Ki kot', settings: 'Settings', help: 'Jingiarap kyrkieh' },
+  lus: { home: 'In', games: 'Rilru game', ai: 'Care Agent', routine: 'Vawiin hna', medicine: 'Damdawi', progress: 'Hmasawnna', 'care-circle': 'Care Circle', safety: 'Himna', 'memory-book': 'Hriatna lehkhabu', documents: 'Lehkha', settings: 'Settings', help: 'Ṭanpui rang' },
+  mni: { home: 'হোম', games: 'মীং গেম', ai: 'কেয়ার এজেন্ট', routine: 'ঙসিগী থবক', medicine: 'হীদাক', progress: 'নিংসিংবা', 'care-circle': 'কেয়ার সার্কেল', safety: 'নুংঙাইবা', 'memory-book': 'নিংসিংবা লৈরিক', documents: 'লৈরিক', settings: 'সেটিংস', help: 'অথুবা মতেং' },
+  brx: { home: 'ह्म', games: 'गोसो गेम', ai: 'केयार एजेन्ट', routine: 'दिनैनि खामानि', medicine: 'मुलि', progress: 'दावगानाय', 'care-circle': 'केयार सर्कल', safety: 'रैखाथि', 'memory-book': 'गोसो बिथां', documents: 'लिरथाइ', settings: 'सेटिंग', help: 'गोख्रै मदद' },
 };
 
 const EVERYDAY_CHROME = {
-  hi: { signOut: 'साइन आउट', signIn: 'साइन इन', menu: 'मेनू', offlineChip: 'ऑफ़लाइन — डेटा बाद में सिंक होगा।', quietDay: 'शांत दिन। दवाई, थोड़ा खेल, थोड़ी बात।', patient: 'मरीज़', emergencyHelp: 'आपातकालीन मदद', emergencySub: 'तुरंत सहायता के लिए कॉल करें', newDay: 'नया दिन', todayKicker: 'आज', moreKicker: 'और', openNow: 'अभी खुला', goodMorning: 'सुप्रभात', goodAfternoon: 'नमस्कार', goodEvening: 'शुभ संध्या' },
-  ta: { signOut: 'வெளியேறு', signIn: 'உள்நுழை', menu: 'பட்டி', offlineChip: 'ஆஃப்லைன் — தரவு பின்னர் ஒத்திசைக்கும்.', quietDay: 'அமைதியான நாள். மருந்து, சிறிது விளையாட்டு, சிறிது பேச்சு.', patient: 'நோயாளி', emergencyHelp: 'அவசர உதவி', emergencySub: 'உடனடி ஆதரவுக்கு அழைக்கவும்', newDay: 'புதிய நாள்', todayKicker: 'இன்று', moreKicker: 'மேலும்', openNow: 'இப்போது திறந்துள்ளது', goodMorning: 'காலை வணக்கம்', goodAfternoon: 'மதிய வணக்கம்', goodEvening: 'மாலை வணக்கம்' },
-  te: { signOut: 'సైన్ అవుట్', signIn: 'సైన్ ఇన్', menu: 'మెను', offlineChip: 'ఆఫ్‌లైన్ — డేటా తర్వాత సింక్ అవుతుంది.', quietDay: 'నిశ్శబ్ద రోజు. మందు, కొంచెం ఆట, కొంచెం మాట.', patient: 'రోగి', emergencyHelp: 'అత్యవసర సహాయం', emergencySub: 'వెంటనే సహాయం కోసం కాల్ చేయండి', newDay: 'కొత్త రోజు', todayKicker: 'ఈరోజు', moreKicker: 'మరిన్ని', openNow: 'ఇప్పుడు తెరిచి ఉంది', goodMorning: 'శుభోదయం', goodAfternoon: 'శుభ మధ్యాహ్నం', goodEvening: 'శుభ సాయంత్రం' },
-  bn: { signOut: 'সাইন আউট', signIn: 'সাইন ইন', menu: 'মেনু', offlineChip: 'অফলাইন — ডেটা পরে সিঙ্ক হবে।', quietDay: 'শান্ত দিন। ওষুধ, একটু খেলা, একটু কথা।', patient: 'রোগী', emergencyHelp: 'জরুরি সাহায্য', emergencySub: 'সঙ্গে সঙ্গে সাহায্যের জন্য কল করুন', newDay: 'নতুন দিন', todayKicker: 'আজ', moreKicker: 'আরও', openNow: 'এখন খোলা', goodMorning: 'শুভ সকাল', goodAfternoon: 'শুভ দুপুর', goodEvening: 'শুভ সন্ধ্যা' },
-  mr: { signOut: 'साइन आउट', signIn: 'साइन इन', menu: 'मेनू', offlineChip: 'ऑफलाइन — डेटा नंतर सिंक होईल.', quietDay: 'शांत दिवस. औषध, थोडा खेळ, थोडी गप्पा.', patient: 'रुग्ण', emergencyHelp: 'आपत्कालीन मदत', emergencySub: 'ताबडतोब मदतीसाठी कॉल करा', newDay: 'नवा दिवस', todayKicker: 'आज', moreKicker: 'आणखी', openNow: 'आता उघडे', goodMorning: 'शुभ प्रभात', goodAfternoon: 'शुभ दुपार', goodEvening: 'शुभ संध्याकाळ' },
-  gu: { signOut: 'સાઇન આઉટ', signIn: 'સાઇન ઇન', menu: 'મેનૂ', offlineChip: 'ઑફલાઇન — ડેટા પછી સિંક થશે.', quietDay: 'શાંત દિવસ. દવા, થોડી રમત, થોડી વાત.', patient: 'દર્દી', emergencyHelp: 'કટોકટી મદદ', emergencySub: 'તરત મદદ માટે કૉલ કરો', newDay: 'નવો દિવસ', todayKicker: 'આજ', moreKicker: 'વધુ', openNow: 'હવે ખુલ્લું', goodMorning: 'શુભ સવાર', goodAfternoon: 'શુભ બપોર', goodEvening: 'શુભ સાંજ' },
-  kn: { signOut: 'ಸೈನ್ ಔಟ್', signIn: 'ಸೈನ್ ಇನ್', menu: 'ಮೆನು', offlineChip: 'ಆಫ್‌ಲೈನ್ — ಡೇಟಾ ನಂತರ ಸಿಂಕ್ ಆಗುತ್ತದೆ.', quietDay: 'ನಿಶ್ಶಬ್ದ ದಿನ. ಔಷಧ, ಸ್ವಲ್ಪ ಆಟ, ಸ್ವಲ್ಪ ಮಾತು.', patient: 'ರೋಗಿ', emergencyHelp: 'ತುರ್ತು ಸಹಾಯ', emergencySub: 'ತಕ್ಷಣ ಸಹಾಯಕ್ಕೆ ಕರೆ ಮಾಡಿ', newDay: 'ಹೊಸ ದಿನ', todayKicker: 'ಇಂದು', moreKicker: 'ಇನ್ನಷ್ಟು', openNow: 'ಈಗ ತೆರೆದಿದೆ', goodMorning: 'ಶುಭೋದಯ', goodAfternoon: 'ಶುಭ ಮಧ್ಯಾಹ್ನ', goodEvening: 'ಶುಭ ಸಂಜೆ' },
-  ml: { signOut: 'സൈൻ ഔട്ട്', signIn: 'സൈൻ ഇൻ', menu: 'മെനു', offlineChip: 'ഓഫ്‌ലൈൻ — ഡാറ്റ പിന്നീട് സിങ്ക് ചെയ്യും.', quietDay: 'ശാന്തമായ ദിവസം. മരുന്ന്, കുറച്ച് കളി, കുറച്ച് സംസാരം.', patient: 'രോഗി', emergencyHelp: 'അടിയന്തര സഹായം', emergencySub: 'ഉടൻ സഹായത്തിന് വിളിക്കുക', newDay: 'പുതിയ ദിവസം', todayKicker: 'ഇന്ന്', moreKicker: 'കൂടുതൽ', openNow: 'ഇപ്പോൾ തുറന്നിരിക്കുന്നു', goodMorning: 'സുപ്രഭാതം', goodAfternoon: 'ശുഭ മധ്യാഹ്നം', goodEvening: 'ശുഭ സന്ധ്യ' },
-  pa: { signOut: 'ਸਾਈਨ ਆਉਟ', signIn: 'ਸਾਈਨ ਇਨ', menu: 'ਮੀਨੂ', offlineChip: 'ਆਫਲਾਈਨ — ਡਾਟਾ ਬਾਅਦ ਵਿੱਚ ਸਿੰਕ ਹੋਵੇਗਾ.', quietDay: 'ਸ਼ਾਂਤ ਦਿਨ। ਦਵਾਈ, ਥੋੜ੍ਹੀ ਖੇਡ, ਥੋੜ੍ਹੀ ਗੱਲ।', patient: 'ਮਰੀਜ਼', emergencyHelp: 'ਐਮਰਜੈਂਸੀ ਮਦਦ', emergencySub: 'ਤੁਰੰਤ ਮਦਦ ਲਈ ਕਾਲ ਕਰੋ', newDay: 'ਨਵਾਂ ਦਿਨ', todayKicker: 'ਅੱਜ', moreKicker: 'ਹੋਰ', openNow: 'ਹੁਣ ਖੁੱਲ੍ਹਾ', goodMorning: 'ਸ਼ੁਭ ਸਵੇਰ', goodAfternoon: 'ਸ਼ੁਭ ਦੁਪਹਿਰ', goodEvening: 'ਸ਼ੁਭ ਸ਼ਾਮ' },
-  as: { signOut: 'ছাইন আউট', signIn: 'ছাইন ইন', menu: 'মেনু', offlineChip: 'অফলাইন — তথ্য পিছত sync হ’ব।', quietDay: 'শান্ত দিন। দৰব, অলপ খেল, অলপ কথা।', patient: 'ৰোগী', emergencyHelp: 'জৰুৰী সহায়', emergencySub: 'লগে লগে সহায়ৰ বাবে কল কৰক', newDay: 'নতুন দিন', todayKicker: 'আজি', moreKicker: 'অধিক', openNow: 'এতিয়া খোলা', goodMorning: 'শুভ প্ৰভাত', goodAfternoon: 'শুভ দুপৰীয়া', goodEvening: 'শুভ সন্ধিয়া' },
+  hi: { askSaarthi: 'सारथी से पूछें', signOut: 'साइन आउट', signIn: 'साइन इन', menu: 'मेनू', offlineChip: 'ऑफ़लाइन — डेटा बाद में सिंक होगा।', quietDay: 'शांत दिन। दवाई, थोड़ा खेल, थोड़ी बात।', patient: 'मरीज़', emergencyHelp: 'आपातकालीन मदद', emergencySub: 'तुरंत सहायता के लिए कॉल करें', newDay: 'नया दिन', todayKicker: 'आज', moreKicker: 'और', openNow: 'अभी खुला', goodMorning: 'सुप्रभात', goodAfternoon: 'नमस्कार', goodEvening: 'शुभ संध्या' },
+  ta: { askSaarthi: 'சாரதியிடம் கேளுங்கள்', signOut: 'வெளியேறு', signIn: 'உள்நுழை', menu: 'பட்டி', offlineChip: 'ஆஃப்லைன் — தரவு பின்னர் ஒத்திசைக்கும்.', quietDay: 'அமைதியான நாள். மருந்து, சிறிது விளையாட்டு, சிறிது பேச்சு.', patient: 'நோயாளி', emergencyHelp: 'அவசர உதவி', emergencySub: 'உடனடி ஆதரவுக்கு அழைக்கவும்', newDay: 'புதிய நாள்', todayKicker: 'இன்று', moreKicker: 'மேலும்', openNow: 'இப்போது திறந்துள்ளது', goodMorning: 'காலை வணக்கம்', goodAfternoon: 'மதிய வணக்கம்', goodEvening: 'மாலை வணக்கம்' },
+  te: { askSaarthi: 'సారథిని అడగండి', signOut: 'సైన్ అవుట్', signIn: 'సైన్ ఇన్', menu: 'మెను', offlineChip: 'ఆఫ్‌లైన్ — డేటా తర్వాత సింక్ అవుతుంది.', quietDay: 'నిశ్శబ్ద రోజు. మందు, కొంచెం ఆట, కొంచెం మాట.', patient: 'రోగి', emergencyHelp: 'అత్యవసర సహాయం', emergencySub: 'వెంటనే సహాయం కోసం కాల్ చేయండి', newDay: 'కొత్త రోజు', todayKicker: 'ఈరోజు', moreKicker: 'మరిన్ని', openNow: 'ఇప్పుడు తెరిచి ఉంది', goodMorning: 'శుభోదయం', goodAfternoon: 'శుభ మధ్యాహ్నం', goodEvening: 'శుభ సాయంత్రం' },
+  bn: { askSaarthi: 'সারথীকে জিজ্ঞাসা করুন', signOut: 'সাইন আউট', signIn: 'সাইন ইন', menu: 'মেনু', offlineChip: 'অফলাইন — ডেটা পরে সিঙ্ক হবে।', quietDay: 'শান্ত দিন। ওষুধ, একটু খেলা, একটু কথা।', patient: 'রোগী', emergencyHelp: 'জরুরি সাহায্য', emergencySub: 'সঙ্গে সঙ্গে সাহায্যের জন্য কল করুন', newDay: 'নতুন দিন', todayKicker: 'আজ', moreKicker: 'আরও', openNow: 'এখন খোলা', goodMorning: 'শুভ সকাল', goodAfternoon: 'শুভ দুপুর', goodEvening: 'শুভ সন্ধ্যা' },
+  mr: { askSaarthi: 'सारथीला विचारा', signOut: 'साइन आउट', signIn: 'साइन इन', menu: 'मेनू', offlineChip: 'ऑफलाइन — डेटा नंतर सिंक होईल.', quietDay: 'शांत दिवस. औषध, थोडा खेळ, थोडी गप्पा.', patient: 'रुग्ण', emergencyHelp: 'आपत्कालीन मदत', emergencySub: 'ताबडतोब मदतीसाठी कॉल करा', newDay: 'नवा दिवस', todayKicker: 'आज', moreKicker: 'आणखी', openNow: 'आता उघडे', goodMorning: 'शुभ प्रभात', goodAfternoon: 'शुभ दुपार', goodEvening: 'शुभ संध्याकाळ' },
+  gu: { askSaarthi: 'સારથીને પૂછો', signOut: 'સાઇન આઉટ', signIn: 'સાઇન ઇન', menu: 'મેનૂ', offlineChip: 'ઑફલાઇન — ડેટા પછી સિંક થશે.', quietDay: 'શાંત દિવસ. દવા, થોડી રમત, થોડી વાત.', patient: 'દર્દી', emergencyHelp: 'કટોકટી મદદ', emergencySub: 'તરત મદદ માટે કૉલ કરો', newDay: 'નવો દિવસ', todayKicker: 'આજ', moreKicker: 'વધુ', openNow: 'હવે ખુલ્લું', goodMorning: 'શુભ સવાર', goodAfternoon: 'શુભ બપોર', goodEvening: 'શુભ સાંજ' },
+  kn: { askSaarthi: 'ಸಾರಥಿಯನ್ನು ಕೇಳಿ', signOut: 'ಸೈನ್ ಔಟ್', signIn: 'ಸೈನ್ ಇನ್', menu: 'ಮೆನು', offlineChip: 'ಆಫ್‌ಲೈನ್ — ಡೇಟಾ ನಂತರ ಸಿಂಕ್ ಆಗುತ್ತದೆ.', quietDay: 'ನಿಶ್ಶಬ್ದ ದಿನ. ಔಷಧ, ಸ್ವಲ್ಪ ಆಟ, ಸ್ವಲ್ಪ ಮಾತು.', patient: 'ರೋಗಿ', emergencyHelp: 'ತುರ್ತು ಸಹಾಯ', emergencySub: 'ತಕ್ಷಣ ಸಹಾಯಕ್ಕೆ ಕರೆ ಮಾಡಿ', newDay: 'ಹೊಸ ದಿನ', todayKicker: 'ಇಂದು', moreKicker: 'ಇನ್ನಷ್ಟು', openNow: 'ಈಗ ತೆರೆದಿದೆ', goodMorning: 'ಶುಭೋದಯ', goodAfternoon: 'ಶುಭ ಮಧ್ಯಾಹ್ನ', goodEvening: 'ಶುಭ ಸಂಜೆ' },
+  ml: { askSaarthi: 'സാരഥിയോട് ചോദിക്കൂ', signOut: 'സൈൻ ഔട്ട്', signIn: 'സൈൻ ഇൻ', menu: 'മെനു', offlineChip: 'ഓഫ്‌ലൈൻ — ഡാറ്റ പിന്നീട് സിങ്ക് ചെയ്യും.', quietDay: 'ശാന്തമായ ദിവസം. മരുന്ന്, കുറച്ച് കളി, കുറച്ച് സംസാരം.', patient: 'രോഗി', emergencyHelp: 'അടിയന്തര സഹായം', emergencySub: 'ഉടൻ സഹായത്തിന് വിളിക്കുക', newDay: 'പുതിയ ദിവസം', todayKicker: 'ഇന്ന്', moreKicker: 'കൂടുതൽ', openNow: 'ഇപ്പോൾ തുറന്നിരിക്കുന്നു', goodMorning: 'സുപ്രഭാതം', goodAfternoon: 'ശുഭ മധ്യാഹ്നം', goodEvening: 'ശുഭ സന്ധ്യ' },
+  pa: { askSaarthi: 'ਸਾਰਥੀ ਨੂੰ ਪੁੱਛੋ', signOut: 'ਸਾਈਨ ਆਉਟ', signIn: 'ਸਾਈਨ ਇਨ', menu: 'ਮੀਨੂ', offlineChip: 'ਆਫਲਾਈਨ — ਡਾਟਾ ਬਾਅਦ ਵਿੱਚ ਸਿੰਕ ਹੋਵੇਗਾ.', quietDay: 'ਸ਼ਾਂਤ ਦਿਨ। ਦਵਾਈ, ਥੋੜ੍ਹੀ ਖੇਡ, ਥੋੜ੍ਹੀ ਗੱਲ।', patient: 'ਮਰੀਜ਼', emergencyHelp: 'ਐਮਰਜੈਂਸੀ ਮਦਦ', emergencySub: 'ਤੁਰੰਤ ਮਦਦ ਲਈ ਕਾਲ ਕਰੋ', newDay: 'ਨਵਾਂ ਦਿਨ', todayKicker: 'ਅੱਜ', moreKicker: 'ਹੋਰ', openNow: 'ਹੁਣ ਖੁੱਲ੍ਹਾ', goodMorning: 'ਸ਼ੁਭ ਸਵੇਰ', goodAfternoon: 'ਸ਼ੁਭ ਦੁਪਹਿਰ', goodEvening: 'ਸ਼ੁਭ ਸ਼ਾਮ' },
+  as: { askSaarthi: 'সাৰথীক সুধিব', signOut: 'ছাইন আউট', signIn: 'ছাইন ইন', menu: 'মেনু', offlineChip: 'অফলাইন — তথ্য পিছত sync হ’ব।', quietDay: 'শান্ত দিন। দৰব, অলপ খেল, অলপ কথা।', patient: 'ৰোগী', emergencyHelp: 'জৰুৰী সহায়', emergencySub: 'লগে লগে সহায়ৰ বাবে কল কৰক', newDay: 'নতুন দিন', todayKicker: 'আজি', moreKicker: 'অধিক', openNow: 'এতিয়া খোলা', goodMorning: 'শুভ প্ৰভাত', goodAfternoon: 'শুভ দুপৰীয়া', goodEvening: 'শুভ সন্ধিয়া' },
+};
+
+/** Map everyday module keys → App sidebar `nav.*` keys (App uses nav, not modules). */
+const MODULE_TO_NAV = {
+  home: 'home',
+  games: 'brainGames',
+  routine: 'myDay',
+  'memory-book': 'memoryBook',
+  'care-circle': 'careCircle',
+  safety: 'safety',
+  documents: 'documents',
+  progress: 'progress',
+  settings: 'settings',
 };
 
 Object.entries(EVERYDAY_MODULES).forEach(([code, mods]) => {
   if (!DICTIONARIES[code]) return;
+  // Only fill nav.* from everyday modules when this language has no APP_UI catalogue
+  // (otherwise we'd overwrite richer hi/ta/… nav copy with shorter module labels).
+  const navOverlay = {};
+  if (!APP_UI[code]) {
+    Object.entries(mods).forEach(([modKey, label]) => {
+      const navKey = MODULE_TO_NAV[modKey];
+      if (navKey) navOverlay[navKey] = label;
+    });
+  }
   DICTIONARIES[code] = {
     ...DICTIONARIES[code],
     modules: { ...DICTIONARIES.en.modules, ...(DICTIONARIES[code].modules || {}), ...mods },
     chrome: { ...(DICTIONARIES.en.chrome || {}), ...(DICTIONARIES[code].chrome || {}), ...(EVERYDAY_CHROME[code] || {}) },
+    ...(Object.keys(navOverlay).length
+      ? { nav: { ...(DICTIONARIES.en.nav || {}), ...(DICTIONARIES[code].nav || {}), ...navOverlay } }
+      : {}),
   };
 });
 Object.entries(EVERYDAY_CHROME).forEach(([code, chrome]) => {
@@ -1437,10 +1462,13 @@ function restoreScientific(text) {
   return SCIENTIFIC_SWAPS.reduce((acc, [re, enTerm]) => acc.replace(re, enTerm), text);
 }
 
+/** Persist manual language choice; clears region-pick locks for next load. Prefer LanguageContext.setLanguage(code, true) so React state clears too. */
 export function markLangManual() {
   try {
     localStorage.setItem('smriti-lang-manual', '1');
     localStorage.setItem('smriti-auto-language', 'false');
+    localStorage.removeItem('smriti-region-pick');
+    localStorage.setItem('smriti-demo-location', 'false');
   } catch {
     /* ignore */
   }

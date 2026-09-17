@@ -2,7 +2,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Heart, Brain, Shield, Users, Mic, Gamepad2, ArrowRight, Globe, Pause, Play, Download } from 'lucide-react';
 import logoMark from '../assets/smriti-saarthi-logo.png';
-import heroCalmLake from '../assets/hero-calm-lake.png';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useI18n } from '../I18nContext';
 import { AppNavContext } from '../AppNavContext';
@@ -14,6 +13,8 @@ import Particles from '../components/bits/Particles';
 import ClickSpark from '../components/bits/ClickSpark';
 import Magnet from '../components/bits/Magnet';
 import Reveal from '../components/bits/Reveal';
+import { useRegionScenery } from '../hooks/useRegionScenery';
+import { useSceneryCrossfade } from '../hooks/useSceneryCrossfade';
 import { landingCopyFor } from '../i18n/landingCopy';
 import './HomeLanding.css';
 
@@ -95,6 +96,13 @@ function HomeLanding() {
   const [installPrompt, setInstallPrompt] = useState(null);
   const [appInstalled, setAppInstalled] = useState(false);
   const { lang } = useI18n();
+  const { src: scenerySrc, key: sceneryKey } = useRegionScenery();
+  const {
+    base: baseScene,
+    overlay: overlayScene,
+    overlayOn,
+    commitOverlay: commitSceneOverlay,
+  } = useSceneryCrossfade(scenerySrc, sceneryKey);
   const copy = landingCopyFor(lang);
   const flowLang = lang === 'hi' ? 'hi' : 'en';
   const musicTracks = tracksFor(musicTab);
@@ -210,7 +218,19 @@ function HomeLanding() {
   return (
     <ClickSpark className="hl">
       <div className="hl-scene" aria-hidden>
-        <img src={heroCalmLake} alt="" className="hl-scene-img" />
+        <img
+          src={baseScene.src}
+          alt=""
+          className="hl-scene-img is-base"
+        />
+        {overlayScene ? (
+          <img
+            src={overlayScene.src}
+            alt=""
+            className={`hl-scene-img is-overlay${overlayOn ? ' is-visible' : ''}`}
+            onTransitionEnd={commitSceneOverlay}
+          />
+        ) : null}
         <div className="hl-scene-scrim" />
       </div>
       {!narrow && (
@@ -275,10 +295,11 @@ function HomeLanding() {
           </div>
         </div>
         <div className="hl-hero-roles" id="roles">
-          {copy.roles.slice(1).map((role, i) => {
-            const meta = ROLE_META[i + 1];
+          {copy.roles.map((role, i) => {
+            const meta = ROLE_META[i];
+            if (!meta) return null;
             return (
-              <Reveal key={role.title} delay={0.08 + i * 0.08}>
+              <Reveal key={role.title} delay={0.08 + i * 0.06}>
                 <SpotlightCard className="hl-role-card hl-role-card-front">
                   <Link to={meta.path} className="hl-role-wide-link">
                     <div className="hl-role-header" style={{ background: meta.gradient }}>
@@ -288,7 +309,9 @@ function HomeLanding() {
                     <div className="hl-role-body">
                       <strong>{role.title}</strong>
                       <p>{role.lead}</p>
-                      <p className="hl-role-how">{i === 0 ? copy.familyHow : copy.clinicHow}</p>
+                      <p className="hl-role-how">
+                        {i === 0 ? copy.howTitle : i === 1 ? copy.familyHow : copy.clinicHow}
+                      </p>
                       <span className="hl-role-arrow">{copy.open} <ArrowRight size={14} /></span>
                     </div>
                   </Link>

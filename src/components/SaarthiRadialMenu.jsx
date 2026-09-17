@@ -253,7 +253,16 @@ export default function SaarthiRadialMenu() {
 
   const scoreText =
     severity.wellnessPercent != null ? `${severity.wellnessPercent}%` : '···';
-  const labelText = severity.label || t('wellness.checking');
+  const labelText = severity.labelKey
+    ? t(severity.labelKey)
+    : (severity.label || t('severity.checking'));
+  const stageText = severity.stageKey
+    ? t(severity.stageKey)
+    : (severity.stageLabel || labelText);
+  const showDistinctStage =
+    Boolean(severity.band) &&
+    stageText &&
+    stageText !== labelText;
 
   const springIn = reduceMotion
     ? { duration: 0.01 }
@@ -417,8 +426,8 @@ export default function SaarthiRadialMenu() {
             aria-expanded={isOpen}
             aria-label={
               isOpen
-                ? 'Close navigation widget'
-                : `Open Smriti Saarthi menu. Wellness ${scoreText}, ${labelText}. Drag to move.`
+                ? t('wellness.closeMenu')
+                : `${t('wellness.openMenu')}. ${scoreText}, ${labelText}${showDistinctStage ? `, ${stageText}` : ''}.`
             }
             whileTap={reduceMotion || dragging ? undefined : { scale: 0.96 }}
             animate={
@@ -470,13 +479,16 @@ export default function SaarthiRadialMenu() {
                       draggable={false}
                     />
                     <span className="widget-score">{scoreText}</span>
+                    {showDistinctStage && (
+                      <span className="widget-stage">{stageText}</span>
+                    )}
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
             <span className="widget-caption">
-              {isOpen ? 'Close' : labelText}
+              {isOpen ? t('wellness.close') : labelText}
             </span>
           </motion.button>
         </ClickSpark>

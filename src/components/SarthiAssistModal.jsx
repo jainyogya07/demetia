@@ -105,6 +105,8 @@ export default function SarthiAssistRuntime({
   onLiveChange,
   authenticated = true,
   onNeedAuth,
+  /** Floating FAB overlaps Routine / footer — open via header or radial Assist */
+  showFab = false,
 }) {
   const { openModule, openEmergency, currentModuleId, activeGameId } = useAppNav();
   const { language, setLang, lang } = useI18n();
@@ -311,14 +313,47 @@ export default function SarthiAssistRuntime({
     });
   };
 
+  const assistUsed = (() => {
+    try { return Boolean(sessionStorage.getItem('ss-assist-used')); } catch { return false; }
+  })();
+
   useSaarthiWake({
-    enabled: authenticated && !paused && !panelOpen && !keepAlive,
+    // Idle wake stays off until Assist has been opened once — prevents OS mic flicker.
+    enabled: authenticated && !paused && !panelOpen && !keepAlive && assistUsed,
     onWake: () => onPanelOpen?.(),
   });
 
+  const [stableLive, setStableLive] = useState(false);
+  const [stableListening, setStableListening] = useState(false);
+
   useEffect(() => {
-    onLiveChange?.(isConnected);
-  }, [isConnected, onLiveChange]);
+    if (panelOpen) {
+      try { sessionStorage.setItem('ss-assist-used', '1'); } catch { /* ignore */ }
+    }
+  }, [panelOpen]);
+
+  useEffect(() => {
+    const live = isConnected && (isListening || isSpeaking);
+    if (live) {
+      setStableLive(true);
+      const t = window.setTimeout(() => onLiveChange?.(true), 180);
+      return () => window.clearTimeout(t);
+    }
+    const t = window.setTimeout(() => {
+      setStableLive(false);
+      onLiveChange?.(false);
+    }, 450);
+    return () => window.clearTimeout(t);
+  }, [isConnected, isListening, isSpeaking, onLiveChange]);
+
+  useEffect(() => {
+    if (isListening) {
+      setStableListening(true);
+      return undefined;
+    }
+    const t = window.setTimeout(() => setStableListening(false), 320);
+    return () => window.clearTimeout(t);
+  }, [isListening]);
 
   useEffect(() => {
     if (paused || !authenticated) {
@@ -458,7 +493,17 @@ export default function SarthiAssistRuntime({
     runText(text, false);
   };
 
-  const statusClass = isSpeaking ? 'speaking' : isListening ? 'listening' : isThinking ? 'thinking' : isConnected ? 'ready' : connectionStatus === 'connecting' ? 'connecting' : 'ready';
+  const statusClass = isSpeaking
+    ? 'speaking'
+    : stableListening
+      ? 'listening'
+      : isThinking
+        ? 'thinking'
+        : isConnected
+          ? 'ready'
+          : connectionStatus === 'connecting'
+            ? 'connecting'
+            : 'ready';
   const statusText = connectionStatus === 'error'
     ? 'Connection issue'
     : connectionStatus === 'connecting'
@@ -467,21 +512,28 @@ export default function SarthiAssistRuntime({
         ? 'Speaking...'
         : isThinking
           ? 'Understanding...'
-          : isListening
+          : stableListening
             ? 'Listening'
             : isConnected
               ? 'Live'
               : 'Ready';
   const micMuted = isConnected && !isListening;
-  const fabLabel = isSpeaking ? 'Speaking…' : isThinking ? 'Understanding…' : isListening || keepAlive ? 'Listening…' : 'Ask Sarthi';
+  const fabLabel = isSpeaking
+    ? 'Speaking…'
+    : isThinking
+      ? 'Understanding…'
+      : stableListening
+        ? 'Listening…'
+        : 'Ask Sarthi';
 
   if (paused) return null;
 
   if (!authenticated) {
+    if (!showFab && !panelOpen) return null;
     return (
       <button
         type="button"
-        className="sarthi-assist-fab is-need-auth"
+        className={`sarthi-assist-fab is-need-auth${showFab ? '' : ' is-hidden-fab'}`}
         aria-label="Sign in to use Assist"
         onClick={() => onNeedAuth?.()}
       >
@@ -491,19 +543,19 @@ export default function SarthiAssistRuntime({
     );
   }
 
-  const fab = (
+  const fab = showFab ? (
     <button
       type="button"
-      className={`sarthi-assist-fab${currentModuleId === 'games' ? ' is-games' : ''}${keepAlive || isConnected ? ' is-live' : ''}${isSpeaking ? ' is-speaking' : ''}`}
+      className={`sarthi-assist-fab${currentModuleId === 'games' ? ' is-games' : ''}${stableLive ? ' is-live' : ''}${isSpeaking ? ' is-speaking' : ''}`}
       aria-label={fabLabel}
       onClick={() => onPanelOpen?.()}
     >
       <MessageCircle size={26} />
       <span className="sarthi-assist-fab-label">{fabLabel}</span>
     </button>
-  );
+  ) : null;
 
-  if (!panelOpen) return null;
+  if (!panelOpen) return fab;
 
   return (
     <div className="sa-modal-overlay sa-modal-overlay-wide" onClick={onPanelClose} role="presentation">

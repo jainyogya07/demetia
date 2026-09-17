@@ -97,11 +97,12 @@ export default function CaregiverAssessment() {
     <div className="os-page ss-assessment-page" style={{ padding: '0 24px 32px' }}>
       {/* 1. Header & Patient Switcher */}
       <div className="os-chart-strip" style={{ marginTop: 16 }}>
-        <AvatarSlot name={patientMeta.name} size={52} />
+        <AvatarSlot name={patientMeta.name} photoUrl={patientMeta.photoUrl} size={52} label={patientMeta.name} />
         <div className="os-chart-id">
-          <p className="os-kicker">Caregiver Observation · 10-Item FAQ (ADL)</p>
+          <p className="os-kicker">Watching with care · 10-Item FAQ (ADL)</p>
           <h2>{patientMeta.name}</h2>
-          <p>{patientMeta.age} Years · {patientMeta.village} · Education: {patientMeta.education_label}</p>
+          <p>{patientMeta.age} Years · {patientMeta.village} · Caregiver: {patientMeta.caregiver}</p>
+          <p className="os-meta">Education: {patientMeta.education_label}</p>
         </div>
         <div className="os-chart-actions">
           <label style={{ fontSize: '0.85rem', fontWeight: 600, marginRight: 6 }}>Look up patient:</label>
@@ -457,7 +458,7 @@ export default function CaregiverAssessment() {
               </div>
             ) : (
               <p className="os-meta">
-                No memory check yet. When Latveria finishes the daily quiz on the patient app, the score appears here and is mixed into the severity evaluation.
+                No memory check yet. When {patientMeta.name.split(' ')[0]} finishes the daily quiz on the patient app, the score appears here and is mixed into the severity evaluation.
               </p>
             )}
           </Panel>

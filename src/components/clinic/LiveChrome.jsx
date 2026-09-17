@@ -92,7 +92,7 @@ export function TaskRow({ task, checked, onToggle, extra }) {
 }
 
 export function TimelineRail({ items }) {
-  if (!items.length) return <p className="os-empty">No events on this chart.</p>;
+  if (!items.length) return <p className="os-empty">Quiet for now — check-ins will show here when someone marks them.</p>;
   return (
     <ol className="os-rail">
       {items.map((item) => (

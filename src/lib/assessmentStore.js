@@ -151,6 +151,8 @@ export const FAQ_QUESTIONS = [
   },
 ];
 
+import aitaPhoto from '../assets/person-aita.jpg';
+
 export const DEMO_PATIENTS = {
   aita: {
     id: 'aita',
@@ -160,6 +162,7 @@ export const DEMO_PATIENTS = {
     education_label: 'No Formal Schooling / Illiterate',
     caregiver: 'Rina Devi (Daughter)',
     village: 'Jorhat, Assam',
+    photoUrl: aitaPhoto,
     initialFunctional: {
       faq_medication_compliance: 0,
       faq_cooking_stove_safety: 0,
@@ -302,6 +305,7 @@ export function getLatestEvaluation(patientId = 'aita') {
 /**
  * Patient-facing severity summary (friendly wording + wellness %).
  * Same underlying band/score as caregiver/doctor views; softer labels only.
+ * Includes risk-stage band for FAB / patient chrome.
  */
 export function getFriendlySeverity(patientId = 'aita') {
   const report = getLatestEvaluation(patientId);
@@ -310,6 +314,9 @@ export function getFriendlySeverity(patientId = 'aita') {
       band: null,
       label: 'Checking in',
       shortLabel: '—',
+      stageLabel: 'Checking in',
+      labelKey: 'severity.checking',
+      stageKey: 'severity.checking',
       tone: 'neutral',
       wellnessPercent: null,
       riskScore: null,
@@ -322,17 +329,55 @@ export function getFriendlySeverity(patientId = 'aita') {
   const band = report.severity_band;
 
   const map = {
-    NORMAL: { label: 'Doing well', shortLabel: 'Well', tone: 'good' },
-    MILD_COGNITIVE_CONCERN: { label: 'Mild concern', shortLabel: 'Mild', tone: 'mild' },
-    MODERATE_IMPAIRMENT: { label: 'Needs support', shortLabel: 'Support', tone: 'moderate' },
-    SEVERE_IMPAIRMENT: { label: 'Extra care', shortLabel: 'Care', tone: 'severe' },
+    NORMAL: {
+      label: 'Doing well',
+      shortLabel: 'Well',
+      stageLabel: 'Low risk',
+      labelKey: 'severity.doingWell',
+      stageKey: 'severity.lowRisk',
+      tone: 'good',
+    },
+    MILD_COGNITIVE_CONCERN: {
+      label: 'Mild concern',
+      shortLabel: 'Mild',
+      stageLabel: 'Mild concern',
+      labelKey: 'severity.mildConcern',
+      stageKey: 'severity.mildConcern',
+      tone: 'mild',
+    },
+    MODERATE_IMPAIRMENT: {
+      label: 'Needs support',
+      shortLabel: 'Support',
+      stageLabel: 'Needs support',
+      labelKey: 'severity.needsSupport',
+      stageKey: 'severity.needsSupport',
+      tone: 'moderate',
+    },
+    SEVERE_IMPAIRMENT: {
+      label: 'Extra care',
+      shortLabel: 'Care',
+      stageLabel: 'Extra care',
+      labelKey: 'severity.extraCare',
+      stageKey: 'severity.extraCare',
+      tone: 'severe',
+    },
   };
 
-  const info = map[band] || { label: 'Checking in', shortLabel: '—', tone: 'neutral' };
+  const info = map[band] || {
+    label: 'Checking in',
+    shortLabel: '—',
+    stageLabel: 'Checking in',
+    labelKey: 'severity.checking',
+    stageKey: 'severity.checking',
+    tone: 'neutral',
+  };
   return {
     band,
     label: info.label,
     shortLabel: info.shortLabel,
+    stageLabel: info.stageLabel,
+    labelKey: info.labelKey,
+    stageKey: info.stageKey,
     tone: info.tone,
     wellnessPercent,
     riskScore: safeRisk,

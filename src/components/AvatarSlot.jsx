@@ -10,7 +10,7 @@ export default function AvatarSlot({ name = '', photoUrl = '', size = 56, label 
     <div
       className="ss-avatar-slot"
       style={{ width: size, height: size, fontSize: Math.round(size * 0.34) }}
-      aria-label={label || name || 'Profile photo placeholder'}
+      aria-label={label || name || 'Profile photo'}
     >
       {photoUrl ? <img src={photoUrl} alt="" /> : <span>{initials}</span>}
     </div>

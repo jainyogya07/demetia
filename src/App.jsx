@@ -1,9 +1,9 @@
 import React, { useState, useCallback, useEffect, useRef, Component } from 'react';
-import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, MessageSquare, Puzzle, CalendarDays, HeartPulse, LineChart,
-  Users, MapPin, BookOpen, Languages, Settings, Bell, User,
-  ShieldAlert, X, Plus, CloudOff, FileText, PanelLeft, PanelLeftClose, Menu, SquarePen, HelpCircle, Info,
+  Users, MapPin, BookOpen, Settings, Bell, User,
+  ShieldAlert, X, Plus, CloudOff, FileText, Menu, SquarePen, HelpCircle, Info,
 } from 'lucide-react';
 import SafetyLocation from './pages/SafetyLocation';
 import BrainGames from './games/BrainGames';
@@ -15,8 +15,9 @@ import './smriti-dashboard.css';
 import './editorial-theme.css';
 import './patient-mobile.css';
 import './components/NewLayout.css';
-import heroCalmLake from './assets/hero-calm-lake.png';
 import logoMark from './assets/smriti-saarthi-logo.png';
+import RegionSceneryBackground from './components/RegionSceneryBackground';
+import RegionScenerySync from './components/RegionScenerySync';
 import ServicesCredits from './ServicesCredits';
 import MyDocuments from './MyDocuments';
 import AICompanion from './AICompanion';
@@ -48,7 +49,6 @@ import Guide from './components/Guide';
 import AlarmRuntime from './components/AlarmRuntime';
 import AuthFlow from './pages/AuthFlow';
 import { useAuth } from './context/AuthContext';
-import { motion } from 'motion/react';
 import SaarthiRadialMenu from './components/SaarthiRadialMenu';
 import AboutUsModal from './components/AboutUsModal';
 import companionPortrait from './assets/infinity_pfp.jpg';
@@ -65,9 +65,26 @@ import { applyMemoryQuizToAssessment } from './lib/assessmentStore';
 import JainQuoteCarousel from './components/JainQuoteCarousel';
 import HeaderProfileMenu from './components/HeaderProfileMenu';
 import HeaderLanguageControl from './components/HeaderLanguageControl';
+import RoleSwitcher from './components/RoleSwitcher';
 import DashAurora from './components/bits/DashAurora';
-import Magnet from './components/bits/Magnet';
 import ClickSpark from './components/bits/ClickSpark';
+import { motion } from 'motion/react';
+
+const SIDEBAR_WIDTH_KEY = 'ss-sidebar-width';
+const SIDEBAR_DEFAULT = 188;
+const SIDEBAR_MIN = 160;
+const SIDEBAR_MAX = 280;
+
+function readSidebarWidth() {
+  try {
+    const raw = Number(localStorage.getItem(SIDEBAR_WIDTH_KEY));
+    if (Number.isFinite(raw) && raw >= SIDEBAR_MIN && raw <= SIDEBAR_MAX) return raw;
+  } catch {
+    /* ignore */
+  }
+  return SIDEBAR_DEFAULT;
+}
+
 class QuizErrorBoundary extends Component {
   constructor(props) {
     super(props);
@@ -227,31 +244,31 @@ function EmergencyPanel({ onClose }) {
 
 const SIDEBAR_GROUPS = [
   {
-    title: 'TODAY',
+    titleKey: 'nav.today',
     items: [
-      { id: 'home', label: 'Home', icon: Home },
-      { id: 'routine', label: 'My Day', icon: CalendarDays },
+      { id: 'home', labelKey: 'nav.home', icon: Home },
+      { id: 'routine', labelKey: 'nav.myDay', icon: CalendarDays },
     ],
   },
   {
-    title: 'MEMORY',
+    titleKey: 'nav.memory',
     items: [
-      { id: 'memory-book', label: 'Memory Book', icon: BookOpen },
-      { id: 'games', label: 'Brain Games', icon: Puzzle },
+      { id: 'memory-book', labelKey: 'nav.memoryBook', icon: BookOpen },
+      { id: 'games', labelKey: 'nav.brainGames', icon: Puzzle },
     ],
   },
   {
-    title: 'CARE',
+    titleKey: 'nav.care',
     items: [
-      { id: 'care-circle', label: 'Care Circle', icon: Users },
-      { id: 'safety', label: 'Safety', icon: MapPin },
+      { id: 'care-circle', labelKey: 'nav.careCircle', icon: Users },
+      { id: 'safety', labelKey: 'nav.safety', icon: MapPin },
     ],
   },
   {
-    title: 'SUPPORT',
+    titleKey: 'nav.support',
     items: [
-      { id: 'documents', label: 'Documents', icon: FileText },
-      { id: 'progress', label: 'Progress', icon: LineChart },
+      { id: 'documents', labelKey: 'nav.documents', icon: FileText },
+      { id: 'progress', labelKey: 'nav.progress', icon: LineChart },
     ],
   },
 ];
@@ -273,9 +290,10 @@ function UserWorkspace({ boot }) {
   const [showMoreNav, setShowMoreNav] = useState(false);
   const [railCollapsed, setRailCollapsed] = useState(false);
   const [railOpen, setRailOpen] = useState(false);
+  const [sidebarWidth, setSidebarWidth] = useState(readSidebarWidth);
+  const [sidebarResizing, setSidebarResizing] = useState(false);
   const [showAssist, setShowAssist] = useState(false);
   const pendingAssistRef = useRef(false);
-  const [assistMuted, setAssistMuted] = useState(false);
   const [, setAssistLive] = useState(false);
   const [activeGameId, setActiveGameId] = useState(null);
   const [showMemoryQuiz, setShowMemoryQuiz] = useState(() => !memoryQuizDoneToday());
@@ -383,6 +401,34 @@ function UserWorkspace({ boot }) {
   const openMemoryQuiz = useCallback(() => setShowMemoryQuiz(true), []);
   const openGuide = useCallback(() => setShowGuide(true), []);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem(SIDEBAR_WIDTH_KEY, String(sidebarWidth));
+    } catch {
+      /* ignore */
+    }
+  }, [sidebarWidth]);
+
+  useEffect(() => {
+    if (!sidebarResizing) return undefined;
+    const onMove = (event) => {
+      const x = event.touches?.[0]?.clientX ?? event.clientX;
+      if (!Number.isFinite(x)) return;
+      setSidebarWidth(Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_MIN, Math.round(x))));
+    };
+    const onUp = () => setSidebarResizing(false);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('touchmove', onMove, { passive: true });
+    window.addEventListener('touchend', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('touchmove', onMove);
+      window.removeEventListener('touchend', onUp);
+    };
+  }, [sidebarResizing]);
+
   // Seed history so the first Back from a module returns to Home (not landing).
   useEffect(() => {
     if (seededHistoryRef.current) return;
@@ -448,86 +494,70 @@ function UserWorkspace({ boot }) {
     });
   };
 
-  const lakesideStyle = {
-    backgroundImage: `url(${heroCalmLake})`,
-    backgroundSize: 'cover',
-    backgroundPosition: '52% 38%',
-    backgroundAttachment: 'fixed',
-    backgroundRepeat: 'no-repeat',
-  };
-
   return (
     <AppNavContext.Provider value={{ openModule, serviceFocus, aiIntent, gameIntent, openEmergency, currentModuleId, openAssist, openMemoryQuiz, openGuide, setActiveGameId, activeGameId }}>
     <ClickSpark
-      className={`app-container ss-theme ss-patient-shell ss-lakeside ${currentModuleId === 'home' ? 'is-home-route' : ''} ${railCollapsed ? ' is-rail-collapsed' : ''}${railOpen ? ' is-rail-open' : ''}`}
-      style={lakesideStyle}
+      className={`app-container ss-theme ss-patient-shell ss-lakeside ss-has-region-scenery ${currentModuleId === 'home' ? 'is-home-route' : ''} ${railCollapsed ? ' is-rail-collapsed' : ''}${railOpen ? ' is-rail-open' : ''}${sidebarResizing ? ' is-sidebar-resizing' : ''}`}
+      style={{ '--ss-sidebar-width': `${railCollapsed ? 72 : sidebarWidth}px` }}
     >
+      <RegionSceneryBackground />
       {railOpen && (
         <button type="button" className="ss-rail-backdrop" aria-label="Close menu" onClick={() => setRailOpen(false)} />
       )}
       <aside className={`sidebar${railCollapsed ? ' is-collapsed' : ''}`}>
+        {!railCollapsed && (
+          <button
+            type="button"
+            className="ss-sidebar-resize"
+            aria-label="Resize sidebar"
+            onPointerDown={(event) => {
+              event.preventDefault();
+              setSidebarResizing(true);
+            }}
+          />
+        )}
         <div className="sidebar-header">
-          {railCollapsed ? (
+          <motion.div
+            className="ss-sidebar-brand-block is-logo-only"
+            initial={false}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          >
             <button
               type="button"
-              className="ss-rail-toggle"
-              aria-label="Expand sidebar"
-              onClick={() => setRailCollapsed(false)}
+              className="ss-brand-link ss-new-brand-link ss-sidebar-identity-link ss-logo-toggle"
+              title="Smriti Saarthi — toggle menu"
+              aria-label={railCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              onClick={() => {
+                if (window.matchMedia('(max-width: 860px)').matches) {
+                  setRailOpen((open) => !open);
+                  return;
+                }
+                setRailCollapsed((collapsed) => !collapsed);
+              }}
             >
-              <PanelLeft size={18} />
+              <div className="ss-new-brand-icon">
+                <img
+                  src={logoMark}
+                  alt="Smriti Saarthi"
+                  className={`ss-new-brand-logo${railCollapsed ? ' ss-rail-collapsed-logo' : ''}`}
+                  draggable={false}
+                />
+              </div>
             </button>
-          ) : (
-            <>
-              <motion.div
-                className="ss-sidebar-brand-block"
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 340, damping: 24 }}
-              >
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Link to="/" className="ss-brand-link ss-new-brand-link" title="Smriti Saarthi">
-                    <div className="ss-new-brand-icon">
-                      <img
-                        src={logoMark}
-                        alt=""
-                        className="ss-new-brand-logo"
-                        draggable={false}
-                      />
-                    </div>
-                    <div className="ss-new-brand-text">
-                      <strong>Smriti Saarthi</strong>
-                      <span>Always With You</span>
-                    </div>
-                  </Link>
-                </motion.div>
-                <motion.button
-                  type="button"
-                  className="ss-about-us-btn"
-                  onClick={() => setShowAboutUs(true)}
-                  whileHover={{ scale: 1.04, y: -1 }}
-                  whileTap={{ scale: 0.97 }}
-                  initial={{ opacity: 0, x: -6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ type: 'spring', stiffness: 360, damping: 22, delay: 0.08 }}
-                  aria-label="About Us"
-                >
-                  <Info size={14} aria-hidden="true" />
-                  About Us
-                </motion.button>
-              </motion.div>
+            {!railCollapsed && (
               <button
                 type="button"
-                className="ss-rail-toggle"
-                aria-label="Collapse sidebar"
-                onClick={() => {
-                  if (window.matchMedia('(max-width: 860px)').matches) setRailOpen(false);
-                  else setRailCollapsed(true);
-                }}
+                className="ss-about-us-btn ss-about-us-inline"
+                onClick={() => setShowAboutUs(true)}
+                aria-label={t('nav.aboutUs')}
+                title={t('nav.aboutUs')}
               >
-                <PanelLeftClose size={18} />
+                <Info size={13} aria-hidden="true" />
+                <span className="ss-about-us-text">{t('nav.aboutUs')}</span>
               </button>
-            </>
-          )}
+            )}
+          </motion.div>
         </div>
 
         <button
@@ -544,12 +574,13 @@ function UserWorkspace({ boot }) {
 
         <div className="ss-gpt-scroll">
           {SIDEBAR_GROUPS.map((group) => (
-            <div key={group.title} className="sidebar-group-block">
-              <p className="ss-rail-kicker">{group.title}</p>
+            <div key={group.titleKey} className="sidebar-group-block">
+              <p className="ss-rail-kicker">{t(group.titleKey)}</p>
               <nav className="sidebar-nav">
                 {group.items.map((item) => {
                   const isActive = (activeTabId === item.id) || (item.id === 'home' && activeTabId === 'home-main');
                   const Icon = item.icon;
+                  const label = t(item.labelKey);
                   return (
                     <button
                       key={item.id}
@@ -559,11 +590,11 @@ function UserWorkspace({ boot }) {
                         openModule(item.id);
                         setRailOpen(false);
                       }}
-                      title={item.label}
+                      title={label}
                     >
                       <Icon size={20} />
                       <span className="ss-rail-copy">
-                        <span className="ss-rail-label">{item.label}</span>
+                        <span className="ss-rail-label">{label}</span>
                       </span>
                     </button>
                   );
@@ -581,11 +612,11 @@ function UserWorkspace({ boot }) {
               openModule('settings');
               setRailOpen(false);
             }}
-            title="Settings"
+            title={t('nav.settings')}
           >
             <Settings size={18} />
             <span className="ss-rail-copy">
-              <span className="ss-rail-label">Settings</span>
+              <span className="ss-rail-label">{t('nav.settings')}</span>
             </span>
           </button>
           <button type="button" className="ss-emergency-nav" onClick={() => { openEmergency(); setRailOpen(false); }}>
@@ -611,6 +642,22 @@ function UserWorkspace({ boot }) {
             >
               <Menu size={22} />
             </button>
+            <button
+              type="button"
+              className="ss-ask-saarthi-hero-btn"
+              onClick={openAssist}
+              aria-label={t('chrome.askSaarthi')}
+              title={t('chrome.askSaarthi')}
+            >
+              <div className="ss-saarthi-avatar-wrap">
+                <img src={companionPortrait} alt="" className="ss-saarthi-avatar-img" />
+                <span className="ss-saarthi-breath-ring" />
+              </div>
+              <div className="ss-saarthi-btn-copy">
+                <span className="ss-saarthi-btn-main">{t('chrome.askSaarthi')}</span>
+              </div>
+            </button>
+            <RoleSwitcher compact />
           </div>
 
           <div className="ss-header-center">
@@ -618,27 +665,7 @@ function UserWorkspace({ boot }) {
           </div>
 
           <div className="ss-header-right">
-            <HeaderLanguageControl />
-            <Magnet>
-              <motion.button
-                type="button"
-                className="ss-ask-saarthi-hero-btn"
-                onClick={openAssist}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                aria-label={t('chrome.askSaarthi')}
-              >
-                <div className="ss-saarthi-avatar-wrap">
-                  <img src={companionPortrait} alt="" className="ss-saarthi-avatar-img" />
-                  <span className="ss-saarthi-breath-ring" />
-                </div>
-                <div className="ss-saarthi-btn-copy">
-                  <span className="ss-saarthi-btn-main">{t('chrome.askSaarthi')}</span>
-                  <span className="ss-saarthi-btn-sub">{t('chrome.askSaarthiSub')}</span>
-                </div>
-              </motion.button>
-            </Magnet>
-
+            <HeaderLanguageControl compact />
             <HeaderProfileMenu
               name={displayName}
               onOpenSettings={() => openModule('settings')}
@@ -653,10 +680,9 @@ function UserWorkspace({ boot }) {
           onPanelOpen={() => setShowAssist(true)}
           onPanelClose={() => setShowAssist(false)}
           paused={assistPaused}
-          muted={assistMuted}
-          onMutedChange={setAssistMuted}
           onLiveChange={setAssistLive}
           authenticated={assistReady}
+          showFab={false}
           onNeedAuth={() => {
             pendingAssistRef.current = true;
             openAuth('signup', { gate: 'assist' });
@@ -847,6 +873,7 @@ function AuthModal() {
 function App() {
   return (
     <>
+      <RegionScenerySync />
       <Routes>
         <Route path="/" element={<HomeLanding />} />
         <Route path="/keypad" element={<KeypadPhone />} />

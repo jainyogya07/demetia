@@ -1,6 +1,6 @@
 import { MEMORIES_FALLBACK } from '../src/data/memoriesFallback.js';
 import { createAuthHandlers } from './auth.mjs';
-import { apiPath, json, readBody, withDb } from './httpKit.mjs';
+import { apiPath, hasDatabaseUrl, json, readBody, withDb } from './httpKit.mjs';
 
 const auth = createAuthHandlers({ withDb, json, readBody });
 
@@ -17,7 +17,7 @@ export async function handleApiRequest(req, res) {
   if (await auth.handle(req, res, path)) return true;
 
   if (req.method === 'GET' && (path === '/api/health' || path === '/health')) {
-    json(res, 200, { ok: true, database: Boolean(process.env.DATABASE_URL?.trim()) });
+    json(res, 200, { ok: true, database: hasDatabaseUrl() });
     return true;
   }
 

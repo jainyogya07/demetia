@@ -59,7 +59,7 @@ function ClinicTasks({ filterId, compact }) {
   }
   return (
     <DataTable
-      empty="No open clinic tasks."
+      empty="No open clinic tasks for today — a calm board."
       columns={[
         {
           key: 'check',
@@ -97,7 +97,7 @@ function WeekBoard({ filterWho }) {
               <span>{col.day}</span>
               {col.today ? <LiveDot label="Today" /> : null}
             </header>
-            {items.length === 0 ? <p className="os-empty">No slot</p> : items.map((item) => (
+            {items.length === 0 ? <p className="os-empty">Quiet day — no named slots</p> : items.map((item) => (
               <article key={`${col.day}-${item.t}-${item.label}`} className="os-slot">
                 <span className="os-slot-time">{item.t}</span>
                 <Badge>{item.kind}</Badge>
@@ -116,17 +116,25 @@ function WeekBoard({ filterWho }) {
 }
 
 function ChartStrip({ patient }) {
+  const statusLabel = patient.status === 'urgent'
+    ? 'Needs attention'
+    : patient.status === 'watch'
+      ? 'Watch kindly'
+      : 'Steady';
   return (
     <section className="os-chart-strip">
-      <AvatarSlot name={patient.name} photoUrl={patient.photoUrl} size={56} label="Patient photo placeholder" />
+      <AvatarSlot name={patient.name} photoUrl={patient.photoUrl} size={56} label={patient.name} />
       <div className="os-chart-id">
-        <p className="os-kicker">Chart · {patient.id.toUpperCase()}</p>
+        <p className="os-kicker">{patient.village} · in Dr. Sharma’s care</p>
         <h2>{patient.name}</h2>
-        <p>{patient.age}{patient.sex} · {patient.village}</p>
+        <p>{patient.age}{patient.sex} · Caregiver: {patient.caregiver} ({patient.caregiverRole})</p>
+        {patient.cognitiveNote ? <p className="os-meta">{patient.cognitiveNote}</p> : null}
       </div>
       <div className="os-chart-actions">
-        <Badge tone={statusTone(patient.status)}>{patient.status}</Badge>
-        <AppLink to={patient.appPath}>Open patient app <ExternalLink size={12} /></AppLink>
+        <Badge tone={statusTone(patient.status)}>{statusLabel}</Badge>
+        {patient.appPath ? (
+          <AppLink to={patient.appPath}>Open {patient.name.split(' ')[0]}’s app <ExternalLink size={12} /></AppLink>
+        ) : null}
       </div>
       <div className="os-chip-row">
         <span>BP {patient.bp}</span>
@@ -166,15 +174,15 @@ export function DoctorPatients() {
     <div className="os-page">
       <SyncBar asOf={`${DR_LIVE.asOf} · ${DR_LIVE.clock}`} lastSync={DR_LIVE.lastSync} extra={DR_LIVE.feed} />
       <div className="os-kpis">
-        <Stat label="Open charts" value={DR_PATIENTS.length} hint="NPHCE OPD list" />
+        <Stat label="People in care" value={DR_PATIENTS.length} hint="Latveria, Binod, Moni" />
         <Stat label="Tasks due" value={DR_TASKS.filter((t) => !t.done).length} hint="Today + held" />
         <Stat label="Open alerts" value={liveAlerts.length} hint="Watch + urgent" />
         <Stat label="Next slot" value="10:15" hint="Latveria Devi · review" />
       </div>
       <div className="ss-focus-bar ss-focus-bar-clinic" role="tablist" aria-label="Clinic today">
         <button type="button" role="tab" aria-selected={pane === 'list'} className={pane === 'list' ? 'is-on' : ''} onClick={() => setPane('list')}>
-          <strong>Patients</strong>
-          <span>OPD list</span>
+          <strong>People</strong>
+          <span>Who you see today</span>
         </button>
         <button type="button" role="tab" aria-selected={pane === 'due'} className={pane === 'due' ? 'is-on' : ''} onClick={() => setPane('due')}>
           <strong>Due</strong>
@@ -187,23 +195,23 @@ export function DoctorPatients() {
       </div>
       {pane === 'list' && (
         <Panel
-          title="Patient list"
+          title="People in Dr. Sharma’s care"
           action={(
             <label className="os-search">
               <Search size={14} />
-              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search name, village, status" />
+              <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search Latveria, Golaghat, Tura…" />
             </label>
           )}
         >
           <DataTable
-            empty="No matching patients."
+            empty="No one matches that search — try a name or village."
             columns={[
               {
                 key: 'name',
-                label: 'Patient',
+                label: 'Person',
                 render: (row) => (
                   <Link className="os-person" to={`/doctor/patients/${row.id}/profile`}>
-                    <AvatarSlot name={row.name} photoUrl={row.photoUrl} size={32} />
+                    <AvatarSlot name={row.name} photoUrl={row.photoUrl} size={32} label={row.name} />
                     <span>
                       <strong>{row.name}</strong>
                       <em>{row.age}{row.sex} · {row.village}</em>
@@ -211,7 +219,15 @@ export function DoctorPatients() {
                   </Link>
                 ),
               },
-              { key: 'status', label: 'Status', render: (row) => <Badge tone={statusTone(row.status)}>{row.status}</Badge> },
+              {
+                key: 'status',
+                label: 'Status',
+                render: (row) => (
+                  <Badge tone={statusTone(row.status)}>
+                    {row.status === 'urgent' ? 'Needs attention' : row.status === 'watch' ? 'Watch kindly' : 'Steady'}
+                  </Badge>
+                ),
+              },
               { key: 'lastSeenRel', label: 'Last seen', render: (row) => <span>{row.lastSeenRel}<em className="os-sub">{row.lastSeenPlace}</em></span> },
               { key: 'mmse', label: 'MMSE', narrow: true },
               { key: 'bp', label: 'BP', narrow: true },
@@ -268,17 +284,25 @@ function ProfileTab({ patient }) {
       rail={(
         <>
           <Panel title="Last session">
-            <p className="os-note-body">{note?.text}</p>
-            <p className="os-meta">{note?.date} · {note?.by}</p>
+            <p className="os-note-body">{note?.text || `No session note yet for ${patient.name.split(' ')[0]} — add one after OPD.`}</p>
+            {note ? <p className="os-meta">{note.date} · {note.by}</p> : null}
           </Panel>
           <Panel title="Caregiver">
-            <p className="os-strong">{patient.caregiver}</p>
-            <p className="os-meta">{patient.caregiverRole}</p>
+            <div className="os-person" style={{ marginBottom: 8 }}>
+              <AvatarSlot name={patient.caregiver} photoUrl={patient.caregiverPhotoUrl} size={36} label={patient.caregiver} />
+              <span>
+                <strong className="os-strong">{patient.caregiver}</strong>
+                <em className="os-meta">{patient.caregiverRole}</em>
+              </span>
+            </div>
+            {patient.caregiverPhone ? (
+              <a className="os-mini-link" href={`tel:${patient.caregiverPhone.replace(/\D/g, '')}`}>Call {patient.caregiver.split(' ')[0]}</a>
+            ) : null}
           </Panel>
         </>
       )}
     >
-      <Panel title="Clinical snapshot">
+      <Panel title={`How ${patient.name.split(' ')[0]} is doing`}>
         <div className="os-kpis tight">
           <Stat label="BP" value={patient.bp} hint="Last OPD" />
           <Stat label="Heart rate" value={patient.hr} hint="bpm" />
@@ -290,6 +314,9 @@ function ProfileTab({ patient }) {
           <div><dt>Last OPD</dt><dd>{patient.lastVisit}</dd></div>
           <div><dt>Last live ping</dt><dd>{patient.lastSeenRel} · {patient.lastSeenPlace}</dd></div>
           <div><dt>Comorbidities</dt><dd>{patient.comorbidities.join(', ')}</dd></div>
+          {patient.cognitiveNote ? (
+            <div><dt>Cognitive note</dt><dd>{patient.cognitiveNote}</dd></div>
+          ) : null}
         </dl>
       </Panel>
     </ChartShell>
@@ -338,7 +365,7 @@ function MedsTab({ patient }) {
     >
       <Panel title="Current medicines">
         <DataTable
-          empty="No medicines on this chart."
+          empty={`No medicines listed for ${patient.name.split(' ')[0]} yet.`}
           columns={[
             { key: 'name', label: 'Medicine' },
             { key: 'dose', label: 'Dose', narrow: true },
@@ -358,20 +385,24 @@ function NotesTab({ patient }) {
   return (
     <ChartShell
       patient={patient}
-      rail={<Panel title="Author"><p className="os-note-body">Session notes stay with Dr. Sharma. Family sees a share when signed.</p></Panel>}
+      rail={<Panel title="Author"><p className="os-note-body">Session notes stay with Dr. Meera Sharma. Family sees a share when signed.</p></Panel>}
     >
-      <Panel title="Session notes">
-        <div className="os-note-stack">
-          {rows.map((note) => (
-            <article key={note.date} className="os-note-card">
-              <header>
-                <strong>{note.date}</strong>
-                <span>{note.by}</span>
-              </header>
-              <p>{note.text}</p>
-            </article>
-          ))}
-        </div>
+      <Panel title={`Notes about ${patient.name.split(' ')[0]}`}>
+        {rows.length === 0 ? (
+          <p className="os-empty">No session notes yet — write the first after you see {patient.name.split(' ')[0]}.</p>
+        ) : (
+          <div className="os-note-stack">
+            {rows.map((note) => (
+              <article key={note.date} className="os-note-card">
+                <header>
+                  <strong>{note.date}</strong>
+                  <span>{note.by}</span>
+                </header>
+                <p>{note.text}</p>
+              </article>
+            ))}
+          </div>
+        )}
       </Panel>
     </ChartShell>
   );
@@ -386,7 +417,7 @@ function AlertsTab({ patient }) {
     >
       <Panel title="Safety alerts">
         <DataTable
-          empty="No alerts on this chart."
+          empty={`${patient.name.split(' ')[0]} has a clear safety board — no open alerts.`}
           columns={[
             { key: 'level', label: 'Level', render: (row) => <Badge tone={row.level.toLowerCase()}>{row.level}</Badge> },
             { key: 'title', label: 'Alert' },
@@ -457,10 +488,15 @@ function CarePlanTab({ patient }) {
 }
 
 function TimelineTab({ patient }) {
+  const items = DR_TIMELINE[patient.id] || [];
   return (
-    <ChartShell patient={patient} rail={<Panel title="Source"><p className="os-note-body">Home pings, OPD, and caregiver marks. Live as of {DR_LIVE.lastSync}.</p></Panel>}>
-      <Panel title="Timeline">
-        <TimelineRail items={DR_TIMELINE[patient.id] || []} />
+    <ChartShell patient={patient} rail={<Panel title="Source"><p className="os-note-body">Home pings, OPD, and caregiver marks for {patient.name.split(' ')[0]}. Live as of {DR_LIVE.lastSync}.</p></Panel>}>
+      <Panel title={`${patient.name.split(' ')[0]}’s timeline`}>
+        {items.length === 0 ? (
+          <p className="os-empty">No check-ins yet for {patient.name.split(' ')[0]} — home pings will land here.</p>
+        ) : (
+          <TimelineRail items={items} />
+        )}
       </Panel>
     </ChartShell>
   );
@@ -621,7 +657,7 @@ export function DoctorProfile() {
             <div><dt>Phone</dt><dd><a href={`tel:${DR_CLINIC.phone.replace(/\D/g, '')}`}>{DR_CLINIC.phone}</a></dd></div>
             <div><dt>Email</dt><dd>{DR_CLINIC.email}</dd></div>
           </dl>
-          <p className="os-meta">Voice gender for Care Agent stays on the patient app — not on this desk.</p>
+          <p className="os-meta">Voice for Care Agent stays on Latveria’s patient app — not on this clinic desk.</p>
         </Panel>
         <Panel title="Today’s board">
           <p className="os-today-line"><strong>10:15</strong> Latveria Devi · review</p>

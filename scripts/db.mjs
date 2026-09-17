@@ -1,22 +1,29 @@
 #!/usr/bin/env node
 /**
- * Connect to Postgres using DATABASE_URL from the environment.
- * Never put passwords in source. Fails clearly if the URL or `pg` is missing.
+ * Connect to Postgres using DATABASE_URL (or POSTGRES_URL) from the environment.
+ * Never put passwords in source. Works with local Docker or a remote Neon/Supabase/Vercel URL.
  *
- *   DATABASE_URL=postgres://USER:PASS@localhost:5432/saheli node scripts/db.mjs
+ *   npm run db:ping
+ *   npm run db:migrate   # applies scripts/schema.sql
+ *   npm run db:seed
+ *
+ * Production (Vercel): set DATABASE_URL in the project env, then migrate once from your machine:
+ *   DATABASE_URL='postgres://…' npm run db:migrate
  */
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadEnv, repoRootFrom } from './loadEnv.mjs';
+import { getDatabaseUrl, pgClientConfig } from '../server/httpKit.mjs';
 
 const root = repoRootFrom(import.meta.url);
 loadEnv(root);
 
-const url = process.env.DATABASE_URL?.trim();
+const url = getDatabaseUrl();
 if (!url) {
-  console.error('DATABASE_URL is not set.');
-  console.error('Copy .env.example to .env (not committed) and set DATABASE_URL, or export it in your shell.');
-  console.error('Example: postgres://USER:PASSWORD@localhost:5432/saheli');
+  console.error('DATABASE_URL is not set (also accepts POSTGRES_URL / POSTGRES_PRISMA_URL).');
+  console.error('Local: copy .env.example → .env, run npm run stack, then retry.');
+  console.error('Vercel: set DATABASE_URL in Project Settings → Environment Variables, then:');
+  console.error("  DATABASE_URL='postgres://…' npm run db:migrate");
   process.exit(1);
 }
 
@@ -30,7 +37,7 @@ try {
 }
 
 const { Client } = pg;
-const client = new Client({ connectionString: url });
+const client = new Client(pgClientConfig(url));
 const action = process.argv[2] || 'ping';
 
 try {

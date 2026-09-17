@@ -2,6 +2,8 @@
 
 .ss-theme {
   --ss-sage: #176b58;
+  --ss-accent: var(--ss-sage);
+  --ss-accent-soft: #2a9d8f;
   --ss-paper: #f8faf9;
   --ss-teal: #214d42;
   --ss-glass: rgba(255, 255, 255, 0.9);
@@ -10,14 +12,25 @@
   --ss-muted: #60716b;
   --ss-gold: #c18429;
   --ss-peach: #f4e4d9;
+  --ss-wash-a: rgba(246, 250, 247, 0.78);
+  --ss-wash-b: rgba(246, 250, 247, 0.42);
+  --ss-wash-c: rgba(20, 48, 42, 0.18);
+  --ss-wash-d: rgba(20, 48, 42, 0.28);
+  --ss-header-wash: rgba(255, 255, 255, 0.28);
+  --ss-sidebar-wash: rgba(255, 255, 255, 0.34);
+  --ss-faith-wash: transparent;
+  --ss-sidebar-width: 188px;
 }
 
 .ss-theme .sidebar,
 .ss-theme .sidebar {
-  width: 252px;
-  background: #f7f9f8;
-  backdrop-filter: none;
-  border-right: 1px solid var(--ss-glass-border);
+  width: var(--ss-sidebar-width, 188px);
+  background: var(--ss-sidebar-wash, rgba(255, 255, 255, 0.34));
+  backdrop-filter: blur(22px) saturate(1.18);
+  -webkit-backdrop-filter: blur(22px) saturate(1.18);
+  border-right: 0;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.55);
+  transition: width 0.32s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s ease;
 }
 
 .ss-theme .sidebar-header,
@@ -310,6 +323,15 @@
   align-items: center;
   gap: 14px;
   flex-shrink: 0;
+  min-width: 0;
+}
+
+.ss-header-left .ss-ask-saarthi-hero-btn {
+  max-width: 100%;
+}
+
+.ss-header-left .ss-role-switch {
+  flex-shrink: 0;
 }
 
 .ss-header-brand-wrap {
@@ -373,15 +395,47 @@
 .ss-ask-saarthi-hero-btn {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 18px 8px 10px;
+  gap: 10px;
+  padding: 6px 14px 6px 8px;
   border-radius: 999px;
-  background: #FFFFFF;
+  background: rgba(255, 255, 255, 0.82);
   border: 1.5px solid rgba(23, 107, 88, 0.28);
   box-shadow: 0 4px 16px rgba(23, 107, 88, 0.1);
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
   outline: none;
+  flex-shrink: 0;
+}
+
+.ss-ask-saarthi-hero-btn.is-compact {
+  gap: 0;
+  padding: 6px;
+  width: 44px;
+  height: 44px;
+  justify-content: center;
+}
+
+.ss-ask-saarthi-hero-btn.is-compact .ss-saarthi-btn-copy {
+  display: none;
+}
+
+.ss-ask-saarthi-hero-btn.ss-role-patient-link.is-compact {
+  width: auto;
+  min-width: 44px;
+  height: 40px;
+  padding: 8px 12px;
+}
+
+.ss-ask-saarthi-hero-btn.ss-role-patient-link.is-compact .ss-saarthi-btn-copy {
+  display: flex;
+}
+
+.ss-ask-saarthi-hero-btn.ss-role-patient-link.is-compact .ss-saarthi-btn-main {
+  font-size: 0.82rem;
+}
+
+.ss-ask-saarthi-hero-btn.ss-role-patient-link.is-compact .ss-saarthi-btn-sub {
+  display: none;
 }
 
 .ss-ask-saarthi-hero-btn:hover {

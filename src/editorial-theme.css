@@ -98,12 +98,13 @@
   color: #4a5f58 !important;
 }
 
-.ss-theme .main-content {
+/* Lakeside shells paint scenery + glass; keep solid paper only off-scenery */
+.ss-theme:not(.ss-has-region-scenery) .main-content {
   background:
     linear-gradient(180deg, #f4f7f5 0%, #f8faf9 40%, #f8faf9 100%) !important;
 }
 
-.ss-theme .sidebar {
+.ss-theme:not(.ss-has-region-scenery) .sidebar {
   background: #ffffff !important;
 }
 

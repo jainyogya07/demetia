@@ -55,6 +55,13 @@ export function I18nProvider({ children }) {
       }
       const found = await detectAndResolveLang();
       if (cancelled || !found.lang) return;
+      // Re-check after await — user may have picked a language while geo was in flight.
+      try {
+        if (localStorage.getItem('smriti-auto-language') === 'false') return;
+        if (localStorage.getItem('smriti-lang-manual') === '1') return;
+      } catch {
+        /* ignore */
+      }
       setLang(found.lang);
       try { localStorage.setItem('smriti-region-applied', '1'); } catch { /* ignore */ }
     })();

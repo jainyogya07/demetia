@@ -8,9 +8,9 @@ import {
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import VoiceToggle from '../components/VoiceToggle';
 import { useI18n } from '../I18nContext';
+import { useLanguage } from '../context/LanguageContext';
 import { usePrefs } from '../PrefsContext';
-import { LANG_STORAGE_KEY, markLangManual } from '../i18n';
-import { detectAndResolveLang } from '../lib/regionLanguage';
+import { LANG_STORAGE_KEY } from '../i18n';
 import { ensureNotifyPermission, getAlarmPrefs, setAlarmPrefs } from '../lib/alarms';
 import { useAppNav } from '../AppNavContext';
 import { useAuth } from '../context/AuthContext';
@@ -32,6 +32,7 @@ function Toggle({ checked, onChange, label }) {
 
 function Settings() {
   const { t, lang, languages, setLang } = useI18n();
+  const { setLanguage, enableAutomaticLanguage } = useLanguage();
   const { prefs, updatePrefs, resetPrefs } = usePrefs();
   const { openEmergency } = useAppNav();
   const { session, signOut, openAuth } = useAuth();
@@ -167,7 +168,7 @@ function Settings() {
     } catch {
       /* ignore */
     }
-    setLang('en');
+    setLanguage('en', true);
     setProfileDraft({ name: '', phone: '', state: '', district: '', photoDataUrl: '' });
     setDataNote(t('settingsPage.deleted'));
   };
@@ -297,11 +298,8 @@ function Settings() {
               type="button"
               className="btn btn-secondary"
               onClick={async () => {
-                const found = await detectAndResolveLang();
-                if (found.lang) {
-                  markLangManual();
-                  setLang(found.lang);
-                  try { localStorage.setItem('smriti-region-applied', '1'); } catch { /* ignore */ }
+                const found = await enableAutomaticLanguage();
+                if (found?.lang) {
                   setRegionNote(found.region ? `Detected ${found.region}` : 'Language updated');
                 } else {
                   setRegionNote('Could not detect region. Stay on the current language.');
@@ -480,7 +478,7 @@ function Settings() {
                 type="button"
                 className={`settings-lang-chip ${item.code === lang ? 'active' : ''}`}
                 onClick={() => {
-                  markLangManual();
+                  setLanguage(item.code, true);
                   setLang(item.code);
                 }}
               >

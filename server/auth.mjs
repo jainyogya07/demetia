@@ -1,6 +1,8 @@
 /** Phone OTP + Postgres users. Email send is optional (FastAPI). */
 
 import { sendAppMail, isSmtpConfigured, mailPreviewUrl } from './mail.mjs';
+import { hasDatabaseUrl } from './httpKit.mjs';
+
 const AUTH_DEV_MODE = String(process.env.AUTH_DEV_MODE || 'false').toLowerCase();
 const DEV_MODE = AUTH_DEV_MODE !== 'false' && AUTH_DEV_MODE !== '0' && AUTH_DEV_MODE !== 'no';
 const memOtps = new Map();
@@ -8,7 +10,7 @@ const memUsers = new Map();
 const SHOW_OTP = DEV_MODE || !isSmtpConfigured() || Boolean(process.env.VERCEL);
 
 function dbHint(err) {
-  return `Postgres is required for accounts. Run: npm run stack && npm run db:migrate. ${err ? `(${err})` : ''}`.trim();
+  return `Postgres is required for accounts. Set DATABASE_URL (or POSTGRES_URL) on Vercel, then run: DATABASE_URL=… npm run db:migrate. Local: npm run stack && npm run db:migrate. ${err ? `(${err})` : ''}`.trim();
 }
 
 export function digitsPhone(raw) {
@@ -260,7 +262,7 @@ export function createAuthHandlers({ withDb, json, readBody }) {
       if (req.method === 'GET' && path === '/api/auth/health') {
         json(res, 200, {
           ok: true,
-          database: Boolean(process.env.DATABASE_URL?.trim()),
+          database: hasDatabaseUrl(),
           devMode: DEV_MODE,
           smtp: isSmtpConfigured(),
         });

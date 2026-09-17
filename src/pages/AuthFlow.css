@@ -8,7 +8,7 @@
   padding: 24px 16px 40px;
   background-image:
     linear-gradient(105deg, rgba(246, 250, 247, 0.82) 0%, rgba(246, 250, 247, 0.55) 45%, rgba(20, 48, 42, 0.22) 100%),
-    url('../assets/hero-calm-lake.png');
+    var(--ss-scenery, url('../assets/hero-calm-lake.png'));
   background-size: cover;
   background-position: 52% 38%;
   background-repeat: no-repeat;

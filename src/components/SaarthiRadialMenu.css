@@ -149,8 +149,8 @@
 }
 
 .widget-logo {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.55);
@@ -185,6 +185,21 @@
   line-height: 1.1;
   color: var(--tone);
   font-variant-numeric: tabular-nums;
+}
+
+.widget-stage {
+  max-width: 82px;
+  margin-top: 0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  text-align: center;
+  color: color-mix(in srgb, var(--tone) 88%, var(--widget-teal));
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: none;
 }
 
 .widget-caption {

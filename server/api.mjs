@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEnv } from '../scripts/loadEnv.mjs';
 import { handleApiRequest } from './handleApi.mjs';
+import { hasDatabaseUrl } from './httpKit.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 loadEnv(root);
@@ -20,7 +21,7 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`API on http://127.0.0.1:${PORT}`);
-  if (!process.env.DATABASE_URL?.trim()) {
+  if (!hasDatabaseUrl()) {
     console.log('DATABASE_URL is not set — auth OTP is on-screen; memories use fallback.');
   }
 });

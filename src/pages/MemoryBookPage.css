@@ -20,7 +20,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin: 16px 0 18px;
+  margin: 8px 0 18px;
 }
 
 .mb-albums button,
@@ -195,14 +195,18 @@
 }
 
 .mb-add {
-  margin-top: 28px;
+  margin: 8px 0 20px;
   padding: 16px;
+  padding-right: max(16px, 112px);
   background: #fff;
   border: 1px solid var(--border-color);
   border-radius: 14px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  position: relative;
+  z-index: 2;
+  scroll-margin-top: 16px;
 }
 
 .mb-add.is-assist-fill {

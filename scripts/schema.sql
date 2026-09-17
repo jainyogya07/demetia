@@ -1,5 +1,7 @@
 -- Saheli Sahaay scheme catalogue (English Excel fields + banner URL).
--- No secrets. Apply with: psql "$DATABASE_URL" -f scripts/schema.sql
+-- No secrets. Apply with remote or local URL:
+--   DATABASE_URL='postgres://…' npm run db:migrate
+--   (also: psql "$DATABASE_URL" -f scripts/schema.sql)
 
 CREATE TABLE IF NOT EXISTS schemes (
   id TEXT PRIMARY KEY,

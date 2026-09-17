@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useAppNav } from '../AppNavContext';
+import { useI18n } from '../I18nContext';
 import {
   getRoutineItems,
   markRoutineDone,
@@ -24,16 +25,17 @@ import {
 import './DailyRoutineDashboard.css';
 
 const TIME_ICONS = {
-  'med-am': { icon: Sun, emoji: '☀️', period: 'Morning' },
-  'water': { icon: Droplets, emoji: '💧', period: '9:00 am' },
-  'brain': { icon: Brain, emoji: '🧠', period: '11:00 am' },
-  'lunch': { icon: Utensils, emoji: '🍲', period: '1:00 pm' },
-  'walk': { icon: Footprints, emoji: '🚶', period: '4:30 pm' },
-  'med-pm': { icon: Moon, emoji: '🌙', period: '8:30 pm' },
+  'med-am': { icon: Sun, periodKey: 'routineCard.morning' },
+  water: { icon: Droplets, period: '9:00 am' },
+  brain: { icon: Brain, period: '11:00 am' },
+  lunch: { icon: Utensils, period: '1:00 pm' },
+  walk: { icon: Footprints, period: '4:30 pm' },
+  'med-pm': { icon: Moon, period: '8:30 pm' },
 };
 
 export default function DailyRoutineDashboard() {
   const { openModule } = useAppNav();
+  const { t } = useI18n();
   const [, setTick] = useState(0);
   const [justCompletedId, setJustCompletedId] = useState(null);
 
@@ -43,16 +45,20 @@ export default function DailyRoutineDashboard() {
   const nextTask = routine.find((item) => !item.completed);
   const completedCount = routine.filter((item) => item.completed).length;
 
+  const taskTitle = (id, fallback) => t(`routineCard.tasks.${id}.title`) || fallback;
+  const taskSubtitle = (id, fallback) => t(`routineCard.tasks.${id}.subtitle`) || fallback;
+
   const tellNext = () => {
     if (!nextTask) {
       if ('speechSynthesis' in window) {
-        const speech = new SpeechSynthesisUtterance("You've completed all your routine activities for now. Have a quiet and restful day.");
+        const speech = new SpeechSynthesisUtterance(t('routineCard.allDoneSpeech'));
         speech.rate = 0.85;
         window.speechSynthesis.speak(speech);
       }
       return;
     }
-    const text = `Your next activity is ${nextTask.title} at ${nextTask.time}.`;
+    const title = taskTitle(nextTask.id, nextTask.title);
+    const text = t('routineCard.nextSpeech', { title, time: nextTask.time });
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
       const speech = new SpeechSynthesisUtterance(text);
@@ -80,11 +86,11 @@ export default function DailyRoutineDashboard() {
             <CalendarDays size={22} />
           </div>
           <div>
-            <h2>Today&apos;s Rhythm</h2>
+            <h2>{t('routineCard.title')}</h2>
             <p className="ss-routine-sub">
               {completedCount === routine.length
-                ? 'All quiet and completed for today'
-                : `${completedCount} of ${routine.length} gentle steps taken`}
+                ? t('routineCard.allQuiet')
+                : t('routineCard.stepsTaken', { done: completedCount, total: routine.length })}
             </p>
           </div>
         </div>
@@ -95,20 +101,26 @@ export default function DailyRoutineDashboard() {
           onClick={tellNext}
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          title="Listen to what's next"
+          title={t('routineCard.tellNextTitle')}
         >
           <Volume2 size={16} />
-          <span>Tell what&apos;s next</span>
+          <span>{t('routineCard.tellNext')}</span>
         </motion.button>
       </div>
 
-      {/* Vertical Animated Calm Timeline */}
       <div className="ss-timeline-stream" role="list">
         {routine.map((item, index) => {
           const isNext = nextTask?.id === item.id;
           const isDone = item.completed;
-          const meta = TIME_ICONS[item.id] || { emoji: '🌿', period: item.time };
+          const meta = TIME_ICONS[item.id] || { period: item.time };
+          const period = meta.periodKey ? t(meta.periodKey) : (meta.period || item.time);
           const justDone = justCompletedId === item.id;
+          const title = taskTitle(item.id, item.title);
+          const subtitle = isDone
+            ? t('routineCard.completedGently')
+            : isNext
+              ? t('routineCard.approachingNext')
+              : taskSubtitle(item.id, item.subtitle);
 
           return (
             <div
@@ -116,19 +128,19 @@ export default function DailyRoutineDashboard() {
               role="listitem"
               className={`ss-timeline-row ${isDone ? 'is-done' : ''} ${isNext ? 'is-next-active' : ''}`}
             >
-              {/* Left Time Badge */}
               <div className="ss-timeline-time-col">
-                <span className="ss-timeline-emoji">{meta.emoji}</span>
-                <span className="ss-timeline-period">{meta.period}</span>
+                <span className="ss-timeline-period">{period}</span>
               </div>
 
-              {/* Connecting Spine Line */}
               <div className="ss-timeline-spine">
                 <button
                   type="button"
                   className={`ss-timeline-dot-btn ${isDone ? 'dot-done' : 'dot-pending'} ${isNext ? 'dot-next-pulse' : ''}`}
                   onClick={() => handleToggle(item)}
-                  aria-label={`Mark ${item.title} as ${isDone ? 'not completed' : 'completed'}`}
+                  aria-label={t('routineCard.markAs', {
+                    title,
+                    state: isDone ? t('routineCard.notDone') : t('routineCard.done'),
+                  })}
                 >
                   <AnimatePresence mode="wait">
                     {isDone ? (
@@ -156,7 +168,6 @@ export default function DailyRoutineDashboard() {
                 {index < routine.length - 1 && <span className="ss-timeline-connector" />}
               </div>
 
-              {/* Task Details Card */}
               <div
                 className={`ss-timeline-task-bubble ${isDone ? 'bubble-done' : ''} ${isNext ? 'bubble-next' : ''}`}
                 onClick={() => handleToggle(item)}
@@ -166,14 +177,11 @@ export default function DailyRoutineDashboard() {
               >
                 <div className="ss-task-info">
                   <span className={`ss-task-title ${isDone ? 'text-done' : ''}`}>
-                    {item.title}
+                    {title}
                   </span>
-                  <span className="ss-task-subtitle">
-                    {isDone ? 'Completed gently' : isNext ? 'Approaching next' : item.subtitle}
-                  </span>
+                  <span className="ss-task-subtitle">{subtitle}</span>
                 </div>
 
-                {/* Subtle confirmation feedback */}
                 {justDone && (
                   <motion.span
                     className="ss-celebration-badge"
@@ -181,7 +189,7 @@ export default function DailyRoutineDashboard() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                   >
-                    <Sparkles size={13} /> Completed
+                    <Sparkles size={13} /> {t('routineCard.completedBadge')}
                   </motion.span>
                 )}
               </div>
@@ -199,7 +207,7 @@ export default function DailyRoutineDashboard() {
             openModule('routine');
           }}
         >
-          View Full Routine &amp; Notes
+          {t('routineCard.viewFull')}
         </button>
       </div>
     </section>

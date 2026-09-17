@@ -9,8 +9,7 @@
 @media (max-width: 860px) {
   .ss-patient-shell {
     flex-direction: column;
-    background:
-      linear-gradient(180deg, #eef6f2 0%, #f8faf9 28%, #f8faf9 100%);
+    background: transparent;
   }
 
   .ss-patient-shell .sidebar {
@@ -20,10 +19,17 @@
     top: 0;
     bottom: 0;
     z-index: 60;
-    width: min(280px, 88vw);
+    width: min(var(--ss-sidebar-width, 188px), 86vw);
     transform: translateX(-105%);
-    transition: transform 0.22s ease;
+    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
     box-shadow: 8px 0 32px rgba(18, 40, 34, 0.12);
+    background: var(--ss-sidebar-wash, rgba(255, 255, 255, 0.38)) !important;
+    backdrop-filter: blur(22px) saturate(1.15) !important;
+    -webkit-backdrop-filter: blur(22px) saturate(1.15) !important;
+  }
+
+  .ss-patient-shell .ss-sidebar-resize {
+    display: none;
   }
 
   .ss-patient-shell.is-rail-open .sidebar {
@@ -31,11 +37,12 @@
   }
 
   .ss-patient-shell .sidebar.is-collapsed {
-    width: min(280px, 88vw);
+    width: min(var(--ss-sidebar-width, 188px), 86vw);
   }
 
   .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-rail-label,
   .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-brand-text,
+  .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-new-brand-text,
   .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-rail-kicker,
   .ss-patient-shell.is-rail-open .sidebar.is-collapsed .help-now-content {
     display: block;
@@ -51,10 +58,11 @@
     align-items: center;
     justify-content: center;
     min-height: 44px;
+    min-width: 44px;
     padding: 0 14px;
     border-radius: 999px;
-    border: 1px solid #d8e5df;
-    background: #f4e4d9;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.78);
     color: #214d42;
     font: inherit;
     font-size: 14px;
@@ -68,6 +76,14 @@
     padding: 10px 14px 8px;
     gap: 8px;
     flex-wrap: wrap;
+  }
+
+  .ss-patient-shell .ss-header-right {
+    gap: 6px;
+  }
+
+  .ss-patient-shell .ss-ask-saarthi-hero-btn.is-compact {
+    order: 0;
   }
 
   .ss-patient-shell .ss-greeting-block h1 {
@@ -113,6 +129,15 @@
     padding: 12px 4px 24px;
   }
 
+  .ss-tab-pane {
+    transition: opacity 0.22s ease, transform 0.22s ease;
+  }
+
+  .ss-tab-pane.is-active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
   .ss-mobile-dock {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -122,7 +147,9 @@
     bottom: 10px;
     z-index: 40;
     padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
-    background: #214d42;
+    background: rgba(33, 77, 66, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     border-radius: 28px;
     box-shadow: 0 16px 40px rgba(18, 87, 71, 0.35);
   }
@@ -144,6 +171,11 @@
     min-height: 64px;
     border-radius: 20px;
     cursor: pointer;
+    transition: background 0.18s ease, transform 0.18s ease;
+  }
+
+  .ss-mobile-dock button:active {
+    transform: scale(0.96);
   }
 
   .ss-mobile-dock button.is-on {
@@ -235,7 +267,9 @@
 
   .granth-home .top-grid,
   .granth-home .middle-grid,
-  .granth-home .bottom-grid {
+  .granth-home .bottom-grid,
+  .granth-home .hero-grid,
+  .granth-home .bottom-extras-grid {
     grid-template-columns: 1fr;
     gap: 12px;
     margin-bottom: 12px;
@@ -245,6 +279,11 @@
     padding: 2px 0 8px;
   }
 
+  .granth-home .unified-dashboard-content {
+    padding: 12px 4px;
+    gap: 16px;
+  }
+
   .granth-home .voice-companion-card,
   .granth-home .daily-routine-card,
   .granth-home .brain-activity-card,
@@ -252,10 +291,17 @@
     min-height: 0;
   }
 
-  .granth-home .speak-button {
+  .granth-home .speak-button,
+  .granth-home .ss-hero-speak-btn {
     min-height: 64px;
-    font-size: 20px;
+    font-size: 18px;
     border-radius: 999px;
+  }
+
+  .granth-home .ss-suggestion-chip,
+  .granth-home .ss-calm-tell-btn,
+  .granth-home .ss-calm-view-all {
+    min-height: 44px;
   }
 
   .granth-home .bottom-status {

@@ -10,6 +10,8 @@ export const DEFAULT_PREFS = {
     state: '',
     district: '',
     photoDataUrl: '',
+    /** Optional soft faith tint key: hindu|muslim|sikh|christian|buddhist|jain|secular — no UI picker yet. */
+    faith: '',
   },
   accessibility: {
     fontSize: 'medium',

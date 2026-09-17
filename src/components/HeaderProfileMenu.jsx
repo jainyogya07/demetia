@@ -3,7 +3,6 @@ import { LogOut, Settings, UserRound, MapPin, Languages, ChevronDown } from 'luc
 import { useAuth } from '../context/AuthContext';
 import { useI18n } from '../I18nContext';
 import { useLanguage } from '../context/LanguageContext';
-import { markLangManual } from '../i18n';
 import AvatarSlot from './AvatarSlot';
 import './HeaderProfileMenu.css';
 
@@ -19,7 +18,7 @@ export default function HeaderProfileMenu({
 }) {
   const { session, signOut, openAuth } = useAuth();
   const { lang, language, languages, setLang } = useI18n();
-  const { detectedRegion, enableAutomaticLanguage, locationLoading } = useLanguage();
+  const { detectedRegion, enableAutomaticLanguage, locationLoading, setLanguage } = useLanguage();
   const [open, setOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
   const [regionNote, setRegionNote] = useState('');
@@ -156,7 +155,8 @@ export default function HeaderProfileMenu({
                     aria-selected={item.code === lang}
                     className={item.code === lang ? 'is-active' : ''}
                     onClick={() => {
-                      markLangManual();
+                      // Clears regionExplicit so language scenery applies; keep I18n t() in sync
+                      setLanguage(item.code, true);
                       setLang(item.code);
                       setLangOpen(false);
                     }}

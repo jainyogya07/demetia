@@ -3,14 +3,20 @@ import { createPortal } from 'react-dom';
 import { ChevronDown, Globe, MapPin } from 'lucide-react';
 import { useI18n } from '../I18nContext';
 import { useLanguage } from '../context/LanguageContext';
-import { markLangManual } from '../i18n';
 
 /**
  * Visible header language control with nearby region detect.
+ *
+ * Lock behaviour (must stay consistent with LanguageContext / resolveRegionScenery):
+ * - Manual language pick → clears regionExplicit → language scenery (en → calm lake)
+ * - Detect region → sets regionExplicit + detected place → region scenery wins until
+ *   the user picks a language manually again
+ *
+ * @param {{ compact?: boolean }} props
  */
-export default function HeaderLanguageControl() {
+export default function HeaderLanguageControl({ compact = false }) {
   const { lang, language, languages, setLang, t } = useI18n();
-  const { detectedRegion, enableAutomaticLanguage, locationLoading } = useLanguage();
+  const { detectedRegion, enableAutomaticLanguage, locationLoading, setLanguage } = useLanguage();
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, right: 16 });
   const [regionNote, setRegionNote] = useState('');
@@ -78,7 +84,9 @@ export default function HeaderLanguageControl() {
               aria-selected={item.code === lang}
               className={item.code === lang ? 'active' : ''}
               onClick={() => {
-                markLangManual();
+                // Keep LanguageContext (scenery) + I18nContext (t()) in lockstep.
+                // setLanguage already calls setI18nLang; setLang is belt-and-suspenders.
+                setLanguage(item.code, true);
                 setLang(item.code);
                 setOpen(false);
               }}
@@ -94,7 +102,7 @@ export default function HeaderLanguageControl() {
     : null;
 
   return (
-    <div className="ss-header-lang" ref={rootRef}>
+    <div className={`ss-header-lang${compact ? ' is-compact' : ''}`} ref={rootRef}>
       <button
         type="button"
         className="ss-header-lang-btn"
@@ -103,9 +111,9 @@ export default function HeaderLanguageControl() {
         aria-label={t('chrome.language')}
         onClick={() => setOpen((prev) => !prev)}
       >
-        <Globe size={16} />
+        <Globe size={compact ? 14 : 16} />
         <span className="ss-header-lang-label">{language?.nativeLabel || lang}</span>
-        <ChevronDown size={14} />
+        {!compact && <ChevronDown size={14} />}
       </button>
       <button
         type="button"
@@ -115,9 +123,9 @@ export default function HeaderLanguageControl() {
         aria-label={t('chrome.detectRegion')}
         onClick={handleDetectRegion}
       >
-        <MapPin size={15} />
+        <MapPin size={compact ? 14 : 15} />
         <span className="ss-header-region-label">
-          {locationLoading ? t('chrome.detectingRegion') : t('chrome.detectRegion')}
+          {locationLoading ? t('chrome.detectingRegion') : (compact ? 'Detect' : t('chrome.detectRegion'))}
         </span>
       </button>
       {menu}

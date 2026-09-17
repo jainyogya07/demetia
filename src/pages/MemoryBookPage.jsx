@@ -49,6 +49,19 @@ function nextAskFrom(fields, ask) {
   return MB_FIELDS.find((key) => !String(fields[key] || '').trim() || fields[key] === '—') || 'title';
 }
 
+function scrollAddFormIntoView() {
+  window.setTimeout(() => {
+    const form = document.getElementById('mb-add-form');
+    if (!form) return;
+    form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const scrollParent = form.closest('.dashboard-scroll') || form.closest('.main-content');
+    if (scrollParent && typeof scrollParent.scrollTo === 'function') {
+      const top = Math.max(0, form.offsetTop - 12);
+      scrollParent.scrollTo({ top, behavior: 'smooth' });
+    }
+  }, 60);
+}
+
 export default function MemoryBookPage() {
   const [memories, setMemories] = useState(MEMORIES_FALLBACK);
   const [source, setSource] = useState('local');
@@ -113,7 +126,7 @@ export default function MemoryBookPage() {
       });
     });
     window.setTimeout(() => {
-      document.getElementById('mb-add-form')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrollAddFormIntoView();
       if (!queued) focusField(MB_IDS[targetAsk] || 'mb-title');
     }, 80);
     if (queued) {
@@ -325,6 +338,54 @@ export default function MemoryBookPage() {
 
       {notice && <p className="ss-safety-note">{notice}</p>}
 
+      <form id="mb-add-form" className={`mb-add${assistFill ? ' is-assist-fill' : ''}`} onSubmit={addMemory}>
+        <h3><Plus size={16} /> Add a memory</h3>
+        {assistFill && <p className="mb-assist-hint">Sarthi Assist is filling this. Say the details — we will add other languages later in edit.</p>}
+        <div className="mb-photo-picker">
+          <div className={`mb-photo-preview${usingDefaultPhoto ? ' is-default' : ''}`} aria-hidden="true">
+            <img src={previewSrc} alt="" />
+          </div>
+          <div className="mb-photo-picker-main">
+            <p className="mb-photo-label">Photo</p>
+            <p className="mb-photo-hint">
+              {usingDefaultPhoto ? 'Default photo until you pick one from the device.' : 'This photo will save with the memory.'}
+            </p>
+            <input ref={photoInputRef} type="file" accept="image/*" hidden onChange={onPickFile} />
+            <button type="button" className="ss-text-btn mb-photo-file" onClick={() => photoInputRef.current?.click()}>
+              <Camera size={14} /> Choose from device
+            </button>
+            {!usingDefaultPhoto && (
+              <button
+                type="button"
+                className="ss-text-btn mb-photo-file"
+                onClick={() => setForm((prev) => ({ ...prev, photo_url: DEFAULT_MEMORY_PHOTO }))}
+              >
+                Remove photo
+              </button>
+            )}
+          </div>
+        </div>
+        <label>
+          Title
+          <input id="mb-title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+        </label>
+        <label>
+          What happened
+          <textarea id="mb-body" rows={3} value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} />
+        </label>
+        <div className="mb-add-row">
+          <label>
+            Person
+            <input id="mb-person" value={form.person} onChange={(e) => setForm({ ...form, person: e.target.value })} />
+          </label>
+          <label>
+            Place
+            <input id="mb-place" value={form.place} onChange={(e) => setForm({ ...form, place: e.target.value })} />
+          </label>
+        </div>
+        <button type="submit" className="ss-full-btn">Save to the book</button>
+      </form>
+
       <div className="mb-albums">
         <button type="button" className={album === 'all' ? 'on' : ''} onClick={() => setAlbum('all')}>
           All
@@ -390,54 +451,6 @@ export default function MemoryBookPage() {
           );
         })}
       </div>
-
-      <form id="mb-add-form" className={`mb-add${assistFill ? ' is-assist-fill' : ''}`} onSubmit={addMemory}>
-        <h3><Plus size={16} /> Add a memory</h3>
-        {assistFill && <p className="mb-assist-hint">Sarthi Assist is filling this. Say the details — we will add other languages later in edit.</p>}
-        <div className="mb-photo-picker">
-          <div className={`mb-photo-preview${usingDefaultPhoto ? ' is-default' : ''}`} aria-hidden="true">
-            <img src={previewSrc} alt="" />
-          </div>
-          <div className="mb-photo-picker-main">
-            <p className="mb-photo-label">Photo</p>
-            <p className="mb-photo-hint">
-              {usingDefaultPhoto ? 'Default photo until you pick one from the device.' : 'This photo will save with the memory.'}
-            </p>
-            <input ref={photoInputRef} type="file" accept="image/*" hidden onChange={onPickFile} />
-            <button type="button" className="ss-text-btn mb-photo-file" onClick={() => photoInputRef.current?.click()}>
-              <Camera size={14} /> Choose from device
-            </button>
-            {!usingDefaultPhoto && (
-              <button
-                type="button"
-                className="ss-text-btn mb-photo-file"
-                onClick={() => setForm((prev) => ({ ...prev, photo_url: DEFAULT_MEMORY_PHOTO }))}
-              >
-                Remove photo
-              </button>
-            )}
-          </div>
-        </div>
-        <label>
-          Title
-          <input id="mb-title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-        </label>
-        <label>
-          What happened
-          <textarea id="mb-body" rows={3} value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} />
-        </label>
-        <div className="mb-add-row">
-          <label>
-            Person
-            <input id="mb-person" value={form.person} onChange={(e) => setForm({ ...form, person: e.target.value })} />
-          </label>
-          <label>
-            Place
-            <input id="mb-place" value={form.place} onChange={(e) => setForm({ ...form, place: e.target.value })} />
-          </label>
-        </div>
-        <button type="submit" className="ss-full-btn">Save to the book</button>
-      </form>
     </div>
   );
 }

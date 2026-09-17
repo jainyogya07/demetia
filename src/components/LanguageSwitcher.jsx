@@ -2,10 +2,11 @@ import { createPortal } from 'react-dom';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { ChevronDown, Globe } from 'lucide-react';
 import { useI18n } from '../I18nContext';
-import { markLangManual } from '../i18n';
+import { useLanguage } from '../context/LanguageContext';
 
 function LanguageSwitcher() {
   const { lang, language, languages, setLang } = useI18n();
+  const { setLanguage } = useLanguage();
   const [open, setOpen] = useState(false);
   const [menuPos, setMenuPos] = useState({ top: 0, right: 16 });
   const rootRef = useRef(null);
@@ -53,7 +54,7 @@ function LanguageSwitcher() {
             aria-selected={item.code === lang}
             className={item.code === lang ? 'active' : ''}
             onClick={() => {
-              markLangManual();
+              setLanguage(item.code, true);
               setLang(item.code);
               setOpen(false);
             }}

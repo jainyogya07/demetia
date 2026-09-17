@@ -20,6 +20,11 @@
   padding: 0;
 }
 
+html, body {
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--background);
@@ -32,6 +37,7 @@ body {
 /* Base styles for the layout */
 .app-container {
   display: flex;
+  height: 100dvh;
   height: 100vh;
   overflow: hidden;
 }
@@ -39,7 +45,8 @@ body {
 .sidebar {
   width: 260px;
   background-color: var(--card-bg);
-  border-right: 1px solid var(--border-color);
+  border-right: 0;
+  box-shadow: 1px 0 0 var(--border-color);
   display: flex;
   flex-direction: column;
   height: 100%;

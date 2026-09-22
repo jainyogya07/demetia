@@ -34,6 +34,15 @@ function Footer() {
           <a className="footer-tel" href="tel:112">Call 112</a>
         </div>
 
+        <div className="footer-support">
+          <span><ShieldCheck size={18} /> Safe &amp; Secure</span>
+          <span><Heart size={18} /> Made with care</span>
+          <span><Phone size={18} /> 24/7 Support</span>
+          <span><BookOpen size={18} /> Memory first</span>
+          <span><CalendarDays size={18} /> Daily rhythm</span>
+          <span><Settings size={18} /> Simple controls</span>
+          <span><FileText size={18} /> Papers nearby</span>
+        </div>
       </div>
 
       <div className="footer-bottom">

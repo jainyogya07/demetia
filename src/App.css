@@ -1254,34 +1254,3 @@ button.text-link {
   max-width: 100%;
   overflow-x: hidden;
 }
-
-
-.topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.emergency-topbar {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 14px;
-  border: 1px solid #e0b4b4;
-  border-radius: 20px;
-  background: #fff5f5;
-  color: #b42318;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.emergency-topbar:hover {
-  background: #ffe8e8;
-  transform: translateY(-1px);
-}
-
-.emergency-icon {
-  font-size: 15px;
-}

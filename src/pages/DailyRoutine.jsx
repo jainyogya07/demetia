@@ -16,7 +16,6 @@ import { enqueueOutbox } from '../lib/offlineStore';
 import PatientDailyCheckin from '../components/PatientDailyCheckin';
 import { useI18n } from '../I18nContext';
 import './DailyRoutine.css';
-import { syncNativeAlarms } from '../lib/alarms';
 
 const ICONS = {
   medicine: <Pill size={20} />,
@@ -30,7 +29,6 @@ const DailyRoutine = () => {
   const { t } = useI18n();
   const [tick, setTick] = useState(0);
   const schedule = useMemo(() => getRoutineItems(), [tick]);
-  useEffect(()=> {syncNativeAlarms();},[]);
   const completed = schedule.filter((item) => item.completed).length;
   const next = schedule.find((item) => !item.completed);
   const pct = Math.round((completed / schedule.length) * 100);

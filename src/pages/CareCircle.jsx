@@ -82,6 +82,11 @@ const CareCircle = () => {
             {t('careCirclePage.lead')}
           </p>
         </div>
+
+        <button className="add-member-btn">
+          <UserPlus size={17} />
+          Add Member
+        </button>
       </div>
 
 

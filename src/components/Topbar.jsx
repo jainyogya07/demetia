@@ -42,32 +42,6 @@ function Topbar() {
 
       <div className="topbar-right">
 
-        <div className="topbar-right">
-
-      <button
-        className="emergency-topbar"
-        onClick={() => {
-          window.location.href = "tel:112";
-        }}
-      >
-        <span className="emergency-icon">🚨</span>
-        <span>Emergency Help</span>
-      </button>
-
-      <button className="language-btn">
-        English
-      </button>
-
-      <button className="detect-btn">
-        Detect
-      </button>
-
-      <div className="profile">
-        L
-      </div>
-
-    </div>
-
         <div className="language-selector">
           <Globe2 size={20} />
 

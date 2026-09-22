@@ -5,7 +5,8 @@
 /* ── Base ── */
 .hl {
   position: relative;
-  min-height: 100vh;
+  height: 100vh; /* Changed from min-height: 100vh to ensure it fills the viewport and allows inner scrolling */
+  overflow-y: auto;
   overflow-x: hidden;
   color: #1a3d34;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;

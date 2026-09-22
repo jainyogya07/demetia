@@ -6,7 +6,6 @@ import ConnectedCareWidget from '../components/ConnectedCareWidget';
 import DashboardQuickLinks from '../components/DashboardQuickLinks';
 import Reveal from '../components/bits/Reveal';
 import SpotlightCard from '../components/bits/SpotlightCard';
-import ClickSpark from '../components/bits/ClickSpark';
 import BlurText from '../components/bits/BlurText';
 import Magnet from '../components/bits/Magnet';
 import { useAppNav } from '../AppNavContext';
@@ -54,7 +53,7 @@ function UserDashboard() {
   };
 
   return (
-    <ClickSpark className="granth-home ss-home-focus">
+    <div className="granth-home ss-home-focus">
       <div className="dashboard ss-home-shell ss-unified-layout">
         <div className="ss-home-main ss-home-transparent">
           <motion.div
@@ -124,7 +123,7 @@ function UserDashboard() {
           </motion.div>
         </div>
       </div>
-    </ClickSpark>
+    </div>
   );
 }
 

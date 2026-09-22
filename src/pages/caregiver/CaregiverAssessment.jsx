@@ -6,10 +6,12 @@ import {
 import {
   FAQ_QUESTIONS, DEMO_PATIENTS, getAssessmentForPatient, saveAssessmentForPatient,
   evaluateTelemetry, getLatestEvaluation, subscribeAssessmentChange,
+  getDrawingGameForPatient,
 } from '../../lib/assessmentStore';
 import { loadMemoryQuizResult } from '../../lib/memoryQuiz';
 import AvatarSlot from '../../components/AvatarSlot';
 import { Badge, Panel, Stat } from '../../components/clinic/LiveChrome';
+import DrawingPracticePanel from '../../components/clinic/DrawingPracticePanel';
 
 const ICON_MAP = {
   Flame, Pill, Coins, Compass, Bus, Phone, Calendar, Sparkles, Utensils, KeyRound,
@@ -65,9 +67,14 @@ export default function CaregiverAssessment() {
   };
 
   const quiz = assessment.memoryQuiz || loadMemoryQuizResult();
+  const drawing = assessment.drawingGame || getDrawingGameForPatient(selectedPatientId);
+  const drawingPct = drawing && Number.isFinite(Number(drawing.averageScore))
+    ? Math.round(Number(drawing.averageScore))
+    : null;
   const functional = assessment.functional || {};
   const answeredCount = Object.keys(functional).length;
   const patientMeta = DEMO_PATIENTS[selectedPatientId] || DEMO_PATIENTS.aita;
+  const patientFirst = (patientMeta.name || 'Latveria').split(' ')[0];
 
   // Active Critical Warnings
   const activeHazards = [];
@@ -142,6 +149,11 @@ export default function CaregiverAssessment() {
           label="Memory quiz"
           value={quiz?.percentage != null ? `${quiz.percentage}%` : 'Not taken'}
           hint={quiz?.score != null ? `${quiz.score}/${quiz.totalQuestions || 0} today · feeds severity` : 'Complete on patient app'}
+        />
+        <Stat
+          label="Shape practice"
+          value={drawingPct != null ? `${drawingPct}%` : 'Not yet'}
+          hint={drawingPct != null ? 'Drawing accuracy · not a diagnosis' : 'When she finishes Shape Draw'}
         />
         <Stat label="Active Safety Alarms" value={activeHazards.length} hint={activeHazards.length ? 'Attention needed' : 'All clear'} />
       </div>
@@ -462,6 +474,12 @@ export default function CaregiverAssessment() {
               </p>
             )}
           </Panel>
+
+          <DrawingPracticePanel
+            patientId={selectedPatientId}
+            patientFirstName={patientFirst}
+            variant="care"
+          />
 
           <Panel title="Caregiver Guidance">
             <p className="os-note-body">

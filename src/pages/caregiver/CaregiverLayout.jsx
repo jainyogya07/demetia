@@ -9,7 +9,6 @@ import HeaderLanguageControl from '../../components/HeaderLanguageControl';
 import RoleSwitcher from '../../components/RoleSwitcher';
 import { getCaregiverProfile, subscribeCaregiverStore } from '../../lib/caregiverStore';
 import DashAurora from '../../components/bits/DashAurora';
-import ClickSpark from '../../components/bits/ClickSpark';
 import BlurText from '../../components/bits/BlurText';
 import RegionSceneryBackground from '../../components/RegionSceneryBackground';
 import { useI18n } from '../../I18nContext';
@@ -74,7 +73,7 @@ export default function CaregiverLayout() {
   useEffect(() => subscribeCaregiverStore(() => setProfile(getCaregiverProfile())), []);
 
   return (
-    <ClickSpark className={`app-container ss-theme ss-lakeside ss-has-region-scenery ss-role-shell${railCollapsed ? ' is-rail-collapsed' : ''}`}>
+    <div className={`app-container ss-theme ss-lakeside ss-has-region-scenery ss-role-shell${railCollapsed ? ' is-rail-collapsed' : ''}`}>
       <RegionSceneryBackground />
       <aside className={`sidebar${railCollapsed ? ' is-collapsed' : ''}`}>
         <div className="sidebar-header ss-sidebar-identity-header">
@@ -109,6 +108,28 @@ export default function CaregiverLayout() {
               </nav>
             </div>
           ))}
+          <div className="sidebar-group-block">
+            <div className="nav-group-title" style={{ marginTop: 16, marginBottom: 8, fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: 1, paddingLeft: 12 }}>Spatial Intelligence</div>
+            <nav className="sidebar-nav">
+              <NavLink 
+                to="/caregiver/spatial-presence" 
+                className={({isActive}) => `nav-item${isActive ? ' active' : ''}`}
+                title="Enter Patient's World"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>
+                <span className="ss-rail-label">Spatial Presence</span>
+              </NavLink>
+
+              <NavLink 
+                to="/caregiver/spatial-config" 
+                className={({isActive}) => `nav-item${isActive ? ' active' : ''}`}
+                title="Familiar Places Config"
+              >
+                <MapPin size={20} />
+                <span className="ss-rail-label">Spatial Config</span>
+              </NavLink>
+            </nav>
+          </div>
         </div>
         <div className="sidebar-footer">
           <a className="ss-emergency-nav" href="tel:112">
@@ -171,6 +192,6 @@ export default function CaregiverLayout() {
           </AnimatePresence>
         </div>
       </main>
-    </ClickSpark>
+    </div>
   );
 }

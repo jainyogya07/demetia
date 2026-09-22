@@ -6,6 +6,7 @@ export default function ClickSpark({
   sparkColor = '#176b58',
   sparkCount = 10,
   sparkRadius = 18,
+  sparkSize = 6,
   duration = 420,
   className = '',
   style,
@@ -24,6 +25,7 @@ export default function ClickSpark({
       const angle = (Math.PI * 2 * i) / sparkCount;
       bit.style.setProperty('--sx', `${Math.cos(angle) * sparkRadius}px`);
       bit.style.setProperty('--sy', `${Math.sin(angle) * sparkRadius}px`);
+      bit.style.setProperty('--spark-size', `${sparkSize}px`);
       bit.style.left = `${x}px`;
       bit.style.top = `${y}px`;
       bit.style.background = sparkColor;

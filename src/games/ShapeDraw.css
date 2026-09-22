@@ -1,0 +1,217 @@
+/* Shape Draw — calm sage/teal, large canvas, elderly-friendly */
+
+.sd-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 8px 0 20px;
+}
+
+.sd-last {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ss-teal);
+  font-weight: 600;
+}
+
+.sd-preview-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 4px 0 8px;
+}
+
+.sd-mini {
+  width: 48px;
+  height: 48px;
+  color: var(--ss-teal);
+  opacity: 0.55;
+  background: rgba(23, 107, 88, 0.06);
+  border-radius: 12px;
+  padding: 6px;
+}
+
+.sd-start {
+  margin-top: 4px;
+}
+
+.sd-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ss-sage);
+}
+
+.sd-play {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 720px;
+  min-width: 0;
+}
+
+.sd-prompt-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.sd-target {
+  flex: 0 0 auto;
+  width: 88px;
+  height: 88px;
+  border-radius: 16px;
+  background: rgba(23, 107, 88, 0.08);
+  border: 1px solid var(--ss-glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ss-teal);
+  padding: 10px;
+}
+
+.sd-target svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sd-prompt-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sd-shape-name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ss-teal);
+  letter-spacing: 0.01em;
+}
+
+.sd-instruction {
+  margin: 0 !important;
+}
+
+.sd-hear {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+  border: 1px solid var(--ss-glass-border);
+  background: var(--ss-glass);
+  color: var(--ss-teal);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 650;
+  border-radius: 999px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.sd-hear:hover {
+  background: rgba(23, 107, 88, 0.1);
+}
+
+.sd-canvas-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: min(62vh, 520px);
+  border-radius: 18px;
+  border: 1.5px solid rgba(23, 107, 88, 0.22);
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.55), transparent 55%),
+    linear-gradient(160deg, rgba(236, 245, 241, 0.95), rgba(220, 236, 230, 0.9));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  touch-action: none;
+}
+
+.sd-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.sd-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.sd-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--ss-glass-border);
+  background: var(--ss-glass);
+  color: var(--ss-teal);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  border-radius: 12px;
+  padding: 12px 16px;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.sd-tool:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.sd-tool:not(:disabled):hover {
+  background: rgba(23, 107, 88, 0.1);
+}
+
+.sd-done {
+  margin-left: auto;
+  min-height: 48px;
+  padding: 12px 20px;
+  font-size: 15px;
+}
+
+.sd-score-chip {
+  background: rgba(23, 107, 88, 0.14) !important;
+  color: var(--ss-teal) !important;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .sd-prompt-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sd-target {
+    width: 72px;
+    height: 72px;
+  }
+
+  .sd-shape-name {
+    font-size: 20px;
+  }
+
+  .sd-done {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .sd-toolbar {
+    width: 100%;
+  }
+
+  .sd-tool {
+    flex: 1;
+    justify-content: center;
+  }
+}

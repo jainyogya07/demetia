@@ -32,6 +32,8 @@ import KeypadPhone from './pages/KeypadPhone';
 import CaregiverLayout from './pages/caregiver/CaregiverLayout';
 import CaregiverAssessment from './pages/caregiver/CaregiverAssessment';
 import CaregiverMemorySetup from './pages/caregiver/CaregiverMemorySetup';
+import SpatialPresence from './pages/caregiver/SpatialPresence';
+import SpatialConfig from './pages/caregiver/SpatialConfig';
 import {
   CgOverview, CgRoutine, CgSafety, CgProgress, CgCircle, CgDocuments, CgSettings,
   CgCalendar, CgProfile,
@@ -67,7 +69,6 @@ import HeaderProfileMenu from './components/HeaderProfileMenu';
 import HeaderLanguageControl from './components/HeaderLanguageControl';
 import RoleSwitcher from './components/RoleSwitcher';
 import DashAurora from './components/bits/DashAurora';
-import ClickSpark from './components/bits/ClickSpark';
 import { motion } from 'motion/react';
 
 const SIDEBAR_WIDTH_KEY = 'ss-sidebar-width';
@@ -496,7 +497,7 @@ function UserWorkspace({ boot }) {
 
   return (
     <AppNavContext.Provider value={{ openModule, serviceFocus, aiIntent, gameIntent, openEmergency, currentModuleId, openAssist, openMemoryQuiz, openGuide, setActiveGameId, activeGameId }}>
-    <ClickSpark
+    <div
       className={`app-container ss-theme ss-patient-shell ss-lakeside ss-has-region-scenery ${currentModuleId === 'home' ? 'is-home-route' : ''} ${railCollapsed ? ' is-rail-collapsed' : ''}${railOpen ? ' is-rail-open' : ''}${sidebarResizing ? ' is-sidebar-resizing' : ''}`}
       style={{ '--ss-sidebar-width': `${railCollapsed ? 72 : sidebarWidth}px` }}
     >
@@ -846,7 +847,7 @@ function UserWorkspace({ boot }) {
       {showGuide && (
         <Guide onClose={() => setShowGuide(false)} />
       )}
-    </ClickSpark>
+    </div>
     </AppNavContext.Provider>
   );
 }
@@ -895,6 +896,8 @@ function App() {
         <Route path="train-ai" element={<TrainAiPage />} />
         <Route path="assessment" element={<CaregiverAssessment />} />
         <Route path="memory-journey" element={<CaregiverMemorySetup />} />
+        <Route path="spatial-presence" element={<SpatialPresence />} />
+        <Route path="spatial-config" element={<SpatialConfig />} />
       </Route>
       <Route path="/doctor" element={<DoctorLayout />}>
         <Route index element={<DoctorPatients />} />

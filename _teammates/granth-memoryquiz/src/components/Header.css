@@ -1,0 +1,251 @@
+.app-header {
+  width: 100%;
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 12px 28px;
+  box-sizing: border-box;
+
+  background: linear-gradient(135deg, #0d4d43, #123f38);
+  color: white;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* LEFT */
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  min-width: 280px;
+}
+
+.menu-button {
+  display: none;
+  border: none;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-logo {
+  width: 55px;
+  height: 55px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+
+  font-size: 25px;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.brand-text span {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* CENTER */
+
+.header-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.welcome-text h2 {
+  margin: 0 0 6px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.welcome-text p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* RIGHT */
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-language,
+.offline-status {
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: white;
+  border-radius: 12px;
+}
+
+.header-language {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 16px;
+  cursor: pointer;
+}
+
+.offline-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+}
+
+.offline-status strong,
+.offline-status span {
+  display: block;
+}
+
+.offline-status strong {
+  color: #f5c35b;
+  font-size: 14px;
+}
+
+.offline-status span {
+  margin-top: 3px;
+  font-size: 10px;
+  opacity: 0.7;
+  max-width: 180px;
+}
+
+.alerts-button {
+  background: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+  text-align: center;
+}
+
+.alert-icon {
+  position: relative;
+}
+
+.notification-count {
+  position: absolute;
+  top: -9px;
+  right: -10px;
+
+  width: 19px;
+  height: 19px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e34d4d;
+  border-radius: 50%;
+
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.alerts-button small {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+.header-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding-left: 14px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.profile-avatar {
+  width: 50px;
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f1e5d9;
+  border-radius: 50%;
+
+  font-size: 26px;
+}
+
+.profile-info strong,
+.profile-info span {
+  display: block;
+}
+
+.profile-info strong {
+  font-size: 14px;
+}
+
+.profile-info span {
+  margin-top: 3px;
+  color: #9ed0b7;
+  font-size: 12px;
+}
+
+@media (max-width: 1200px) {
+  .header-center {
+    display: none;
+  }
+
+  .offline-status {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    min-height: 70px;
+    padding: 8px 15px;
+  }
+
+  .menu-button {
+    display: block;
+  }
+
+  .brand-logo {
+    width: 42px;
+    height: 42px;
+  }
+
+  .brand-text h1 {
+    font-size: 18px;
+  }
+
+  .brand-text span {
+    display: none;
+  }
+
+  .header-language {
+    display: none;
+  }
+
+  .profile-info,
+  .header-profile > svg {
+    display: none;
+  }
+}

@@ -1,0 +1,24 @@
+input,
+textarea,
+select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border: 1px solid #ccd8d8;
+  border-radius: 10px;
+  font-size: 16px;
+  margin-top: 8px;
+}
+
+label {
+  font-weight: 600;
+  display: block;
+}
+
+button {
+  padding: 13px 20px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 16px;
+}

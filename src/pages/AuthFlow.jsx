@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BrandLogo from '../components/BrandLogo';
 import { useAuth } from '../context/AuthContext';
-import ClickSpark from '../components/bits/ClickSpark';
-import Reveal from '../components/bits/Reveal';
+import SpotlightCard from '../components/bits/SpotlightCard';
 import BlurText from '../components/bits/BlurText';
 import Particles from '../components/bits/Particles';
 import './AuthFlow.css';
@@ -302,7 +301,7 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
   };
 
   return (
-    <ClickSpark className={`af ${variant === 'modal' ? 'af-modal' : ''}`}>
+    <div className={`af ${variant === 'modal' ? 'af-modal' : ''}`}>
       {variant !== 'modal' && (
         <div className="af-bits" aria-hidden>
           <Particles particleCount={36} particleSpread={10} speed={0.08} />
@@ -425,6 +424,6 @@ export default function AuthFlow({ variant = 'page', onSkip, requireAccount = fa
           </button>
         )}
       </Reveal>
-    </ClickSpark>
+    </div>
   );
 }

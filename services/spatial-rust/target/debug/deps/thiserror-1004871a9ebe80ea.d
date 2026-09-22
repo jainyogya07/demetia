@@ -1,0 +1,14 @@
+/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/deps/thiserror-1004871a9ebe80ea.d: /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/lib.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/aserror.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/display.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/var.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/private.rs /Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/thiserror-d778071de0d9c4d8/out/private.rs
+
+/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/deps/libthiserror-1004871a9ebe80ea.rlib: /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/lib.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/aserror.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/display.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/var.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/private.rs /Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/thiserror-d778071de0d9c4d8/out/private.rs
+
+/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/deps/libthiserror-1004871a9ebe80ea.rmeta: /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/lib.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/aserror.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/display.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/var.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/private.rs /Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/thiserror-d778071de0d9c4d8/out/private.rs
+
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/lib.rs:
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/aserror.rs:
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/display.rs:
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/var.rs:
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.20/src/private.rs:
+/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/thiserror-d778071de0d9c4d8/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/thiserror-d778071de0d9c4d8/out

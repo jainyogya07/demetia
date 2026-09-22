@@ -996,3 +996,73 @@ export function applyMemoryJourneyToAssessment(
 
   return updated;
 }
+
+/**
+ * Read Shape Draw result for dashboards.
+ * Prefers assessmentStore.drawingGame; for aita also falls back to local session key.
+ */
+export function getDrawingGameForPatient(patientId = 'aita') {
+  const id = patientId || 'aita';
+  const fromAssessment = getAssessmentForPatient(id)?.drawingGame;
+  if (fromAssessment && Number.isFinite(Number(fromAssessment.averageScore))) {
+    return fromAssessment;
+  }
+  if (id === 'aita') {
+    try {
+      // Lazy import avoided — session key mirrors applyDrawingResult payload shape.
+      const raw = localStorage.getItem('smritiSaarthiShapeDrawLast');
+      const session = raw ? JSON.parse(raw) : null;
+      if (session && Number.isFinite(Number(session.averageScore))) return session;
+    } catch {
+      /* ignore */
+    }
+  }
+  return null;
+}
+
+/**
+ * Light-touch: Shape Draw session → local drawingGame field + soft motor hints.
+ * Client-side accuracy only — no server ML required for v1.
+ */
+export function applyDrawingResultToAssessment(result, patientId = 'aita') {
+  const id = patientId || 'aita';
+  const current = getAssessmentForPatient(id);
+  const avg = Number(result?.averageScore);
+  const pct = Number.isFinite(avg) ? Math.max(0, Math.min(100, Math.round(avg))) : 0;
+  const shapeCount = Math.max(0, Number(result?.shapeCount) || 0);
+
+  // Lower accuracy → slightly higher curvature / hesitation (fine-motor hint only).
+  const curvatureHint = Number((1.2 + ((100 - pct) / 100) * 0.9).toFixed(2));
+  const hesitationHint = Math.max(
+    1,
+    Math.round(2 + ((100 - pct) / 100) * 8),
+  );
+
+  const drawingGame = {
+    averageScore: pct,
+    shapeCount,
+    scores: Array.isArray(result?.scores) ? result.scores : [],
+    completedAt: result?.completedAt || new Date().toISOString(),
+  };
+
+  const updated = saveAssessmentForPatient(id, {
+    drawingGame,
+    motor: {
+      ...(current.motor || {}),
+      stroke_curvature_index: curvatureHint,
+      stroke_hesitation_count: hesitationHint,
+      drawing_accuracy_pct: pct,
+    },
+  });
+
+  // Soft re-eval — client fallback if auth-api is down; never blocks Shape Draw.
+  evaluateTelemetry({
+    patient_id: id,
+    demographics: { age: updated.age, education_years: updated.education_years },
+    motor: updated.motor,
+    functional: updated.functional,
+    memoryQuiz: updated.memoryQuiz,
+  }).catch(() => {});
+
+  return updated;
+}

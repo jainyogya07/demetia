@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowLeft, Play, Puzzle, Eye, Wind, ListOrdered, Users, Search, BookOpen, Compass } from 'lucide-react';
+import { ArrowLeft, Play, Puzzle, Eye, Wind, ListOrdered, Users, Search, BookOpen, Compass, Pencil, Sparkles, MapPin } from 'lucide-react';
 import MatchPairs from './MatchPairs';
 import SpotDifference from './SpotDifference';
 import BalloonPop from './BalloonPop';
@@ -8,6 +8,14 @@ import FamiliarFaces from './FamiliarFaces';
 import ObjectFind from './ObjectFind';
 import StorySolver from './StorySolver';
 import MemoryJourney from './MemoryJourney';
+import GentleRouteRunner from './regional/GentleRouteRunner';
+import ShapeDraw from './ShapeDraw';
+import SortingGame from './regional/SortingGame';
+import RhythmTapGame from './regional/RhythmTapGame';
+import RegionalMatchGame from './regional/RegionalMatchGame';
+import TracingGame from './regional/TracingGame';
+import NavigationGame from './regional/NavigationGame';
+import { getRegionalPack } from './regional/index';
 import { useAppNav } from '../AppNavContext';
 import { useI18n } from '../I18nContext';
 import './BrainGames.css';
@@ -87,6 +95,13 @@ const GAME_DEFS = [
     icon: Search,
     photo: imgFindObject,
   },
+  {
+    id: 'shape-draw',
+    titleKey: 'gamesHub.drawTitle',
+    descKey: 'gamesHub.drawDesc',
+    diffKey: 'gamesHub.drawDiff',
+    icon: Pencil,
+  },
 ];
 
 const GAME_COMPONENTS = {
@@ -98,28 +113,79 @@ const GAME_COMPONENTS = {
   faces: FamiliarFaces,
   'object-find': ObjectFind,
   'memory-journey': MemoryJourney,
+  'shape-draw': ShapeDraw,
+};
+
+const REGIONAL_ENGINES = {
+  sorting: SortingGame,
+  rhythm: RhythmTapGame,
+  match: RegionalMatchGame,
+  tracing: TracingGame,
+  navigation: NavigationGame,
+};
+
+const REGIONAL_TYPE_META = {
+  sorting: { icon: '📦', diffLabel: 'Easy · Sorting' },
+  rhythm: { icon: '🎵', diffLabel: 'Medium · Rhythm' },
+  match: { icon: '🃏', diffLabel: 'Easy · Memory' },
+  tracing: { icon: '✏️', diffLabel: 'Medium · Tracing' },
+  navigation: { icon: '🧭', diffLabel: 'Easy · Navigation' },
 };
 
 export default function BrainGames() {
   const { gameIntent, setActiveGameId } = useAppNav();
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const [activeGame, setActiveGame] = useState(null);
+  const [activeRegional, setActiveRegional] = useState(null); // { type, data }
+  const [showSpatialGame, setShowSpatialGame] = useState(false);
+
+  const regionalPack = getRegionalPack(lang);
 
   useEffect(() => {
     if (!gameIntent?.ts) return;
     if (gameIntent.gameId && GAME_COMPONENTS[gameIntent.gameId]) {
       setActiveGame(gameIntent.gameId);
+      setActiveRegional(null);
     } else {
       setActiveGame(null);
     }
   }, [gameIntent]);
 
   useEffect(() => {
-    setActiveGameId?.(activeGame);
-  }, [activeGame, setActiveGameId]);
+    setActiveGameId?.(activeGame || activeRegional?.type || null);
+  }, [activeGame, activeRegional, setActiveGameId]);
 
   useEffect(() => () => setActiveGameId?.(null), [setActiveGameId]);
 
+  if (showSpatialGame) {
+    return (
+      <div className="game-wrapper">
+        <GentleRouteRunner onClose={() => setShowSpatialGame(false)} />
+      </div>
+    );
+  }
+
+  // Render regional game
+  if (activeRegional) {
+    const Engine = REGIONAL_ENGINES[activeRegional.type];
+    return (
+      <div className="game-wrapper">
+        <div className="game-topbar">
+          <button
+            type="button"
+            className="bg-back-btn"
+            onClick={() => setActiveRegional(null)}
+          >
+            <ArrowLeft size={16} />
+            {t('gamesHub.back')}
+          </button>
+        </div>
+        <Engine data={activeRegional.data} onBack={() => setActiveRegional(null)} />
+      </div>
+    );
+  }
+
+  // Render existing game
   if (activeGame) {
     const GameComponent = GAME_COMPONENTS[activeGame];
     return (
@@ -139,6 +205,14 @@ export default function BrainGames() {
     );
   }
 
+  const regionalGames = [
+    { type: 'sorting', data: regionalPack.sorting },
+    { type: 'rhythm', data: regionalPack.rhythm },
+    { type: 'match', data: regionalPack.match },
+    { type: 'tracing', data: regionalPack.tracing },
+    { type: 'navigation', data: regionalPack.navigation },
+  ];
+
   return (
     <div className="bg-hub">
       <div className="bg-hub-head">
@@ -148,7 +222,74 @@ export default function BrainGames() {
         </div>
       </div>
 
-      <p className="bg-category-label">Featured, then the rest</p>
+      {/* ── Regional Cultural Games ── */}
+      <p className="bg-category-label" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+        <Sparkles size={16} /> Your Cultural Games
+      </p>
+
+      <div className="bg-grid">
+        {regionalGames.map((rg) => {
+          const meta = REGIONAL_TYPE_META[rg.type];
+          return (
+            <article
+              key={rg.data.id}
+              className="bg-game-tile"
+              onClick={() => setActiveRegional(rg)}
+            >
+              <div className="bg-tile-emoji" style={{ fontSize: 32 }}>
+                {rg.data.emoji}
+              </div>
+              <h3>{rg.data.title}</h3>
+              <p>{rg.data.subtitle}</p>
+              <div className="bg-tile-meta">
+                <span className="bg-tile-badge">{meta.diffLabel}</span>
+                <button
+                  type="button"
+                  className="bg-tile-play"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveRegional(rg);
+                  }}
+                >
+                  {t('gamesHub.play')} <Play size={13} fill="currentColor" />
+                </button>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+
+      {/* ── Spatial Intelligence ── */}
+      <p className="bg-category-label" style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: '24px' }}>
+        <MapPin size={16} /> Spatial Intelligence
+      </p>
+
+      <div className="bg-grid">
+        <article
+          className="bg-game-tile featured"
+          onClick={() => setShowSpatialGame(true)}
+        >
+          <div className="bg-tile-emoji" style={{ fontSize: 32 }}>🌍</div>
+          <h3>Let's Go Home</h3>
+          <p>A gentle spatial navigation experience.</p>
+          <div className="bg-tile-meta">
+            <span className="bg-tile-badge" style={{ background: 'rgba(23,107,88,0.1)', color: '#176b58' }}>Spatial Presence</span>
+            <button
+              type="button"
+              className="bg-tile-play"
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowSpatialGame(true);
+              }}
+            >
+              Start Walk <Play size={13} fill="currentColor" />
+            </button>
+          </div>
+        </article>
+      </div>
+
+      {/* ── Original Games ── */}
+      <p className="bg-category-label" style={{ marginTop: '24px' }}>Classic Brain Games</p>
 
       <div className="bg-grid">
         {GAME_DEFS.map((game) => {

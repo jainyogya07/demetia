@@ -25,6 +25,7 @@
     "@capacitor/android": "^8.5.1",
     "@capacitor/cli": "^8.5.1",
     "@capacitor/core": "^8.5.1",
+    "@googlemaps/js-api-loader": "^2.1.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.31.0",
     "motion": "^13.2.0",
@@ -33,7 +34,9 @@
     "pg": "^8.23.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-router-dom": "^7.18.2"
+    "react-leaflet": "^5.0.0",
+    "react-router-dom": "^7.18.2",
+    "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",

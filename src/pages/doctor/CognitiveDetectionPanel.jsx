@@ -8,6 +8,7 @@ import {
   subscribeAssessmentChange,
 } from '../../lib/assessmentStore';
 import { Badge, Panel, Stat } from '../../components/clinic/LiveChrome';
+import DrawingPracticePanel from '../../components/clinic/DrawingPracticePanel';
 
 export default function CognitiveDetectionPanel({ patient }) {
   const [assessment, setAssessment] = useState(() => getAssessmentForPatient(patient.id));
@@ -60,6 +61,12 @@ export default function CognitiveDetectionPanel({ patient }) {
         : 'urgent';
 
   return (
+    <>
+    <DrawingPracticePanel
+      patientId={patient.id}
+      patientFirstName={(patient.name || 'Patient').split(' ')[0]}
+      variant="clinic"
+    />
     <Panel
       title="Cognitive-motor detection & severity"
       action={(
@@ -141,5 +148,6 @@ export default function CognitiveDetectionPanel({ patient }) {
         </div>
       )}
     </Panel>
+    </>
   );
 }

@@ -76,3 +76,61 @@ body {
   overflow-y: auto;
   padding: 40px 32px;
 }
+/* ==========================================================================
+   GTA Minimap Styles
+   ========================================================================== */
+.gta-minimap-container {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid rgba(255,255,255, 0.9);
+  box-shadow: 0 12px 40px rgba(0,0,0, 0.4), inset 0 0 20px rgba(0,0,0, 0.3);
+  position: relative;
+  /* Darken/Desaturate standard Leaflet tiles slightly for GTA vibe */
+  filter: contrast(1.1) saturate(0.8) sepia(0.1);
+  background-color: #1a1a2e; /* Fallback */
+}
+
+/* Hide leaflet controls */
+.gta-minimap-container .leaflet-control-container {
+  display: none !important;
+}
+
+/* Pulsing Player Marker */
+.gta-player-marker {
+  width: 16px;
+  height: 16px;
+  background-color: #00ffcc; /* Bright cyan/green */
+  border: 2px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #00ffcc, 0 0 20px #00ffcc;
+  animation: pulse-blip 1.5s infinite alternate;
+  position: relative;
+}
+
+.gta-player-arrow {
+  position: absolute;
+  top: -8px;
+  left: 3px;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-bottom: 8px solid white;
+}
+
+@keyframes pulse-blip {
+  0% { transform: scale(1); box-shadow: 0 0 10px #00ffcc; }
+  100% { transform: scale(1.2); box-shadow: 0 0 20px #00ffcc, 0 0 30px #00ffcc; }
+}
+
+/* Familiar Place tiny blip */
+.gta-place-blip {
+  width: 10px;
+  height: 10px;
+  background-color: #ff3366;
+  border: 1px solid white;
+  border-radius: 50%;
+  box-shadow: 0 0 5px #ff3366;
+}

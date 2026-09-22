@@ -21,7 +21,6 @@ import {
   subscribeAssessmentChange,
 } from '../lib/assessmentStore';
 import logoMark from '../assets/smriti-saarthi-logo.png';
-import ClickSpark from './bits/ClickSpark';
 import './SaarthiRadialMenu.css';
 
 const PATIENT_ID = 'aita';
@@ -409,13 +408,7 @@ export default function SaarthiRadialMenu() {
           )}
         </AnimatePresence>
 
-        <ClickSpark
-          sparkColor="#176b58"
-          sparkCount={reduceMotion ? 0 : 8}
-          sparkRadius={16}
-          duration={480}
-          className="saarthi-widget-spark"
-        >
+        <div className="saarthi-widget-spark">
           <motion.button
             type="button"
             className={`saarthi-widget-handle ${isOpen ? 'is-open' : ''}`}
@@ -491,7 +484,7 @@ export default function SaarthiRadialMenu() {
               {isOpen ? t('wellness.close') : labelText}
             </span>
           </motion.button>
-        </ClickSpark>
+        </div>
       </div>
     </>
   );

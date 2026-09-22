@@ -10,7 +10,6 @@ import Aurora from '../components/bits/Aurora';
 import BlurText from '../components/bits/BlurText';
 import SpotlightCard from '../components/bits/SpotlightCard';
 import Particles from '../components/bits/Particles';
-import ClickSpark from '../components/bits/ClickSpark';
 import Magnet from '../components/bits/Magnet';
 import Reveal from '../components/bits/Reveal';
 import { useRegionScenery } from '../hooks/useRegionScenery';
@@ -216,7 +215,7 @@ function HomeLanding() {
   ];
 
   return (
-    <ClickSpark className="hl">
+    <div className="hl">
       <div className="hl-scene" aria-hidden>
         <img
           src={baseScene.src}
@@ -444,7 +443,7 @@ function HomeLanding() {
         </p>
         <p className="hl-footer-legal">{copy.footerLegal}</p>
       </footer>
-    </ClickSpark>
+    </div>
   );
 }
 

@@ -10,6 +10,7 @@ export const ASSIST_GAMES = [
   { id: 'sequence', label: 'Sequence', aliases: ['sequence', 'sequence recall', 'order', 'kram', 'क्रम', 'yaad kram'] },
   { id: 'faces', label: 'Familiar faces', aliases: ['familiar faces', 'faces', 'chehra', 'chehre', 'चेहरा', 'chehra pehchano'] },
   { id: 'object-find', label: 'Find object', aliases: ['find the object', 'object find', 'vastu', 'cheez dhoondo', 'find object', 'household'] },
+  { id: 'shape-draw', label: 'Shape draw', aliases: ['shape draw', 'drawing', 'draw shapes', 'aakaar', 'aakar', 'आकार', 'draw game', 'drawing game', 'shape', 'shapes', 'dikhao draw', 'banaye'] },
 ];
 
 const SCREEN_DEFS = [

@@ -44,6 +44,8 @@ import {
 import {
   RowActions, AddButton, CrudForm, Field, useConfirmRemove,
 } from './CaregiverCrud';
+import DrawingPracticePanel, { useDrawingGame } from '../../components/clinic/DrawingPracticePanel';
+import { subscribeAssessmentChange } from '../../lib/assessmentStore';
 
 function medTone(status) {
   if (status === 'Taken' || status === 'Done') return 'stable';
@@ -54,6 +56,12 @@ function medTone(status) {
 function useStoreTick() {
   const [, setTick] = useState(0);
   useEffect(() => subscribeCaregiverStore(() => setTick((n) => n + 1)), []);
+}
+
+/** Caregiver Progress also listens for patient assessment / Shape Draw writes. */
+function useAssessmentTick() {
+  const [, setTick] = useState(0);
+  useEffect(() => subscribeAssessmentChange(() => setTick((n) => n + 1)), []);
 }
 
 function TodayTasks({ compact }) {
@@ -635,9 +643,14 @@ export function CgSafety() {
 
 export function CgProgress() {
   useStoreTick();
+  useAssessmentTick();
   const quiz = getMemoryQuizResult();
   const quizPct = quiz
     ? (quiz.percentage ?? Math.round(((quiz.score || 0) / (quiz.totalQuestions || 1)) * 100))
+    : null;
+  const drawing = useDrawingGame('aita');
+  const drawingPct = drawing && Number.isFinite(Number(drawing.averageScore))
+    ? Math.round(Number(drawing.averageScore))
     : null;
   const doctorNotes = getDoctorNotes();
   const confirm = useConfirmRemove();
@@ -673,11 +686,15 @@ export function CgProgress() {
       <div className="os-kpis">
         <Stat label="Games" value={CG_ENGAGEMENT.gamesThisWeek} hint="This week with Latveria" />
         <Stat label="Voice" value={`${CG_ENGAGEMENT.voiceMinutes} min`} hint="Companion + stories" />
-        <Stat label="Story beats" value={CG_ENGAGEMENT.storyBeats} hint="Held kindly" />
         <Stat
           label="Memory check"
           value={quizPct != null ? `${quizPct}%` : 'Not yet'}
           hint={quizPct != null ? 'From her patient app · not a diagnosis' : 'When she finishes the quiz'}
+        />
+        <Stat
+          label="Shape practice"
+          value={drawingPct != null ? `${drawingPct}%` : 'Not yet'}
+          hint={drawingPct != null ? 'Drawing accuracy · not a diagnosis' : 'When she finishes Shape Draw'}
         />
       </div>
       <div className="os-split">
@@ -696,11 +713,14 @@ export function CgProgress() {
           </div>
           <p className="os-note-body">{CG_ENGAGEMENT.moodNote}</p>
           <p className="os-meta" style={{ marginTop: 12 }}>
-            Memory Quiz and FAQ answers feed the severity band on{' '}
+            Memory Quiz, Shape Draw, and FAQ answers feed the severity band on{' '}
             <Link to="/caregiver/assessment">Assessment</Link>
             {' '}— for monitoring with Dr. Sharma, not a verdict.
           </p>
         </Panel>
+        <DrawingPracticePanel patientId="aita" patientFirstName="Latveria" variant="care" />
+      </div>
+      <div className="os-split" style={{ marginTop: 16 }}>
         <Panel title="Notes for Dr. Meera Sharma" action={<AddButton label="Add note" onClick={startAdd} />}>
           <div className="cg-stack-cards">
             <AnimatePresence initial={false}>

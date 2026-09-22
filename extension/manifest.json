@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "Smriti Saarthi",
+  "version": "1.0.0",
+  "description": "Helplines and today’s care tasks for Smriti Saarthi.",
+  "action": {
+    "default_title": "Smriti Saarthi",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "192": "icon.png"
+    }
+  },
+  "icons": {
+    "192": "icon.png"
+  },
+  "permissions": ["tabs"]
+}

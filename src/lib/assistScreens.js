@@ -37,6 +37,11 @@ const GAMES_HOW = {
     how: 'Jo cheez boli jaaye, table par usko dhundo.',
     tap: 'Sahi object par tap karo.',
   },
+  'shape-draw': {
+    title: 'Shape draw',
+    how: 'Pehle shape dekho. Phir bade canvas par dheere se banao. Check dabao, accuracy milti hai.',
+    tap: 'Ungli se draw karo. Undo ya Clear se sudhaar. Check ke baad Next.',
+  },
 };
 
 export const SCREEN_GUIDES = {

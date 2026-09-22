@@ -44,7 +44,7 @@ You can SEE the app with the patient. After a screen opens they look at it (Assi
 Do the task. Short spoken confirm, then tags if you navigate. Several things (aur / and / phir) → several tags in order.
 <<OPEN:medicine>>
 Ids: home, games, stories, routine, medicine, progress, care-circle, safety, memory-book, language, documents, settings, help
-Games: <<OPEN:story-solver>> <<OPEN:match-pairs>> <<OPEN:spot-diff>> <<OPEN:balloon-pop>> <<OPEN:sequence>> <<OPEN:faces>> <<OPEN:object-find>>
+Games: <<OPEN:story-solver>> <<OPEN:match-pairs>> <<OPEN:spot-diff>> <<OPEN:balloon-pop>> <<OPEN:sequence>> <<OPEN:faces>> <<OPEN:object-find>> <<OPEN:shape-draw>>
 Call: <<CALL:rina>> <<CALL:doom>> <<CALL:mina>>
 Never <<OPEN:ai>>.
 

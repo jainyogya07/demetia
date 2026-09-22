@@ -1,0 +1,14 @@
+/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/deps/serde-675990031ab5181e.d: /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/serde-e70948ae5831ab69/out/private.rs
+
+/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/deps/libserde-675990031ab5181e.rlib: /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/serde-e70948ae5831ab69/out/private.rs
+
+/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/deps/libserde-675990031ab5181e.rmeta: /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/serde-e70948ae5831ab69/out/private.rs
+
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs:
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs:
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs:
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs:
+/Users/yogayjain/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs:
+/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/serde-e70948ae5831ab69/out/private.rs:
+
+# env-dep:OUT_DIR=/Users/yogayjain/Projects/Dementia/services/spatial-rust/target/debug/build/serde-e70948ae5831ab69/out

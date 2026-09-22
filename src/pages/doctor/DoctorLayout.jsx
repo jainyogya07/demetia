@@ -7,7 +7,6 @@ import HeaderLanguageControl from '../../components/HeaderLanguageControl';
 import RoleSwitcher from '../../components/RoleSwitcher';
 import { DR_CLINIC, DR_PATIENTS } from '../../data/doctorPlaceholders';
 import DashAurora from '../../components/bits/DashAurora';
-import ClickSpark from '../../components/bits/ClickSpark';
 import BlurText from '../../components/bits/BlurText';
 import RegionSceneryBackground from '../../components/RegionSceneryBackground';
 import { useI18n } from '../../I18nContext';
@@ -65,7 +64,7 @@ export default function DoctorLayout() {
   }
 
   return (
-    <ClickSpark className={`app-container ss-theme ss-lakeside ss-has-region-scenery ss-role-shell${railCollapsed ? ' is-rail-collapsed' : ''}`}>
+    <div className={`app-container ss-theme ss-lakeside ss-has-region-scenery ss-role-shell${railCollapsed ? ' is-rail-collapsed' : ''}`}>
       <RegionSceneryBackground />
       <aside className={`sidebar${railCollapsed ? ' is-collapsed' : ''}`}>
         <div className="sidebar-header ss-sidebar-identity-header">
@@ -165,6 +164,6 @@ export default function DoctorLayout() {
           </AnimatePresence>
         </div>
       </main>
-    </ClickSpark>
+    </div>
   );
 }

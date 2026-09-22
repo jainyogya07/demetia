@@ -1,1071 +1,452 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import './MemoryJourney.css';
 
-import {
-  getMemoryJourneyConfig,
-  saveMemoryJourneySession,
-} from "../lib/memoryJourneyStore";
+/**
+ * Default route for the "Morning Walk Memory Journey".
+ * Swap this in via the `journey` prop for other sessions (e.g. "Evening Market Walk").
+ *
+ * Each stop supports an optional `image` (url) — if you have the illustrated
+ * icons already used elsewhere in the app (like the house art in your
+ * screenshot), drop the path in here and it will be used instead of the
+ * emoji fallback.
+ */
+const DEFAULT_JOURNEY = [
+  { id: 1, landmark: 'Local Shop', icon: '🏪', direction: 'straight', instruction: 'Walk straight towards the Local Shop.' },
+  { id: 2, landmark: 'Neighbourhood House', icon: '🏠', direction: 'left', instruction: 'Turn left towards the Neighbourhood House.' },
+  { id: 3, landmark: 'Community Park', icon: '🌳', direction: 'right', instruction: 'Turn right towards the Community Park.' },
+  { id: 4, landmark: 'Hanuman Temple', icon: '🛕', direction: 'straight', instruction: 'Walk straight towards the Hanuman Temple.' },
+  { id: 5, landmark: 'Back Home', icon: '🏡', direction: 'left', instruction: 'Turn left to head back home.' },
+];
 
-import { applyMemoryJourneyToAssessment } from "../lib/assessmentStore";
+const LANE_OFFSET = { left: -1, straight: 0, right: 1 };
+const DIRECTION_LABEL = { left: '← Going Left', straight: '↑ Going Straight', right: '→ Going Right' };
 
-import "./MemoryJourney.css";
-
-
-const DEFAULT_PATIENT_ID = "aita";
-
-
-const PHASES = {
-  LOADING: "loading",
-  NO_CONFIG: "no-config",
-  WELCOME: "welcome",
-  BRIEFING: "briefing",
-  PRACTICE: "practice",
-  JOURNEY: "journey",
-  LANDMARK_RECALL: "landmark-recall",
-  COMPLETE: "complete",
-};
-
-
-const DIRECTIONS = {
-  LEFT: "left",
-  RIGHT: "right",
-  STRAIGHT: "straight",
-};
-
-
-function createSessionId() {
-  return `memory-journey-${Date.now()}-${Math.random()
-    .toString(36)
-    .slice(2, 8)}`;
-}
-
-
-function now() {
-  return Date.now();
-}
-
-
-function median(values) {
-  const numbers = values
-    .map(Number)
-    .filter(Number.isFinite)
-    .sort((a, b) => a - b);
-
-  if (!numbers.length) return 0;
-
-  const middle = Math.floor(numbers.length / 2);
-
-  if (numbers.length % 2 === 0) {
-    return Math.round(
-      (numbers[middle - 1] + numbers[middle]) / 2
-    );
+/** Speak a line with the Web Speech API, falling back gracefully if it isn't available. */
+function speak(text, onEnd) {
+  try {
+    if (!('speechSynthesis' in window)) {
+      if (onEnd) onEnd();
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    if (onEnd) utterance.onend = onEnd;
+    window.speechSynthesis.speak(utterance);
+  } catch (err) {
+    if (onEnd) onEnd();
   }
-
-  return Math.round(numbers[middle]);
 }
 
-
-function calculatePercentage(correct, total) {
-  if (!total) return 0;
-
-  return Math.round((correct / total) * 100);
+function stopSpeaking() {
+  try {
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+  } catch (err) {
+    /* no-op */
+  }
 }
 
 export default function MemoryJourney({
-  patientId = DEFAULT_PATIENT_ID,
+  journey = DEFAULT_JOURNEY,
+  sessionTitle = 'Morning Walk Memory Journey',
+  mode = 'Practice',
   onExit,
-  onComplete,
 }) {
-  const [phase, setPhase] = useState(PHASES.LOADING);
+  const [screen, setScreen] = useState('intro'); // intro | instructions | playing | complete
+  const [stepIndex, setStepIndex] = useState(0);
+  const [lane, setLane] = useState(0); // -1 left, 0 center, 1 right
+  const [phase, setPhase] = useState('idle'); // idle | correct | incorrect
+  const [lastDirection, setLastDirection] = useState(null);
+  const [visited, setVisited] = useState([]);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const timeoutRef = useRef(null);
 
-  const [config, setConfig] = useState(null);
+  const totalSteps = journey.length;
+  const currentStep = journey[stepIndex];
 
-  const [currentStepIndex, setCurrentStepIndex] =
-    useState(0);
+  const readInstruction = useCallback((text) => {
+    setIsSpeaking(true);
+    speak(text, () => setIsSpeaking(false));
+  }, []);
 
-  const [isSpeaking, setIsSpeaking] =
-    useState(false);
-
-  const [stepStartedAt, setStepStartedAt] =
-    useState(null);
-
-  const [practiceCompleted, setPracticeCompleted] =
-    useState(false);
-
-  const [turnTelemetry, setTurnTelemetry] =
-    useState([]);
-
-  const [landmarkTelemetry, setLandmarkTelemetry] =
-    useState([]);
-
-  const [landmarkRecallIndex, setLandmarkRecallIndex] =
-    useState(0);
-
-  const [selectedLandmark, setSelectedLandmark] =
-    useState(null);
-
-  const [result, setResult] = useState(null);
-
-  const [sessionId] = useState(createSessionId);
-
-  const recognitionRef = useRef(null);
-
-  const mountedRef = useRef(true);
-
-
+  // Clean up any pending timers / speech on unmount.
   useEffect(() => {
-    mountedRef.current = true;
-
-    async function loadJourney() {
-      try {
-        const savedConfig =
-          await getMemoryJourneyConfig(patientId);
-
-        if (!mountedRef.current) return;
-
-        if (!savedConfig) {
-          setPhase(PHASES.NO_CONFIG);
-          return;
-        }
-
-        setConfig(savedConfig);
-        setPhase(PHASES.WELCOME);
-
-      } catch (error) {
-        console.error(
-          "Memory Journey config error:",
-          error
-        );
-
-        setPhase(PHASES.NO_CONFIG);
-      }
-    }
-
-    loadJourney();
-
     return () => {
-      mountedRef.current = false;
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      stopSpeaking();
+    };
+  }, []);
 
-      try {
-        window.speechSynthesis?.cancel();
-      } catch {
-        // Ignore cleanup error
+  // Read the welcome line once we land on the instructions screen.
+  useEffect(() => {
+    if (screen === 'instructions') {
+      readInstruction('Welcome. Listen carefully and remember the places you see along the way.');
+    }
+  }, [screen, readInstruction]);
+
+  // Read each step's instruction as it becomes current.
+  useEffect(() => {
+    if (screen === 'playing' && currentStep) {
+      readInstruction(currentStep.instruction);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen, stepIndex]);
+
+  const goToScreen = (next) => {
+    stopSpeaking();
+    setScreen(next);
+  };
+
+  const handleDirection = (dir) => {
+    if (phase !== 'idle' || screen !== 'playing') return; // ignore input mid-animation
+
+    setLastDirection(dir);
+    setLane(LANE_OFFSET[dir]);
+
+    const isCorrect = dir === currentStep.direction;
+    setPhase(isCorrect ? 'correct' : 'incorrect');
+    speak(isCorrect ? 'Well done.' : "Let's try that again.");
+
+    timeoutRef.current = setTimeout(() => {
+      setLane(0);
+      setPhase('idle');
+
+      if (isCorrect) {
+        setVisited((prev) => [...prev, currentStep.landmark]);
+        if (stepIndex + 1 < totalSteps) {
+          setStepIndex((i) => i + 1);
+        } else {
+          setScreen('complete');
+        }
       }
+    }, 1200);
+  };
 
-      try {
-        recognitionRef.current?.stop();
-      } catch {
-        // Ignore cleanup error
-      }
+  // Optional keyboard support (arrow keys) alongside the on-screen buttons.
+  useEffect(() => {
+    if (screen !== 'playing') return undefined;
+    const onKeyDown = (e) => {
+      if (e.key === 'ArrowLeft') handleDirection('left');
+      else if (e.key === 'ArrowRight') handleDirection('right');
+      else if (e.key === 'ArrowUp') handleDirection('straight');
     };
-  }, [patientId]);
-
-
-  const currentStep = useMemo(() => {
-    const steps = config?.route?.steps;
-
-    if (!Array.isArray(steps) || !steps.length) {
-      return null;
-    }
-
-    return steps[currentStepIndex] || null;
-  }, [config, currentStepIndex]);
-
-
-  const landmarks = useMemo(() => {
-    if (!Array.isArray(config?.landmarks)) {
-      return [];
-    }
-
-    return config.landmarks;
-  }, [config]);
-
-  function speak(text) {
-    if (!text) return;
-
-    try {
-      window.speechSynthesis?.cancel();
-
-      const utterance =
-        new SpeechSynthesisUtterance(text);
-
-      const language =
-        config?.language || "en";
-
-      const voiceLanguageMap = {
-        en: "en-IN",
-        hi: "hi-IN",
-        as: "as-IN",
-        mni: "mni-IN",
-        kh: "en-IN",
-        mz: "en-IN",
-      };
-
-      utterance.lang =
-        voiceLanguageMap[language] || "en-IN";
-
-      // Calm speaking speed for elderly users
-      utterance.rate = 0.78;
-      utterance.pitch = 1;
-
-      utterance.onstart = () => {
-        setIsSpeaking(true);
-      };
-
-      utterance.onend = () => {
-        setIsSpeaking(false);
-      };
-
-      utterance.onerror = () => {
-        setIsSpeaking(false);
-      };
-
-      window.speechSynthesis?.speak(utterance);
-
-    } catch (error) {
-      console.warn(
-        "Speech synthesis unavailable:",
-        error
-      );
-
-      setIsSpeaking(false);
-    }
-  }
-
-
-  function startBriefing() {
-    setPhase(PHASES.BRIEFING);
-
-    const message =
-      config?.route?.startMessage ||
-      "Let us begin the journey. Listen carefully to the directions.";
-
-    setTimeout(() => {
-      speak(message);
-    }, 200);
-  }
-
-  function startPractice() {
-    setCurrentStepIndex(0);
-
-    setStepStartedAt(now());
-
-    setPracticeCompleted(false);
-
-    setPhase(PHASES.PRACTICE);
-
-    const firstInstruction =
-      config?.route?.steps?.[0]?.instruction || "";
-
-    if (firstInstruction) {
-      setTimeout(() => {
-        speak(firstInstruction);
-      }, 200);
-    }
-  }
-
-
-  function startJourney() {
-    setCurrentStepIndex(0);
-
-    setStepStartedAt(now());
-
-    setTurnTelemetry([]);
-
-    setLandmarkTelemetry([]);
-
-    setPhase(PHASES.JOURNEY);
-
-    const firstInstruction =
-      config?.route?.steps?.[0]?.instruction || "";
-
-    if (firstInstruction) {
-      setTimeout(() => {
-        speak(firstInstruction);
-      }, 200);
-    }
-  }
-
-
-  function finishPractice() {
-    setPracticeCompleted(true);
-
-    setCurrentStepIndex(0);
-
-    setStepStartedAt(now());
-
-    setPhase(PHASES.JOURNEY);
-
-    const firstInstruction =
-      config?.route?.steps?.[0]?.instruction || "";
-
-    if (firstInstruction) {
-      setTimeout(() => {
-        speak(firstInstruction);
-      }, 250);
-    }
-  }
-
-  function recordTurn(direction) {
-    if (!currentStep) return;
-
-    const responseTime = stepStartedAt
-      ? now() - stepStartedAt
-      : 0;
-
-    const expectedDirection =
-      currentStep.direction || DIRECTIONS.STRAIGHT;
-
-    const correct =
-      direction === expectedDirection;
-
-    const hesitation =
-      responseTime >=
-      Number(
-        config?.difficulty?.hesitationThresholdMs || 5000
-      );
-
-    const telemetry = {
-      stepId:
-        currentStep.id ||
-        `step-${currentStepIndex + 1}`,
-
-      instruction:
-        currentStep.instruction || "",
-
-      expectedDirection,
-
-      chosenDirection: direction,
-
-      correct,
-
-      decisionTimeMs: responseTime,
-
-      motorResponseMs: responseTime,
-
-      assistanceUsed: false,
-
-      repeatedInstruction: false,
-
-      hesitation,
-    };
-
-    setTurnTelemetry((previous) => [
-      ...previous,
-      telemetry,
-    ]);
-
-    if (phase === PHASES.PRACTICE) {
-      finishPractice();
-      return;
-    }
-
-    if (
-      currentStepIndex <
-      config.route.steps.length - 1
-    ) {
-      const nextIndex =
-        currentStepIndex + 1;
-
-      setCurrentStepIndex(nextIndex);
-
-      setStepStartedAt(now());
-
-      const nextStep =
-        config.route.steps[nextIndex];
-
-      if (nextStep?.instruction) {
-        setTimeout(() => {
-          speak(nextStep.instruction);
-        }, 250);
-      }
-
-      return;
-    }
-
-    finishJourney();
-  }
-
-
-  function finishJourney() {
-    if (landmarks.length > 0) {
-      setLandmarkRecallIndex(0);
-
-      setSelectedLandmark(null);
-
-      setStepStartedAt(now());
-
-      setPhase(PHASES.LANDMARK_RECALL);
-
-      return;
-    }
-
-    finishAssessment();
-  }
-
-  function handleLandmarkAnswer(landmarkId) {
-    const landmark =
-      landmarks[landmarkRecallIndex];
-
-    if (!landmark) return;
-
-    const responseTime = stepStartedAt
-      ? now() - stepStartedAt
-      : 0;
-
-    const correct =
-      landmarkId === landmark.id;
-
-    const telemetry = {
-      landmarkId: landmark.id,
-
-      selectedLandmarkId: landmarkId,
-
-      correct,
-
-      responseTimeMs: responseTime,
-    };
-
-    const updatedLandmarkTelemetry = [
-      ...landmarkTelemetry,
-      telemetry,
-    ];
-
-    setLandmarkTelemetry(
-      updatedLandmarkTelemetry
-    );
-
-    if (
-      landmarkRecallIndex <
-      landmarks.length - 1
-    ) {
-      setSelectedLandmark(null);
-
-      setLandmarkRecallIndex(
-        landmarkRecallIndex + 1
-      );
-
-      setStepStartedAt(now());
-
-      return;
-    }
-
-    finishAssessment(
-      updatedLandmarkTelemetry
-    );
-  }
-
-
-  function buildAssessmentResult(
-    finalLandmarkTelemetry = landmarkTelemetry
-  ) {
-    const totalTurns =
-      turnTelemetry.length;
-
-    const correctTurns =
-      turnTelemetry.filter(
-        (item) => item.correct
-      ).length;
-
-    const wrongTurns =
-      turnTelemetry.filter(
-        (item) => !item.correct
-      ).length;
-
-    const decisionTimes =
-      turnTelemetry.map(
-        (item) => item.decisionTimeMs
-      );
-
-    const motorTimes =
-      turnTelemetry.map(
-        (item) => item.motorResponseMs
-      );
-
-    const hesitationCount =
-      turnTelemetry.filter(
-        (item) => item.hesitation
-      ).length;
-
-    const landmarkTotal =
-      finalLandmarkTelemetry.length;
-
-    const landmarkCorrect =
-      finalLandmarkTelemetry.filter(
-        (item) => item.correct
-      ).length;
-
-    return {
-      sessionId,
-
-      patientId,
-
-      routeId:
-        config?.route?.id ||
-        config?.routeId ||
-        null,
-
-      language:
-        config?.language || "en",
-
-      difficulty:
-        config?.difficulty?.level ||
-        "easy",
-
-      startedAt:
-        new Date().toISOString(),
-
-      completedAt:
-        new Date().toISOString(),
-
-      completed: true,
-
-      practiceCompleted,
-
-      turns: turnTelemetry,
-
-      landmarks:
-        finalLandmarkTelemetry,
-
-      summary: {
-        routeAccuracy:
-          calculatePercentage(
-            correctTurns,
-            totalTurns
-          ),
-
-        landmarkAccuracy:
-          calculatePercentage(
-            landmarkCorrect,
-            landmarkTotal
-          ),
-
-        medianDecisionTimeMs:
-          median(decisionTimes),
-
-        medianMotorResponseMs:
-          median(motorTimes),
-
-        wrongTurns,
-
-        hesitationCount,
-
-        assistanceCount: 0,
-
-        totalTurns,
-
-        correctTurns,
-
-        landmarkTotal,
-
-        landmarkCorrect,
-      },
-    };
-  }
-
-  async function finishAssessment(
-    finalLandmarkTelemetry = landmarkTelemetry
-  ) {
-    const resultData =
-      buildAssessmentResult(
-        finalLandmarkTelemetry
-      );
-
-    setResult(resultData);
-
-    try {
-      await saveMemoryJourneySession(
-        patientId,
-        resultData
-      );
-    } catch (error) {
-      console.error(
-        "Memory Journey session save failed:",
-        error
-      );
-    }
-
-    try {
-      applyMemoryJourneyToAssessment(
-        resultData,
-        patientId
-      );
-    } catch (error) {
-      console.warn(
-        "Assessment integration failed:",
-        error
-      );
-    }
-
-    setPhase(PHASES.COMPLETE);
-
-    if (typeof onComplete === "function") {
-      onComplete(resultData);
-    }
-  }
-
-
-  function handleExit() {
-    try {
-      window.speechSynthesis?.cancel();
-    } catch {
-      // Ignore cleanup error
-    }
-
-    if (typeof onExit === "function") {
-      onExit();
-    }
-  }
-
-
-  if (phase === PHASES.LOADING) {
-    return (
-      <div className="memory-journey-page">
-        <div className="memory-journey-card">
-          <h2>
-            Preparing Memory Journey
-          </h2>
-
-          <p>
-            Please wait while we prepare
-            your journey.
-          </p>
-        </div>
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screen, phase, stepIndex]);
+
+  const handleExit = () => {
+    stopSpeaking();
+    if (onExit) onExit();
+    else setScreen('intro');
+  };
+
+  const handleRestart = () => {
+    setStepIndex(0);
+    setLane(0);
+    setPhase('idle');
+    setLastDirection(null);
+    setVisited([]);
+    goToScreen('intro');
+  };
+
+  return (
+    <div className="mj-page">
+      {screen === 'intro' && (
+        <IntroCard sessionTitle={sessionTitle} onStart={() => goToScreen('instructions')} onExit={handleExit} />
+      )}
+
+      {screen === 'instructions' && (
+        <InstructionsCard
+          isSpeaking={isSpeaking}
+          onReady={() => goToScreen('playing')}
+          onHearAgain={() =>
+            readInstruction('Welcome. Listen carefully and remember the places you see along the way.')
+          }
+        />
+      )}
+
+      {screen === 'playing' && currentStep && (
+        <GameCard
+          mode={mode}
+          journey={journey}
+          stepIndex={stepIndex}
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          lane={lane}
+          phase={phase}
+          lastDirection={lastDirection}
+          visited={visited}
+          isSpeaking={isSpeaking}
+          onDirection={handleDirection}
+          onHearAgain={() => readInstruction(currentStep.instruction)}
+        />
+      )}
+
+      {screen === 'complete' && (
+        <CompleteCard visited={visited} onRestart={handleRestart} onExit={handleExit} />
+      )}
+    </div>
+  );
+}
+
+/* ----------------------------- Intro screen ----------------------------- */
+
+function IntroCard({ sessionTitle, onStart, onExit }) {
+  return (
+    <div className="mj-card mj-intro">
+      <div className="mj-icon-badge" aria-hidden="true">🧠</div>
+      <h1 className="mj-title">Memory Journey</h1>
+      <p className="mj-subtitle">A calm memory and navigation activity</p>
+      <p className="mj-session-name">{sessionTitle}</p>
+
+      <div className="mj-pills">
+        <span className="mj-pill">🌿 Calm pace</span>
+        <span className="mj-pill">🕐 Remember the route</span>
+        <span className="mj-pill">🔊 Listen to instructions</span>
       </div>
-    );
-  }
 
+      <div className="mj-actions">
+        <button type="button" className="mj-btn mj-btn-primary" onClick={onStart}>Start</button>
+        <button type="button" className="mj-btn mj-btn-secondary" onClick={onExit}>Exit</button>
+      </div>
+    </div>
+  );
+}
 
-  if (phase === PHASES.NO_CONFIG) {
-    return (
-      <div className="memory-journey-page">
-        <div className="memory-journey-card">
+/* ------------------------- Listen carefully screen ----------------------- */
 
-          <h2>
-            Memory Journey is not ready
-          </h2>
+function InstructionsCard({ isSpeaking, onReady, onHearAgain }) {
+  return (
+    <div className="mj-card mj-instructions">
+      <h1 className="mj-title">Listen Carefully</h1>
 
-          <p>
-            A caregiver needs to create a
-            personalised journey first.
+      <div className="mj-instruction-box">
+        Welcome. Listen carefully and remember the places you see along the way.
+      </div>
+
+      <p className={`mj-speaking-status ${isSpeaking ? 'is-speaking' : ''}`} aria-live="polite">
+        <span aria-hidden="true">🔊</span> {isSpeaking ? 'Speaking…' : 'Ready when you are'}
+      </p>
+
+      <div className="mj-actions">
+        <button type="button" className="mj-btn mj-btn-primary" onClick={onReady}>I am Ready</button>
+        <button type="button" className="mj-btn mj-btn-secondary" onClick={onHearAgain}>🔊 Hear Again</button>
+      </div>
+    </div>
+  );
+}
+
+/* ------------------------------ Game screen ------------------------------ */
+
+function GameCard({
+  mode,
+  journey,
+  stepIndex,
+  currentStep,
+  totalSteps,
+  lane,
+  phase,
+  lastDirection,
+  visited,
+  isSpeaking,
+  onDirection,
+  onHearAgain,
+}) {
+  const locked = phase !== 'idle';
+
+  return (
+    <div className="mj-card mj-game">
+      <div className="mj-game-topbar">
+        <span className="mj-mode-pill">{mode}</span>
+        <span className="mj-remembered-pill">🌟 Remembered {visited.length}/{totalSteps}</span>
+        <span className="mj-step-pill">Step {stepIndex + 1} / {totalSteps}</span>
+      </div>
+
+      <div className="mj-game-body">
+        <RoutePanel journey={journey} stepIndex={stepIndex} />
+
+        <div className="mj-play-area">
+          <Scene
+            step={currentStep}
+            lane={lane}
+            phase={phase}
+            lastDirection={lastDirection}
+          />
+
+          <p className="mj-instruction-text" aria-live="polite">
+            {phase === 'incorrect' ? "Let's try again — " : ''}
+            {currentStep.instruction}
           </p>
 
-          <button
-            type="button"
-            className="memory-journey-secondary-btn"
-            onClick={handleExit}
-          >
-            Go Back
-          </button>
-
-        </div>
-      </div>
-    );
-  }
-
-  if (phase === PHASES.WELCOME) {
-    return (
-      <div className="memory-journey-page">
-        <div className="memory-journey-card">
-
-          <div className="memory-journey-icon">
-            🧠
+          <div className="mj-controls-row">
+            <button type="button" className="mj-btn mj-btn-secondary mj-hear-again" onClick={onHearAgain}>
+              {isSpeaking ? '🔊 Speaking…' : '🔊 Hear Again'}
+            </button>
           </div>
 
-          <h1>
-            Memory Journey
-          </h1>
-
-          <p className="memory-journey-subtitle">
-            A calm memory and navigation activity
-          </p>
-
-          <p>
-            {config?.route?.title ||
-              "Your Personal Journey"}
-          </p>
-
-          <div className="memory-journey-info">
-            <span>🌿 Calm pace</span>
-            <span>🧭 Remember the route</span>
-            <span>🔊 Listen to instructions</span>
-          </div>
-
-          <div className="memory-journey-actions">
-
+          <div className="mj-direction-controls" role="group" aria-label="Choose a direction">
             <button
               type="button"
-              className="memory-journey-primary-btn"
-              onClick={startBriefing}
+              className="mj-dir-btn"
+              disabled={locked}
+              onClick={() => onDirection('left')}
             >
-              Start
+              <span className="mj-dir-arrow" aria-hidden="true">←</span>
+              <span>Left</span>
             </button>
-
             <button
               type="button"
-              className="memory-journey-secondary-btn"
-              onClick={handleExit}
+              className="mj-dir-btn mj-dir-btn-straight"
+              disabled={locked}
+              onClick={() => onDirection('straight')}
             >
-              Exit
+              <span className="mj-dir-arrow" aria-hidden="true">↑</span>
+              <span>Straight</span>
             </button>
-
-          </div>
-
-        </div>
-      </div>
-    );
-  }
-
-
-  if (phase === PHASES.BRIEFING) {
-    return (
-      <div className="memory-journey-page">
-
-        <div className="memory-journey-card">
-
-          <h1>
-            Listen Carefully
-          </h1>
-
-          <div className="memory-journey-instruction">
-            {config?.route?.startMessage ||
-              "Listen carefully to the instructions."}
-          </div>
-
-          {isSpeaking && (
-            <p className="memory-journey-speaking">
-              🔊 Speaking...
-            </p>
-          )}
-
-          <button
-            type="button"
-            className="memory-journey-primary-btn"
-            onClick={startPractice}
-          >
-            I am Ready
-          </button>
-
-          <button
-            type="button"
-            className="memory-journey-secondary-btn"
-            onClick={() =>
-              speak(config?.route?.startMessage)
-            }
-          >
-            🔊 Hear Again
-          </button>
-
-        </div>
-
-      </div>
-    );
-  }
-
-  if (
-    phase === PHASES.PRACTICE ||
-    phase === PHASES.JOURNEY
-  ) {
-    const isPractice =
-      phase === PHASES.PRACTICE;
-
-    return (
-      <div className="memory-journey-page">
-
-        <div className="memory-journey-game">
-
-          <div className="memory-journey-topbar">
-            <span>
-              {isPractice
-                ? "Practice"
-                : "Memory Journey"}
-            </span>
-
-            <span>
-              Step {currentStepIndex + 1} /{" "}
-              {config?.route?.steps?.length || 0}
-            </span>
-          </div>
-
-
-          <div className="memory-journey-scene">
-
-            <div className="memory-journey-sky">
-              ☁️
-            </div>
-
-            <div className="memory-journey-tree">
-              🌳
-            </div>
-
-            <div className="memory-journey-character">
-              🚶
-            </div>
-
-            <div className="memory-journey-path">
-              ───────────────
-            </div>
-
-            <div className="memory-journey-landmark">
-              📍
-
-              <span>
-                {currentStep?.landmark ||
-                  currentStep?.landmarkName ||
-                  "Path"}
-              </span>
-            </div>
-
-          </div>
-
-
-          <div className="memory-journey-instruction-panel">
-
-            <div className="memory-journey-instruction">
-
-              {currentStep?.instruction ||
-                "Listen to the instruction."}
-
-            </div>
-
-            {isSpeaking && (
-              <div className="memory-journey-speaking">
-                🔊 Speaking...
-              </div>
-            )}
-
             <button
               type="button"
-              className="memory-journey-repeat-btn"
-              onClick={() =>
-                speak(currentStep?.instruction)
-              }
+              className="mj-dir-btn"
+              disabled={locked}
+              onClick={() => onDirection('right')}
             >
-              🔊 Hear Again
+              <span className="mj-dir-arrow" aria-hidden="true">→</span>
+              <span>Right</span>
             </button>
-
           </div>
 
-
-          <div className="memory-journey-controls">
-
-            <button
-              type="button"
-              className="memory-journey-direction-btn"
-              onClick={() =>
-                recordTurn(DIRECTIONS.LEFT)
-              }
-              aria-label="Turn left"
-            >
-              <span className="direction-arrow">
-                ←
-              </span>
-
-              <span>
-                Left
-              </span>
-            </button>
-
-
-            <button
-              type="button"
-              className="memory-journey-direction-btn"
-              onClick={() =>
-                recordTurn(DIRECTIONS.STRAIGHT)
-              }
-              aria-label="Go straight"
-            >
-              <span className="direction-arrow">
-                ↑
-              </span>
-
-              <span>
-                Straight
-              </span>
-            </button>
-
-
-            <button
-              type="button"
-              className="memory-journey-direction-btn"
-              onClick={() =>
-                recordTurn(DIRECTIONS.RIGHT)
-              }
-              aria-label="Turn right"
-            >
-              <span className="direction-arrow">
-                →
-              </span>
-
-              <span>
-                Right
-              </span>
-            </button>
-
-          </div>
-
-        </div>
-
-      </div>
-    );
-  }
-
-  if (phase === PHASES.LANDMARK_RECALL) {
-    return (
-      <div className="memory-journey-page">
-
-        <div className="memory-journey-card">
-
-          <h1>
-            Which landmark did you see?
-          </h1>
-
-          <p>
-            Take your time. There is no timer.
-          </p>
-
-          <div className="memory-journey-landmark-options">
-
-            {landmarks.map((landmark) => (
-              <button
-                key={landmark.id}
-                type="button"
+          <div className="mj-progress-dots">
+            {journey.map((step, i) => (
+              <span
+                key={step.id}
                 className={
-                  selectedLandmark === landmark.id
-                    ? "memory-landmark-option selected"
-                    : "memory-landmark-option"
+                  'mj-dot' +
+                  (i < stepIndex ? ' is-visited' : '') +
+                  (i === stepIndex ? ' is-current' : '')
                 }
-                onClick={() => {
-                  setSelectedLandmark(
-                    landmark.id
-                  );
-
-                  handleLandmarkAnswer(
-                    landmark.id
-                  );
-                }}
-              >
-
-                {landmark.imageUrl ? (
-                  <img
-                    src={landmark.imageUrl}
-                    alt=""
-                  />
-                ) : (
-                  <span className="landmark-placeholder">
-                    📍
-                  </span>
-                )}
-
-                <strong>
-                  {landmark.name}
-                </strong>
-
-              </button>
+              />
             ))}
-
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
+/** Left-hand "your route" panel — a simple vertical line map, never overlapping. */
+function RoutePanel({ journey, stepIndex }) {
+  return (
+    <aside className="mj-route-panel" aria-label="Your route">
+      <h2 className="mj-route-title">Your Route</h2>
+      <ul className="mj-route-list">
+        {journey.map((step, i) => {
+          const state = i < stepIndex ? 'visited' : i === stepIndex ? 'current' : 'upcoming';
+          return (
+            <li key={step.id} className={`mj-route-item is-${state}`}>
+              <span className="mj-route-dot" aria-hidden="true">
+                {state === 'visited' ? '✓' : ''}
+              </span>
+              <span className="mj-route-icon" aria-hidden="true">
+                {step.image ? <img src={step.image} alt="" /> : step.icon || '📍'}
+              </span>
+              <span className="mj-route-label">{step.landmark}</span>
+            </li>
+          );
+        })}
+      </ul>
+    </aside>
+  );
+}
+
+/** The pseudo-3D road scene, avatar, and destination banner. */
+function Scene({ step, lane, phase, lastDirection }) {
+  const roadClass =
+    'mj-road' +
+    (phase === 'correct' && lastDirection === 'left' ? ' mj-road--bend-left' : '') +
+    (phase === 'correct' && lastDirection === 'right' ? ' mj-road--bend-right' : '');
+
+  const avatarClass =
+    'mj-avatar' +
+    (phase === 'correct' ? ' mj-avatar--success' : '') +
+    (phase === 'incorrect' ? ' mj-avatar--retry' : '');
+
+  return (
+    <div className="mj-scene">
+      <div className="mj-destination-banner">
+        <span aria-hidden="true">📍</span> {step.landmark}
+      </div>
+
+      <span className="mj-direction-badge">
+        {lastDirection ? DIRECTION_LABEL[lastDirection] : '↑ Ready to walk'}
+      </span>
+
+      <div className="mj-sky">
+        <div className="mj-sun" aria-hidden="true" />
+        <div className="mj-cloud mj-cloud-1" aria-hidden="true" />
+        <div className="mj-cloud mj-cloud-2" aria-hidden="true" />
+      </div>
+
+      <div className="mj-ground">
+        <span className="mj-tree mj-tree-1" aria-hidden="true">🌲</span>
+        <span className="mj-tree mj-tree-2" aria-hidden="true">🌳</span>
+        <span className="mj-tree mj-tree-3" aria-hidden="true">🌳</span>
+        <span className="mj-tree mj-tree-4" aria-hidden="true">🌲</span>
+
+        <div className={roadClass}>
+          <span className="mj-road-line" />
         </div>
 
-      </div>
-    );
-  }
-
-
-  if (phase === PHASES.COMPLETE) {
-    const summary =
-      result?.summary || {};
-
-    return (
-      <div className="memory-journey-page">
-
-        <div className="memory-journey-card">
-
-          <div className="memory-journey-success">
-            ✓
-          </div>
-
-          <h1>
-            Journey Complete
-          </h1>
-
-          <p>
-            Well done. You completed the
-            Memory Journey.
-          </p>
-
-
-          <div className="memory-journey-results">
-
-            <div>
-              <strong>
-                {summary.routeAccuracy ?? 0}%
-              </strong>
-
-              <span>
-                Route accuracy
-              </span>
-            </div>
-
-
-            <div>
-              <strong>
-                {summary.landmarkAccuracy ?? 0}%
-              </strong>
-
-              <span>
-                Landmark recall
-              </span>
-            </div>
-
-
-            <div>
-              <strong>
-                {summary.wrongTurns ?? 0}
-              </strong>
-
-              <span>
-                Wrong turns
-              </span>
-            </div>
-
-
-            <div>
-              <strong>
-                {summary.medianDecisionTimeMs ?? 0}
-                ms
-              </strong>
-
-              <span>
-                Median decision time
-              </span>
-            </div>
-
-          </div>
-
-
-          <p className="memory-journey-note">
-            This result is an observation from
-            today's activity. It should be viewed
-            together with previous sessions and
-            caregiver or clinical information.
-          </p>
-
-
-          <button
-            type="button"
-            className="memory-journey-primary-btn"
-            onClick={handleExit}
-          >
-            Done
-          </button>
-
+        <div className="mj-landmark-icon" aria-hidden="true">
+          {step.image ? <img src={step.image} alt="" /> : step.icon || '📍'}
         </div>
 
+        <div
+          className={avatarClass}
+          style={{ '--mj-lane': lane }}
+        >
+          <div className="mj-avatar-glow" aria-hidden="true" />
+          <svg className="mj-avatar-svg" viewBox="0 0 100 120" width="64" height="78" aria-hidden="true">
+            <g className="mj-leg mj-leg-left">
+              <rect x="38" y="78" width="10" height="34" rx="5" />
+            </g>
+            <g className="mj-leg mj-leg-right">
+              <rect x="52" y="78" width="10" height="34" rx="5" />
+            </g>
+            <rect className="mj-body" x="30" y="46" width="40" height="40" rx="16" />
+            <circle className="mj-head" cx="50" cy="30" r="22" />
+            <circle className="mj-eye" cx="42" cy="28" r="3" />
+            <circle className="mj-eye" cx="58" cy="28" r="3" />
+            <path className="mj-smile" d="M40 36 Q50 44 60 36" fill="none" strokeLinecap="round" />
+          </svg>
+          <span className="mj-avatar-tag">You</span>
+        </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
+/* ---------------------------- Complete screen ---------------------------- */
 
-  return null;
+function CompleteCard({ visited, onRestart, onExit }) {
+  return (
+    <div className="mj-card mj-complete">
+      <div className="mj-icon-badge" aria-hidden="true">🎉</div>
+      <h1 className="mj-title">Journey Complete</h1>
+      <p className="mj-subtitle">Here is the route you just walked and remembered.</p>
+
+      <ol className="mj-recap-list">
+        {visited.map((landmark, i) => (
+          <li key={landmark + i} className="mj-recap-item">
+            <span className="mj-recap-check" aria-hidden="true">✓</span> {landmark}
+          </li>
+        ))}
+      </ol>
+
+      <div className="mj-actions">
+        <button type="button" className="mj-btn mj-btn-primary" onClick={onRestart}>Walk Again</button>
+        <button type="button" className="mj-btn mj-btn-secondary" onClick={onExit}>Back to Games</button>
+      </div>
+    </div>
+  );
 }

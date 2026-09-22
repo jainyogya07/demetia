@@ -10,6 +10,7 @@ import {
   DR_LIVE, DR_CLINIC, DR_PATIENTS, DR_TASKS, DR_CALENDAR, DR_COGNITIVE, DR_MEDS,
   DR_NOTES, DR_ALERTS, DR_REPORTS, DR_CAREPLAN, DR_TIMELINE, DR_MESSAGES,
 } from '../../data/doctorPlaceholders';
+import { upsertDoctorNote } from '../../lib/caregiverStore';
 
 const TABS = [
   { id: 'profile', label: 'Profile' },
@@ -381,19 +382,89 @@ function MedsTab({ patient }) {
 }
 
 function NotesTab({ patient }) {
-  const rows = DR_NOTES[patient.id] || [];
+  const [extraNotes, setExtraNotes] = useState([]);
+  const [draft, setDraft] = useState('');
+  const [sent, setSent] = useState(false);
+  const rows = [...extraNotes, ...(DR_NOTES[patient.id] || [])];
+
+  const handleSend = () => {
+    if (!draft.trim()) return;
+    const text = draft.trim();
+    upsertDoctorNote({
+      id: `dn-dr-${Date.now()}`,
+      rel: 'Dr. Meera Sharma',
+      text,
+      date: 'Today',
+    });
+    setExtraNotes((prev) => [
+      { id: `dn-dr-${Date.now()}`, by: 'Dr. Meera Sharma', text, date: 'Today' },
+      ...prev,
+    ]);
+    setDraft('');
+    setSent(true);
+    setTimeout(() => setSent(false), 3000);
+  };
+
   return (
     <ChartShell
       patient={patient}
-      rail={<Panel title="Author"><p className="os-note-body">Session notes stay with Dr. Meera Sharma. Family sees a share when signed.</p></Panel>}
+      rail={
+        <Panel title="Author">
+          <p className="os-note-body">Session notes stay with Dr. Meera Sharma. Sent notes immediately alert the caregiver.</p>
+        </Panel>
+      }
     >
+      <Panel title={`Send note to ${patient.name.split(' ')[0]}’s care circle`}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
+          <textarea
+            placeholder={`Enter clinical advice, medication updates, or instructions for ${patient.caregiver || 'caregiver'}...`}
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            rows={3}
+            style={{
+              width: '100%',
+              padding: '10px 12px',
+              borderRadius: 12,
+              border: '1.5px solid rgba(23, 107, 88, 0.25)',
+              fontSize: '13.5px',
+              fontFamily: 'inherit',
+              outline: 'none',
+              resize: 'vertical',
+            }}
+          />
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+            <span style={{ fontSize: '12px', color: sent ? '#0f766e' : '#64748b', fontWeight: 600 }}>
+              {sent ? '✓ Shared with Care Circle & Caregiver notified!' : 'Caregiver will receive a high-priority notification'}
+            </span>
+            <button
+              type="button"
+              onClick={handleSend}
+              disabled={!draft.trim()}
+              style={{
+                padding: '8px 16px',
+                borderRadius: 10,
+                background: draft.trim() ? '#0f766e' : '#cbd5e1',
+                color: '#ffffff',
+                border: 'none',
+                fontWeight: 600,
+                fontSize: '13px',
+                cursor: draft.trim() ? 'pointer' : 'not-allowed',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              Send Note to Caregiver
+            </button>
+          </div>
+        </div>
+      </Panel>
+
       <Panel title={`Notes about ${patient.name.split(' ')[0]}`}>
         {rows.length === 0 ? (
           <p className="os-empty">No session notes yet — write the first after you see {patient.name.split(' ')[0]}.</p>
         ) : (
           <div className="os-note-stack">
             {rows.map((note) => (
-              <article key={note.date} className="os-note-card">
+              <article key={note.id || note.date} className="os-note-card">
                 <header>
                   <strong>{note.date}</strong>
                   <span>{note.by}</span>

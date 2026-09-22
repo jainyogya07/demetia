@@ -135,20 +135,6 @@ function Sidebar({ openTabs, setOpenTabs }) {
         })}
       </nav>
 
-      {/* EMERGENCY HELP */}
-      <div className="emergency-card">
-        <div className="emergency-icon">
-          <PhoneCall size={26} />
-        </div>
-
-        <div className="emergency-content">
-          <h3>Emergency Help</h3>
-          <p>Tap to call for help</p>
-          <strong>Helpline: 112 / 102 / 108</strong>
-          <span>(Works offline)</span>
-        </div>
-      </div>
-
     </aside>
   );
 }

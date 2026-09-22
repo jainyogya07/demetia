@@ -8,7 +8,7 @@ export const ROUTINE_TEMPLATE = [
   { id: 'brain', hour: 11, minute: 0, title: 'Brain Activity', subtitle: "Complete today's memory activity", type: 'brain' },
   { id: 'lunch', hour: 13, minute: 0, title: 'Lunch Time', subtitle: 'Have a healthy meal', type: 'meal' },
   { id: 'walk', hour: 16, minute: 30, title: 'Evening Walk', subtitle: 'A short walk outside', type: 'walk' },
-  { id: 'med-pm', hour: 20, minute: 30, title: 'Night Medicine', subtitle: 'Take your night medicine', type: 'medicine' },
+  { id: 'med-pm', hour: 21, minute: 20, title: 'Night Medicine', subtitle: 'Take your night medicine', type: 'medicine' },
 ];
 
 export const CIRCLE_MEMBERS = [

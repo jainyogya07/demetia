@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Bell,
@@ -125,6 +125,7 @@ export default function NotificationsPage({ standalone = false }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [demoMenuOpen, setDemoMenuOpen] = useState(false);
+  const demoRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -133,6 +134,24 @@ export default function NotificationsPage({ standalone = false }) {
       setNotifications(list);
     });
   }, []);
+
+  useEffect(() => {
+    if (!demoMenuOpen) return undefined;
+    const onMouseDown = (e) => {
+      if (demoRef.current && !demoRef.current.contains(e.target)) {
+        setDemoMenuOpen(false);
+      }
+    };
+    const onKeyDown = (e) => {
+      if (e.key === 'Escape') setDemoMenuOpen(false);
+    };
+    document.addEventListener('mousedown', onMouseDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', onMouseDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [demoMenuOpen]);
 
   // Compute stat counts
   const stats = useMemo(() => {
@@ -220,10 +239,11 @@ export default function NotificationsPage({ standalone = false }) {
               </button>
             )}
 
-            <div className="ss-notif-demo-dropdown-container">
+            <div className="ss-notif-demo-dropdown-container" ref={demoRef}>
               <button
                 type="button"
                 className="ss-notif-btn-primary"
+                aria-expanded={demoMenuOpen}
                 onClick={() => setDemoMenuOpen((v) => !v)}
               >
                 <PlusCircle size={16} />
@@ -231,8 +251,14 @@ export default function NotificationsPage({ standalone = false }) {
               </button>
 
               {demoMenuOpen && (
-                <div className="ss-notif-page-demo-menu">
-                  <div className="ss-demo-menu-title">Trigger Live Notification:</div>
+                <>
+                  <div
+                    className="ss-notif-demo-backdrop"
+                    onClick={() => setDemoMenuOpen(false)}
+                    aria-hidden="true"
+                  />
+                  <div className="ss-notif-page-demo-menu" role="menu">
+                    <div className="ss-demo-menu-title">Trigger Live Notification:</div>
                   <button
                     type="button"
                     onClick={() => {
@@ -294,8 +320,9 @@ export default function NotificationsPage({ standalone = false }) {
                     <span>New Government Welfare Scheme</span>
                   </button>
                 </div>
-              )}
-            </div>
+              </>
+            )}
+          </div>
 
             {notifications.length > 0 && (
               <button

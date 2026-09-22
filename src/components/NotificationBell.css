@@ -502,11 +502,11 @@
   right: 0;
   width: 250px;
   background: #ffffff;
-  border-radius: 12px;
-  padding: 6px;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  z-index: 600;
+  border-radius: 14px;
+  padding: 8px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.24);
+  border: 1.5px solid rgba(23, 107, 88, 0.22);
+  z-index: 2000;
   animation: ssNotifPop 0.18s ease;
 }
 

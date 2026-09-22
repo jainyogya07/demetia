@@ -1,12 +1,13 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound, BrainCircuit, ClipboardList, Compass, Sparkles,
+  LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound, BrainCircuit, ClipboardList, Compass, Sparkles, Bell,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import BrandLogo from '../../components/BrandLogo';
 import companionPortrait from '../../assets/infinity_pfp.jpg';
 import HeaderProfileMenu from '../../components/HeaderProfileMenu';
 import HeaderLanguageControl from '../../components/HeaderLanguageControl';
+import NotificationBell from '../../components/NotificationBell';
 import RoleSwitcher from '../../components/RoleSwitcher';
 import CaregiverAssistModal from '../../components/CaregiverAssistModal';
 import { getCaregiverProfile, subscribeCaregiverStore } from '../../lib/caregiverStore';
@@ -33,6 +34,7 @@ const NAV_GROUPS = [
       { to: '/caregiver/progress', icon: LineChart, labelKey: 'cgChrome.progress' },
       { to: '/caregiver/assessment', icon: ClipboardList, labelKey: 'cgChrome.checkin' },
       { to: '/caregiver/circle', icon: Users, labelKey: 'cgChrome.careCircle' },
+      { to: '/caregiver/notifications', icon: Bell, labelKey: 'Notifications' },
     ],
   },
   {
@@ -60,6 +62,7 @@ const TITLE_KEYS = {
   '/caregiver/train-ai': ['cgChrome.trainAi', 'Teach Care Agent household facts about Latveria.'],
   '/caregiver/circle': ['cgChrome.careCircle', 'Rina, Doom, Anita Das, Dr. Sharma — call from here.'],
   '/caregiver/documents': ['cgChrome.documents', 'Prescriptions Latveria’s circle can see.'],
+  '/caregiver/notifications': ['Notifications', 'Doctor notes, routine alarms, upcoming reminders, and AI updates.'],
   '/caregiver/profile': ['Profile', 'Rina Devi — primary caregiver.'],
   '/caregiver/settings': ['cgChrome.settings', 'Reminders, sharing, and preferences.'],
 };
@@ -160,6 +163,7 @@ export default function CaregiverLayout() {
                 <span className="ss-saarthi-btn-main">{t('chrome.patientView')}</span>
               </div>
             </button>
+            <NotificationBell historyPath="/caregiver/notifications" />
             <HeaderProfileMenu
               name={profile.name}
               photoUrl={profile.photoUrl}

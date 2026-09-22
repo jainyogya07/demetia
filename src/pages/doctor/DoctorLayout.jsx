@@ -4,6 +4,7 @@ import { useState } from 'react';
 import BrandLogo from '../../components/BrandLogo';
 import HeaderProfileMenu from '../../components/HeaderProfileMenu';
 import HeaderLanguageControl from '../../components/HeaderLanguageControl';
+import NotificationBell from '../../components/NotificationBell';
 import RoleSwitcher from '../../components/RoleSwitcher';
 import { DR_CLINIC, DR_PATIENTS } from '../../data/doctorPlaceholders';
 import DashAurora from '../../components/bits/DashAurora';
@@ -136,6 +137,7 @@ export default function DoctorLayout() {
                 <span className="ss-saarthi-btn-main">{t('chrome.patientView')}</span>
               </div>
             </button>
+            <NotificationBell historyPath="/caregiver/notifications" />
             <HeaderProfileMenu
               name={DR_CLINIC.name}
               photoUrl={DR_CLINIC.photoUrl}

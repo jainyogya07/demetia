@@ -1,6 +1,7 @@
 /** Browser alarms for daily routine items (medicine, water, meals, …). */
 
 import { getRoutineItems, markRoutineDone, pingLive } from './liveState';
+import { addNotification } from './notificationStore';
 
 const FIRED_KEY = 'ss-alarm-fired-v1';
 const PREFS_KEY = 'ss-alarm-prefs-v1';
@@ -138,6 +139,17 @@ export function fireNextAlarm(now = new Date()) {
   const prefs = getAlarmPrefs();
   if (prefs.sound) beep();
   pushNotify(item);
+
+  addNotification({
+    type: 'alarm',
+    title: `Routine Alarm: ${item.title}`,
+    message: `${item.time} — ${item.subtitle || 'Scheduled routine task is due right now.'}`,
+    priority: 'high',
+    actionUrl: '/caregiver/routine',
+    actionLabel: 'View Schedule',
+    meta: { itemId: item.id },
+  });
+
   return item;
 }
 

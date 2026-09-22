@@ -65,6 +65,9 @@ import { applyMemoryQuizToAssessment } from './lib/assessmentStore';
 import JainQuoteCarousel from './components/JainQuoteCarousel';
 import HeaderProfileMenu from './components/HeaderProfileMenu';
 import HeaderLanguageControl from './components/HeaderLanguageControl';
+import NotificationBell from './components/NotificationBell';
+import NotificationsPage from './pages/NotificationsPage';
+import { startUpcomingAlarmWatcher } from './lib/upcomingAlarmNotifier';
 import RoleSwitcher from './components/RoleSwitcher';
 import DashAurora from './components/bits/DashAurora';
 import ClickSpark from './components/bits/ClickSpark';
@@ -666,6 +669,7 @@ function UserWorkspace({ boot }) {
 
           <div className="ss-header-right">
             <HeaderLanguageControl compact />
+            <NotificationBell historyPath="/caregiver/notifications" />
             <HeaderProfileMenu
               name={displayName}
               onOpenSettings={() => openModule('settings')}
@@ -871,6 +875,10 @@ function AuthModal() {
 }
 
 function App() {
+  useEffect(() => {
+    return startUpcomingAlarmWatcher();
+  }, []);
+
   return (
     <>
       <RegionScenerySync />
@@ -878,6 +886,7 @@ function App() {
         <Route path="/" element={<HomeLanding />} />
         <Route path="/keypad" element={<KeypadPhone />} />
         <Route path="/signin" element={<SignInPage />} />
+        <Route path="/notifications" element={<NotificationsPage standalone />} />
         <Route path="/user" element={<UserWorkspace />} />
         <Route path="/talk" element={<UserWorkspace boot="talk" />} />
         <Route path="/assist" element={<UserWorkspace boot="assist" />} />
@@ -895,6 +904,7 @@ function App() {
         <Route path="train-ai" element={<TrainAiPage />} />
         <Route path="assessment" element={<CaregiverAssessment />} />
         <Route path="memory-journey" element={<CaregiverMemorySetup />} />
+        <Route path="notifications" element={<NotificationsPage />} />
       </Route>
       <Route path="/doctor" element={<DoctorLayout />}>
         <Route index element={<DoctorPatients />} />

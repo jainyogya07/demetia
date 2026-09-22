@@ -14,6 +14,7 @@ import {
   CG_TODAY,
   CG_ROUTINE,
 } from '../data/caregiverPlaceholders';
+import { addNotification } from './notificationStore';
 
 const EVENT = 'ss-caregiver-updated';
 
@@ -212,8 +213,21 @@ export function saveMessages(list) {
 export function upsertMessage(msg) {
   const list = getMessages();
   const idx = list.findIndex((m) => m.id === msg.id);
+  const isNew = idx < 0;
   if (idx >= 0) list[idx] = { ...list[idx], ...msg };
   else list.unshift({ ...msg, id: msg.id || uid('msg') });
+
+  if (isNew && msg.from && !msg.from.toLowerCase().includes('you')) {
+    addNotification({
+      type: msg.rel?.toLowerCase().includes('dr') || msg.from?.toLowerCase().includes('dr') ? 'doctor' : 'circle_message',
+      title: `Message from ${msg.from}`,
+      message: msg.text ? (msg.text.length > 110 ? msg.text.slice(0, 107) + '...' : msg.text) : 'Sent a new message in Care Circle.',
+      priority: 'normal',
+      actionUrl: '/caregiver/circle',
+      actionLabel: 'Open Care Circle',
+    });
+  }
+
   return saveMessages(list);
 }
 
@@ -256,8 +270,21 @@ export function saveDoctorNotes(list) {
 export function upsertDoctorNote(note) {
   const list = getDoctorNotes();
   const idx = list.findIndex((n) => n.id === note.id);
+  const isNew = idx < 0;
   if (idx >= 0) list[idx] = { ...list[idx], ...note };
   else list.unshift({ ...note, id: note.id || uid('dn') });
+
+  if (isNew) {
+    addNotification({
+      type: 'doctor',
+      title: note.rel ? `Doctor Note (${note.rel})` : 'New Doctor Note',
+      message: note.text ? (note.text.length > 120 ? note.text.slice(0, 117) + '...' : note.text) : 'A new clinical note was recorded.',
+      priority: 'high',
+      actionUrl: '/caregiver/circle',
+      actionLabel: 'View Doctor Notes',
+    });
+  }
+
   return saveDoctorNotes(list);
 }
 
@@ -278,8 +305,19 @@ export function saveDocs(list) {
 export function upsertDoc(doc) {
   const list = getDocs();
   const idx = list.findIndex((d) => d.id === doc.id);
+  const isNew = idx < 0;
   if (idx >= 0) list[idx] = { ...list[idx], ...doc };
   else list.push({ ...doc, id: doc.id || uid('doc') });
+
+  addNotification({
+    type: 'document',
+    title: isNew ? 'Document Uploaded' : 'Document Updated',
+    message: `${doc.name || 'Medical Document'} (${doc.kind || 'Record'}) was updated for the care team.`,
+    priority: 'normal',
+    actionUrl: '/caregiver/documents',
+    actionLabel: 'View Documents',
+  });
+
   return saveDocs(list);
 }
 
@@ -429,6 +467,16 @@ export function addAiKnowledgeFact(category = 'about', text = '', source = 'Care
     [validCat]: [...(current[validCat] || []), newFact],
   };
   saveAiKnowledge(next);
+
+  addNotification({
+    type: 'ai_train',
+    title: 'Care Agent AI Trained',
+    message: `${source} taught new habit [${validCat}]: "${newFact.text.length > 95 ? newFact.text.slice(0, 92) + '...' : newFact.text}"`,
+    priority: 'normal',
+    actionUrl: '/caregiver/train-ai',
+    actionLabel: 'View AI Training',
+  });
+
   return newFact;
 }
 

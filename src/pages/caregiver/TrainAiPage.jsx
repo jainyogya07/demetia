@@ -1,33 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { BrainCircuit, Mic, Send, ShieldCheck, CheckCircle2, AlertCircle, Info, MapPin, Users, Sparkles, BookOpen, Clock, Heart, TriangleAlert } from 'lucide-react';
+import {
+  getAiKnowledge,
+  addAiKnowledgeFact,
+  removeAiKnowledgeFact,
+  subscribeCaregiverStore,
+} from '../../lib/caregiverStore';
 import './TrainAiPage.css';
-
-const INITIAL_KNOWLEDGE = {
-  about: [
-    { id: 'a1', text: 'Born in Shillong, moved to Guwahati in 1985.', source: 'Rina (Daughter)' },
-    { id: 'a2', text: 'Likes old Assamese songs and classical music.', source: 'Rina (Daughter)' }
-  ],
-  routine: [
-    { id: 'r1', text: 'Has tea exactly at 4 PM every day.', source: 'Rina (Daughter)' },
-    { id: 'r2', text: 'Goes for a walk in the garden after breakfast.', source: 'Rina (Daughter)' }
-  ],
-  people: [
-    { id: 'p1', text: 'Daughter is Rina. Grandson is Rahul.', source: 'System' },
-    { id: 'p2', text: 'Best friend from childhood is Sunita (passed away).', source: 'Rina (Daughter)' }
-  ],
-  confusion: [
-    { id: 'c1', text: 'Sometimes asks for her husband (passed away 5 years ago).', source: 'Rina (Daughter)' },
-    { id: 'c2', text: 'Gets confused about whether she took her morning pill.', source: 'Rina (Daughter)' }
-  ],
-  responses: [
-    { id: 'rs1', text: 'If she asks for husband: Say "He went to the market and will be late, let\'s have tea first."', source: 'Rina (Daughter)' },
-    { id: 'rs2', text: 'When anxious about pills: Calmly assure her that Rina has kept the count and she is safe.', source: 'Doctor' }
-  ],
-  avoid: [
-    { id: 'av1', text: 'Do not argue if she says she needs to go to work.', source: 'Doctor' },
-    { id: 'av2', text: 'Avoid mentioning hospitalization.', source: 'Rina (Daughter)' }
-  ]
-};
 
 const CATEGORIES = [
   { id: 'about', label: 'About Patient', icon: Info },
@@ -39,36 +18,26 @@ const CATEGORIES = [
 ];
 
 export default function TrainAiPage() {
-  const [knowledge, setKnowledge] = useState(INITIAL_KNOWLEDGE);
+  const [knowledge, setKnowledge] = useState(() => getAiKnowledge());
   const [inputText, setInputText] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [activeCategory, setActiveCategory] = useState('about');
 
+  useEffect(() => {
+    return subscribeCaregiverStore(() => {
+      setKnowledge(getAiKnowledge());
+    });
+  }, []);
+
   const handleTrain = (e) => {
     e.preventDefault();
     if (!inputText.trim()) return;
-    
-    // In a real app, backend NLP would extract category and structure.
-    // Here we just append to the active category for prototyping.
-    const newFact = {
-      id: Date.now().toString(),
-      text: inputText,
-      source: 'Rina (Daughter)'
-    };
-    
-    setKnowledge(prev => ({
-      ...prev,
-      [activeCategory]: [...prev[activeCategory], newFact]
-    }));
-    
+    addAiKnowledgeFact(activeCategory, inputText.trim(), 'Rina (Daughter)');
     setInputText('');
   };
 
   const removeFact = (category, id) => {
-    setKnowledge(prev => ({
-      ...prev,
-      [category]: prev[category].filter(fact => fact.id !== id)
-    }));
+    removeAiKnowledgeFact(category, id);
   };
 
   return (

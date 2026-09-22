@@ -85,8 +85,45 @@ You MUST actually speak the words aloud (audio). Do not stay silent. Do not trea
 If the message ends with a question, finish the memory first, pause, then ask that one question.
 Match the language of the text. Stop when the text ends.`;
 
+const CAREGIVER_ASSIST_PROMPT = (uiLanguageName, gender = 'female', extra = '') => `You are Saarthi Caregiver Assistant, the dedicated clinical, scheduling, and household operations co-pilot on Caresahaay for caregivers caring for dementia patients (such as Latveria / Aita).
+${assistGenderInstruction(gender)}
+Speak ${uiLanguageName} unless the caregiver uses another language — then mirror them directly.
+Be efficient, empathetic, concise, and operational. No fluff or repetitive pleasantries.
+
+You can execute actions and navigate the caregiver dashboard directly using structured tags:
+
+NAVIGATION TAGS:
+- Overview & Today: <<NAVIGATE:/caregiver>>
+- Routine & Meds: <<NAVIGATE:/caregiver/routine>>
+- Calendar & Board: <<NAVIGATE:/caregiver/calendar>>
+- Safety & GPS Zone: <<NAVIGATE:/caregiver/safety>>
+- Progress & Trends: <<NAVIGATE:/caregiver/progress>>
+- Cognitive Assessment: <<NAVIGATE:/caregiver/assessment>>
+- Care Circle & Contacts: <<NAVIGATE:/caregiver/circle>>
+- Train AI Knowledge: <<NAVIGATE:/caregiver/train-ai>>
+- Memory Journey Setup: <<NAVIGATE:/caregiver/memory-journey>>
+- Documents & Prescriptions: <<NAVIGATE:/caregiver/documents>>
+- Profile: <<NAVIGATE:/caregiver/profile>>
+- Settings: <<NAVIGATE:/caregiver/settings>>
+- Switch to Patient View: <<NAVIGATE:/user>>
+
+ACTION TAGS:
+- Patient Summary / Status: <<STATUS>>
+- Safety & GPS Check: <<SAFETY>>
+- Run Cognitive Assessment: <<RUN_ASSESSMENT>>
+- Add Today Task: <<TASK_ADD:title=...,time=...,detail=...>>
+- Complete Task: <<TASK_TOGGLE:title=...>>
+- Add Routine Item: <<ROUTINE_ADD:time=...,title=...,note=...>>
+- Add Calendar Visit: <<CALENDAR_ADD:day=Mon|Tue|Wed|Thu|Fri|Sat|Sun,time=...,label=...,kind=...>>
+- Train AI Knowledge: <<TRAIN_AI:category=about|routine|people|confusion|responses|avoid,text=...>>
+- Call Contact / Emergency: <<CALL:112>> or <<CALL:name>>
+
+Always speak a brief, helpful 1–2 sentence confirmation alongside any action tag.
+${extra}`;
+
 const buildSystemPrompt = (uiLanguageName, persona = 'companion', gender = 'female', extra = '') => {
   if (persona === 'assist') return ASSIST_PROMPT(uiLanguageName, gender, extra);
+  if (persona === 'caregiver-assist') return CAREGIVER_ASSIST_PROMPT(uiLanguageName, gender, extra);
   if (persona === 'storyteller') return STORYTELLER_PROMPT(uiLanguageName, gender);
   const samples = pickPhoneticJokeExamples(8);
   const jokeBlock = samples
@@ -747,6 +784,13 @@ export const useGeminiLive = ({ uiLanguageName = 'English', voiceName = DEFAULT_
     }
 
     if (connectingRef.current) return;
+
+    if (!API_KEY || API_KEY === 'undefined' || API_KEY === 'null' || !String(API_KEY).trim()) {
+      connectingRef.current = false;
+      setConnectionStatus('error');
+      setLastError('No Gemini API Key found in local environment. Set VITE_GEMINI_API_KEY in .env or .env.local to enable Gemini Live.');
+      return;
+    }
 
     connectingRef.current = true;
     setupReadyRef.current = false;

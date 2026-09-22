@@ -28,6 +28,7 @@ const KEYS = {
   today: 'ss-caregiver-today-v1',
   todayDone: 'ss-caregiver-today-done-v1',
   routine: 'ss-caregiver-routine-v1',
+  aiKnowledge: 'ss-caregiver-ai-knowledge-v1',
 };
 
 function readJson(key, fallback) {
@@ -373,6 +374,73 @@ export function upsertRoutineStep(step) {
 
 export function removeRoutineStep(id) {
   return saveRoutine(getRoutine().filter((r) => r.id !== id));
+}
+
+/* —— AI Knowledge (Train AI) —— */
+const INITIAL_AI_KNOWLEDGE = {
+  about: [
+    { id: 'a1', text: 'Born in Shillong, moved to Guwahati in 1985.', source: 'Rina (Daughter)' },
+    { id: 'a2', text: 'Likes old Assamese songs and classical music.', source: 'Rina (Daughter)' },
+  ],
+  routine: [
+    { id: 'r1', text: 'Has tea exactly at 4 PM every day.', source: 'Rina (Daughter)' },
+    { id: 'r2', text: 'Goes for a walk in the garden after breakfast.', source: 'Rina (Daughter)' },
+  ],
+  people: [
+    { id: 'p1', text: 'Daughter is Rina. Grandson is Rahul.', source: 'System' },
+    { id: 'p2', text: 'Best friend from childhood is Sunita (passed away).', source: 'Rina (Daughter)' },
+  ],
+  confusion: [
+    { id: 'c1', text: 'Sometimes asks for her husband (passed away 5 years ago).', source: 'Rina (Daughter)' },
+    { id: 'c2', text: 'Gets confused about whether she took her morning pill.', source: 'Rina (Daughter)' },
+  ],
+  responses: [
+    { id: 'rs1', text: 'If she asks for husband: Say "He went to the market and will be late, let\'s have tea first."', source: 'Rina (Daughter)' },
+    { id: 'rs2', text: 'When anxious about pills: Calmly assure her that Rina has kept the count and she is safe.', source: 'Doctor' },
+  ],
+  avoid: [
+    { id: 'av1', text: 'Do not argue if she says she needs to go to work.', source: 'Doctor' },
+    { id: 'av2', text: 'Avoid mentioning hospitalization.', source: 'Rina (Daughter)' },
+  ],
+};
+
+export function getAiKnowledge() {
+  const saved = readJson(KEYS.aiKnowledge, null);
+  if (saved && typeof saved === 'object') return saved;
+  writeJson(KEYS.aiKnowledge, INITIAL_AI_KNOWLEDGE);
+  return INITIAL_AI_KNOWLEDGE;
+}
+
+export function saveAiKnowledge(data) {
+  writeJson(KEYS.aiKnowledge, data);
+  return getAiKnowledge();
+}
+
+export function addAiKnowledgeFact(category = 'about', text = '', source = 'Caregiver Assistant') {
+  const current = getAiKnowledge();
+  const validCat = current[category] ? category : 'about';
+  const newFact = {
+    id: uid('fact'),
+    text: String(text || '').trim(),
+    source,
+  };
+  const next = {
+    ...current,
+    [validCat]: [...(current[validCat] || []), newFact],
+  };
+  saveAiKnowledge(next);
+  return newFact;
+}
+
+export function removeAiKnowledgeFact(category, id) {
+  const current = getAiKnowledge();
+  if (!current[category]) return current;
+  const next = {
+    ...current,
+    [category]: current[category].filter((f) => f.id !== id),
+  };
+  saveAiKnowledge(next);
+  return next;
 }
 
 export function subscribeCaregiverStore(handler) {

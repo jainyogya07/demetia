@@ -1,12 +1,14 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
-  LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound, BrainCircuit, ClipboardList, Compass,
+  LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound, BrainCircuit, ClipboardList, Compass, Sparkles,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import BrandLogo from '../../components/BrandLogo';
+import companionPortrait from '../../assets/infinity_pfp.jpg';
 import HeaderProfileMenu from '../../components/HeaderProfileMenu';
 import HeaderLanguageControl from '../../components/HeaderLanguageControl';
 import RoleSwitcher from '../../components/RoleSwitcher';
+import CaregiverAssistModal from '../../components/CaregiverAssistModal';
 import { getCaregiverProfile, subscribeCaregiverStore } from '../../lib/caregiverStore';
 import DashAurora from '../../components/bits/DashAurora';
 import ClickSpark from '../../components/bits/ClickSpark';
@@ -67,6 +69,7 @@ export default function CaregiverLayout() {
   const navigate = useNavigate();
   const { t } = useI18n();
   const [railCollapsed, setRailCollapsed] = useState(false);
+  const [showAssist, setShowAssist] = useState(false);
   const [profile, setProfile] = useState(() => getCaregiverProfile());
   const [titleKey, lead] = TITLE_KEYS[pathname] || TITLE_KEYS['/caregiver'];
   const title = titleKey.includes('.') ? t(titleKey) : titleKey;
@@ -131,6 +134,21 @@ export default function CaregiverLayout() {
             <RoleSwitcher compact />
           </div>
           <div className="top-bar-right ss-header-right">
+            <button
+              type="button"
+              className="ss-ask-saarthi-hero-btn"
+              onClick={() => setShowAssist(true)}
+              aria-label="Ask Saarthi (Care Partner)"
+              title="Ask Saarthi (Care Partner)"
+            >
+              <div className="ss-saarthi-avatar-wrap">
+                <img src={companionPortrait} alt="" className="ss-saarthi-avatar-img" />
+                <span className="ss-saarthi-breath-ring" />
+              </div>
+              <div className="ss-saarthi-btn-copy">
+                <span className="ss-saarthi-btn-main">Ask Saarthi</span>
+              </div>
+            </button>
             <HeaderLanguageControl compact />
             <button
               type="button"
@@ -171,6 +189,7 @@ export default function CaregiverLayout() {
           </AnimatePresence>
         </div>
       </main>
+      <CaregiverAssistModal open={showAssist} onClose={() => setShowAssist(false)} />
     </ClickSpark>
   );
 }

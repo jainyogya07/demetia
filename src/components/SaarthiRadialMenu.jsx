@@ -244,9 +244,11 @@ export default function SaarthiRadialMenu() {
         savePos(next);
         return next;
       });
-      return;
     }
+  };
 
+  const handleClick = (e) => {
+    if (dragRef.current.moved) return;
     toggleOpen();
   };
 
@@ -416,6 +418,7 @@ export default function SaarthiRadialMenu() {
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
             onPointerCancel={endDrag}
+            onClick={handleClick}
             aria-expanded={isOpen}
             aria-label={
               isOpen

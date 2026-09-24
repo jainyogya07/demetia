@@ -1,0 +1,28 @@
+# Smriti Saarthi — Render Blueprint (Node BFF only).
+# Connect this repo in Render → New → Blueprint.
+# Health: GET /api/v1/health
+# Start: npm start → node server/api.mjs
+
+services:
+  - type: web
+    name: smriti-saarthi-api
+    runtime: node
+    plan: free
+    region: singapore
+    autoDeploy: true
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: CORS_ORIGIN
+        value: https://demetia.vercel.app
+      - key: DATABASE_URL
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: SMTP_EMAIL
+        sync: false
+      - key: SMTP_APP_PASSWORD
+        sync: false

@@ -311,7 +311,7 @@ function UserWorkspace({ boot }: { boot?: string }) {
     } catch {
       /* local seed still writes the quiz result */
     }
-    return false;
+    return true;
   });
   const [showGuide, setShowGuide] = useState(false);
   const [showAboutUs, setShowAboutUs] = useState(false);

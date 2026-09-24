@@ -314,7 +314,7 @@ html, body, #root {
   text-decoration: none;
   font-weight: 400;
   font-size: 14px;
-  transition: all 0.2s;
+  transition: background-color 0.16s ease, color 0.16s ease;
   cursor: pointer;
   border: 1px solid transparent;
   position: relative;

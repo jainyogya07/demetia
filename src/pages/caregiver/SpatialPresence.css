@@ -293,6 +293,8 @@
 .dashboard-map-area {
   flex-grow: 1;
   position: relative;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .spatial-presence-dashboard .demo-legend {
@@ -377,6 +379,7 @@
     min-height: min(68vh, 560px);
     min-height: min(68dvh, 560px);
     width: 100%;
+    order: -1;
   }
 
   .spatial-minimap-wrap {

@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect, useRef, Component } from 'react';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import {
-  Home, MessageSquare, Puzzle, CalendarDays, HeartPulse, LineChart,
+  Home, MessageSquare, Puzzle, CalendarDays, Landmark, LineChart,
   Users, MapPin, BookOpen, Settings, Bell, User,
   ShieldAlert, X, Plus, CloudOff, FileText, Menu, SquarePen, HelpCircle, Info, Map
 } from 'lucide-react';
@@ -18,7 +18,7 @@ import './components/NewLayout.css';
 import logoMark from './assets/smriti-saarthi-logo.png';
 import RegionSceneryBackground from './components/RegionSceneryBackground';
 import RegionScenerySync from './components/RegionScenerySync';
-import ServicesCredits from './ServicesCredits';
+import SchemesPage from './pages/Schemes';
 import MyDocuments from './MyDocuments';
 import AICompanion from './AICompanion';
 import SettingsPage from './pages/Settings';
@@ -156,7 +156,8 @@ const SmritiPlaceholder = ({ title, description }: { title: string; description:
   </div>
 );
 
-const SIDEBAR_HIDDEN = new Set(['support-credits', 'services']);
+const SIDEBAR_HIDDEN = new Set(['support-credits', 'services', 'medicine']);
+const MODULE_ALIASES = { medicine: 'schemes', services: 'schemes' };
 
 const MODULES: Array<{
   id: string;
@@ -169,6 +170,7 @@ const MODULES: Array<{
   { id: 'games', icon: Puzzle, component: BrainGames, closable: true },
   { id: 'ai', icon: MessageSquare, component: AICompanion, closable: true },
   { id: 'routine', icon: CalendarDays, component: DailyRoutinePage, closable: true },
+  { id: 'schemes', icon: Landmark, component: SchemesPage, closable: true },
   { id: 'memory-book', icon: BookOpen, component: MemoryBookPage, closable: true },
   { id: 'care-circle', icon: Users, component: CareCirclePage, closable: true },
   { id: 'safety', icon: MapPin, component: SafetyLocation, closable: true },
@@ -279,6 +281,7 @@ const SIDEBAR_GROUPS = [
     titleKey: 'nav.support',
     items: [
       { id: 'documents', labelKey: 'nav.documents', icon: FileText },
+      { id: 'schemes', labelKey: 'nav.schemes', icon: Landmark },
       { id: 'spatial', labelKey: 'modules.spatial', icon: Map },
       { id: 'progress', labelKey: 'nav.progress', icon: LineChart },
     ],
@@ -324,7 +327,8 @@ function UserWorkspace({ boot }: { boot?: string }) {
   const showTabs = tabs.length > 1;
 
   const activateModule = useCallback((moduleId: string, options: AppNavOptions = {}) => {
-    const moduleItem = MODULES.find((mod) => mod.id === moduleId);
+    const resolvedId = MODULE_ALIASES[moduleId] || moduleId;
+    const moduleItem = MODULES.find((mod) => mod.id === resolvedId);
     if (!moduleItem) return null;
 
     const existingTab = tabsRef.current.find((tab) => tab.id === moduleItem.id);
@@ -340,7 +344,7 @@ function UserWorkspace({ boot }: { boot?: string }) {
       setActiveTabId(instanceId);
     }
 
-    if (moduleId === 'services') {
+    if (resolvedId === 'schemes' || moduleId === 'services' || moduleId === 'medicine') {
       setServiceFocus({
         serviceId: options.serviceId || null,
         ts: Date.now(),
@@ -367,21 +371,22 @@ function UserWorkspace({ boot }: { boot?: string }) {
   }, []);
 
   const openModule = useCallback((moduleId: string, options: AppNavOptions = {}) => {
-    const moduleItem = MODULES.find((mod) => mod.id === moduleId);
+    const resolvedId = MODULE_ALIASES[moduleId] || moduleId;
+    const moduleItem = MODULES.find((mod) => mod.id === resolvedId);
     if (!moduleItem) return;
 
     const prevId = tabsRef.current.find((tab) => tab.instanceId === activeTabIdRef.current)?.id || 'home';
-    activateModule(moduleId, options);
+    activateModule(resolvedId, options);
 
     if (skipHistoryRef.current) return;
 
-    const sameModule = prevId === moduleId && location.state?.moduleId === moduleId;
+    const sameModule = prevId === resolvedId && location.state?.moduleId === resolvedId;
     const onlyIntentRefresh = sameModule && (options.startVoice || options.gameId || options.serviceId || options.initialQuery);
     if (sameModule && !onlyIntentRefresh) return;
 
     navigate('/user', {
       state: {
-        moduleId,
+        moduleId: resolvedId,
         options: {
           startVoice: options.startVoice || false,
           gameId: options.gameId || null,
@@ -476,6 +481,10 @@ function UserWorkspace({ boot }: { boot?: string }) {
     if (boot === 'assist') {
       bootRef.current = true;
       setShowAssist(true);
+    }
+    if (boot === 'schemes') {
+      bootRef.current = true;
+      openModule('schemes');
     }
   }, [boot, openModule]);
 
@@ -602,7 +611,7 @@ function UserWorkspace({ boot }: { boot?: string }) {
                         openModule(item.id);
                         setRailOpen(false);
                       }}
-                      title={label}
+                      aria-label={label}
                     >
                       <Icon size={20} />
                       <span className="ss-rail-copy">
@@ -624,7 +633,7 @@ function UserWorkspace({ boot }: { boot?: string }) {
               openModule('settings');
               setRailOpen(false);
             }}
-            title={t('nav.settings')}
+            aria-label={t('nav.settings')}
           >
             <Settings size={18} />
             <span className="ss-rail-copy">
@@ -895,6 +904,8 @@ function App() {
         <Route path="/signin" element={<SignInPage />} />
         <Route path="/notifications" element={<NotificationsPage standalone />} />
         <Route path="/user" element={<UserWorkspace />} />
+        <Route path="/schemes" element={<UserWorkspace boot="schemes" />} />
+        <Route path="/medicine-health" element={<UserWorkspace boot="schemes" />} />
         <Route path="/talk" element={<UserWorkspace boot="talk" />} />
         <Route path="/assist" element={<UserWorkspace boot="assist" />} />
         <Route path="/stories" element={<UserWorkspace boot="stories" />} />
@@ -907,6 +918,7 @@ function App() {
         <Route path="progress" element={<CgProgress />} />
         <Route path="circle" element={<CgCircle />} />
         <Route path="documents" element={<CgDocuments />} />
+        <Route path="schemes" element={<SchemesPage />} />
         <Route path="calendar" element={<CgCalendar />} />
         <Route path="profile" element={<CgProfile />} />
         <Route path="settings" element={<CgSettings />} />

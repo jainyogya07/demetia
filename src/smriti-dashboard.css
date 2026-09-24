@@ -2193,3 +2193,24 @@
   .os-kv { grid-template-columns: 1fr; }
   .os-kv div { display: grid; }
 }
+
+.doctor-welcome-card, .doctor-live-profile {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid rgba(23, 107, 88, 0.2);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #14352c;
+}
+.doctor-profile-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.doctor-patient-card { display: flex; flex-direction: column; gap: 12px; padding: 16px; color: #14352c; text-decoration: none; border: 1px solid rgba(23, 107, 88, 0.18); border-radius: 18px; background: rgba(255,255,255,.9); }
+.doctor-patient-card h3 { margin: 0; color: #14352c; font-size: 16px; }
+.doctor-patient-card header { display: flex; align-items: center; gap: 10px; }
+.doctor-card-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; color: #214d42; font-size: 12px; }
+.doctor-progress { height: 6px; overflow: hidden; border-radius: 999px; background: rgba(23,107,88,.12); }
+.doctor-progress i { display: block; height: 100%; border-radius: inherit; background: #176b58; }
+.doctor-back-link { color: #14352c; font-size: 13px; font-weight: 700; text-decoration: none; width: fit-content; }
+.doctor-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+.doctor-profile-icon { color: #176b58; }

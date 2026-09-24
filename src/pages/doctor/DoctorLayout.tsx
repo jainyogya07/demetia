@@ -95,7 +95,7 @@ export default function DoctorLayout() {
                       const onChart = item.to === '/doctor' && pathname.startsWith('/doctor/patients');
                       return `nav-item ${isActive || onChart ? 'active' : ''}`;
                     }}
-                    title={t(item.labelKey)}
+                    aria-label={t(item.labelKey)}
                   >
                     <item.icon size={18} />
                     <span className="ss-rail-label">{t(item.labelKey)}</span>

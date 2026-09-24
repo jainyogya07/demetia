@@ -36,7 +36,10 @@ function Follow({ lat, lng, enabled }) {
   const map = useMap();
   useEffect(() => {
     if (!enabled || lat == null) return;
-    map.panTo([lat, lng], { animate: true, duration: 0.45 });
+    map.panTo([lat, lng], {
+      animate: typeof window === 'undefined' ? false : !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      duration: 0.45,
+    });
   }, [lat, lng, enabled, map]);
   return null;
 }
@@ -50,8 +53,8 @@ function Invalidate() {
   return null;
 }
 
-const CARTO = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
 const OSM = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const OSM_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
 
 export default function LeafletSpatialMap({
   zoom = 16,
@@ -75,8 +78,7 @@ export default function LeafletSpatialMap({
   const activeCity = city || getActiveDemoCity();
   const home = activeCity.home;
   const [show360Full, setShow360Full] = useState(false);
-  const [tileUrl, setTileUrl] = useState(CARTO);
-  const [tileFails, setTileFails] = useState(0);
+  const tileUrl = OSM;
 
   const pos = sample
     ? [sample.lat, sample.lng]
@@ -84,10 +86,6 @@ export default function LeafletSpatialMap({
   const heading = sample?.heading ?? 0;
   const headingKey = Math.round(heading);
   const icon = useMemo(() => walkerIcon(headingKey), [headingKey]);
-
-  useEffect(() => {
-    if (tileFails > 6 && tileUrl !== OSM) setTileUrl(OSM);
-  }, [tileFails, tileUrl]);
 
   const trailLatLng = trail.map((p) => [p.lat, p.lng]);
   const heat = trail.slice(-28);
@@ -107,7 +105,7 @@ export default function LeafletSpatialMap({
           scrollWheelZoom={false}
           doubleClickZoom={false}
         >
-          <TileLayer url={tileUrl} eventHandlers={{ tileerror: () => setTileFails((n) => n + 1) }} />
+          <TileLayer url={tileUrl} attribution={OSM_ATTR} />
           <Follow lat={pos[0]} lng={pos[1]} enabled />
           <Circle center={[home.lat, home.lng]} radius={home.radiusM} pathOptions={{ color: '#176b58', fillColor: '#176b58', fillOpacity: 0.12, weight: 1 }} />
           {trailLatLng.length > 1 && <Polyline positions={trailLatLng} color="#176b58" weight={3} opacity={0.7} />}
@@ -125,7 +123,7 @@ export default function LeafletSpatialMap({
         zoom={zoom}
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
-        attributionControl={false}
+        attributionControl
         dragging={interactive}
         touchZoom={interactive}
         scrollWheelZoom={interactive}
@@ -133,11 +131,7 @@ export default function LeafletSpatialMap({
         minZoom={13}
         maxZoom={19}
       >
-        <TileLayer
-          url={tileUrl}
-          attribution='&copy; OpenStreetMap &copy; CARTO'
-          eventHandlers={{ tileerror: () => setTileFails((n) => n + 1) }}
-        />
+        <TileLayer url={tileUrl} attribution={OSM_ATTR} />
         <Invalidate />
         <Follow lat={pos[0]} lng={pos[1]} enabled={enabled && playing} />
 
@@ -211,7 +205,7 @@ export default function LeafletSpatialMap({
       </div>
 
       <div className="demo-map-dock">
-        <div className="demo-360-pip" aria-label="Simulated 360 walk view">
+        <div className="demo-360-pip" aria-label="Simulation 360 look-around">
           <Simulated360Viewer heading={heading} playing={playing} compact city={activeCity} />
         </div>
         <div className="demo-controls">

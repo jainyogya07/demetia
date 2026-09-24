@@ -1,0 +1,17 @@
+Open-source 360° panoramas used by Safe Journey (Simulation, not Google Street View).
+
+assam-street.jpg
+  Title: 360° panoramic view of Domlur 2nd Stage, Bengaluru, Karnataka, India
+  Author: Subhashish Panigrahi (User:Psubhashish)
+  License: CC BY-SA 4.0
+  Source: https://commons.wikimedia.org/wiki/File:360%C2%B0_panoramic_view_of_Domlur_2nd_Stage,_Bengaluru,_Karnataka,_India.JPG
+  Note: Generic Indian residential street photosphere. Labeled Simulation for the Assam/Guwahati demo walk (no Street View / Mapbox keys).
+
+delhi-oldfort.jpg
+  Title: South-western Gate with Garden — 360° view — Old Fort, New Delhi (2014)
+  Author: Biswarup Ganguly (User:Gangulybiswarup)
+  License: CC BY 3.0
+  Source: https://commons.wikimedia.org/wiki/File:South-western_Gate_with_Garden_-_360_Degree_View_-_Old_Fort_-_New_Delhi_2014-05-13_2759-2770_Compress.JPG
+  Note: Horizontal 360° garden/fort panorama near South Delhi, padded to 2:1 equirectangular for the viewer. Lodhi-adjacent Delhi demo.
+
+Do not replace these with Google Street View, Mapillary keys, Mapbox, or Carto API tiles.

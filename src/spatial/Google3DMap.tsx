@@ -3,7 +3,7 @@ import './Google3DMap.css';
 
 /**
  * Visual layer for Safe Journey.
- * Uses the key-free Carto/Leaflet demo map so filming never depends on Google 3D keys.
+ * OSM (Leaflet) map plus key-free Wikimedia 360 look-around. No Google / Mapbox / Carto keys.
  */
 export default function Google3DMap(props) {
   const {

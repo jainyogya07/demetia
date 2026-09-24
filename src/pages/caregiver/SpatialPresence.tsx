@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { Map, AlertTriangle, PhoneOff, Clock, Route, Activity, Crosshair, CloudLightning, Compass, Footprints, ShieldAlert, Navigation2, ThermometerSun, BrainCircuit, Radar, Play } from 'lucide-react';
 import Google3DMap from '../../spatial/Google3DMap';
-import LeafletSpatialMap from '../../spatial/LeafletSpatialMap';
 import FamiliarRouteBuilder from '../../spatial/FamiliarRouteBuilder';
 import { getDetectionState, subscribeDetectionState, simulateRouteDeviation, simulatePhoneLeftBehind, resetDetection } from '../../spatial/DetectionEngine';
 import { initializeSpatialClient, disconnectSpatialClient } from '../../spatial/spatialClient';
@@ -262,19 +261,6 @@ export default function SpatialPresence() {
             city={city}
             setCity={demo.setCity}
           />
-
-          <div className="spatial-minimap-wrap">
-            <LeafletSpatialMap
-              isMinimap
-              centerLat={sample?.lat}
-              centerLng={sample?.lng}
-              sample={sample}
-              trail={demo.trail}
-              playing={demo.playing}
-              enabled={demo.enabled}
-              city={city}
-            />
-          </div>
         </div>
       </div>
 

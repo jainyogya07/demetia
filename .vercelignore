@@ -1,35 +1,35 @@
-# CLI / Git deploy: frontend + Node serverless BFF only.
-# Do not ship Rust / Go / Python microservices or local junk.
+# Vercel = Vite PWA + Node serverless /api only.
+# Never upload Rust / Go / Python / Android / venvs.
 
-# Polyglot backends (not used on Vercel)
-services/spatial-rust/**
-services/detection-go/**
-services/api-node/**
-backend/**
-ats_rust_xmp/**
-scripts/run_polyglot_stack.sh
+.git
+.venv
+**/.venv/**
+**/target/**
+**/node_modules/**
 
-# Teammate copies & native
-_from_teammates/**
-_teammates/**
-android/**
-keypad-sms/**
-keypad-java/**
-saheli-sahaay/**
-extension/**
+services/
+backend/
+ats_rust_xmp/
+android/
+keypad-sms/
+keypad-java/
+saheli-sahaay/
+extension/
+_from_teammates/
+_teammates/
+_from-granth/
 
-# Secrets & build
 .env
 .env.local
 .env.*.local
-node_modules
 dist
 .DS_Store
+.idea
 
-# Docs / decks / injectors
 *.pdf
 *.pptx
 ats_*.py
 ats_*.cjs
-temp_pptx_test/**
+temp_pptx_test/
 BACKEND_ARCHITECTURE_PLAN.md
+scripts/run_polyglot_stack.sh

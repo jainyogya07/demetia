@@ -1,0 +1,334 @@
+/* Caregiver CRUD — touch-friendly, lakeside, mobile-first */
+
+.cg-row-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.cg-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--ss-glass-border, rgba(33, 77, 66, 0.18));
+  border-radius: 12px;
+  background: rgba(244, 247, 245, 0.85);
+  color: var(--ss-teal, #214d42);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+}
+
+.cg-icon-btn:hover,
+.cg-icon-btn:focus-visible {
+  background: rgba(23, 107, 88, 0.12);
+  border-color: rgba(23, 107, 88, 0.35);
+  outline: none;
+}
+
+.cg-icon-btn:active {
+  transform: scale(0.96);
+}
+
+.cg-icon-btn-danger {
+  color: #8b3a3a;
+}
+
+.cg-icon-btn-danger:hover,
+.cg-icon-btn-danger:focus-visible {
+  background: rgba(180, 60, 60, 0.1);
+  border-color: rgba(180, 60, 60, 0.35);
+}
+
+.cg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--ss-glass-border, rgba(33, 77, 66, 0.18));
+  font: inherit;
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.cg-btn-ghost {
+  background: transparent;
+  color: var(--ss-teal, #214d42);
+}
+
+.cg-btn-ghost:hover {
+  background: rgba(23, 107, 88, 0.08);
+}
+
+.cg-btn-primary {
+  background: rgba(23, 107, 88, 0.9);
+  border-color: transparent;
+  color: #f8faf9;
+}
+
+.cg-btn-primary:hover {
+  background: rgba(23, 107, 88, 1);
+}
+
+.cg-btn-danger {
+  background: rgba(160, 48, 48, 0.92);
+  border-color: transparent;
+  color: #f8faf9;
+}
+
+.cg-btn-add {
+  background: rgba(244, 247, 245, 0.9);
+  color: var(--ss-teal, #214d42);
+  border-style: dashed;
+  border-color: rgba(23, 107, 88, 0.35);
+}
+
+.cg-btn-add:hover {
+  background: rgba(23, 107, 88, 0.1);
+}
+
+.cg-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(20, 40, 34, 0.45);
+  backdrop-filter: blur(4px);
+}
+
+.cg-confirm-dialog {
+  width: min(100%, 380px);
+  background: linear-gradient(165deg, rgba(248, 250, 249, 0.98), rgba(236, 244, 240, 0.96));
+  border: 1px solid rgba(33, 77, 66, 0.16);
+  border-radius: 18px;
+  padding: 20px 18px 16px;
+  box-shadow: 0 16px 40px rgba(20, 40, 34, 0.18);
+  margin-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.cg-confirm-dialog h3 {
+  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ss-teal, #214d42);
+}
+
+.cg-confirm-dialog p {
+  margin: 0 0 18px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #3d5c52;
+}
+
+.cg-confirm-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.cg-confirm-actions .cg-btn {
+  flex: 1 1 120px;
+}
+
+@media (min-width: 640px) {
+  .cg-confirm-backdrop {
+    align-items: center;
+  }
+}
+
+.cg-crud-form {
+  margin-top: 10px;
+  padding: 12px;
+  border: 1px solid var(--ss-glass-border, rgba(33, 77, 66, 0.16));
+  border-radius: 14px;
+  background: rgba(244, 247, 245, 0.72);
+}
+
+.cg-crud-form-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ss-sage, #5c736a);
+}
+
+.cg-crud-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cg-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--ss-sage, #5c736a);
+}
+
+.cg-field input,
+.cg-field textarea,
+.cg-field select {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--ss-glass-border, rgba(33, 77, 66, 0.2));
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.88);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ss-teal, #214d42);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.cg-field textarea {
+  min-height: 88px;
+  resize: vertical;
+}
+
+.cg-crud-form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.cg-crud-form-actions .cg-btn {
+  flex: 1 1 120px;
+}
+
+.cg-note-card-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.cg-note-card-actions .os-note-body,
+.cg-note-card-actions p {
+  flex: 1;
+  min-width: 0;
+}
+
+.cg-slot-editable {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 4px;
+}
+
+.cg-slot-editable .cg-row-actions {
+  margin-top: 2px;
+}
+
+.cg-stack-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cg-person-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--ss-glass-border, rgba(33, 77, 66, 0.16));
+  border-radius: 14px;
+  background: rgba(244, 247, 245, 0.65);
+}
+
+.cg-person-card .os-person {
+  flex: 1 1 160px;
+  min-width: 0;
+}
+
+.cg-person-meta {
+  flex: 1 1 140px;
+  min-width: 0;
+  font-size: 13px;
+  color: var(--ss-sage, #5c736a);
+}
+
+.cg-person-meta strong {
+  display: block;
+  color: var(--ss-teal, #214d42);
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+/* Mobile: stacked tables → card list feel, no horizontal overflow */
+@media (max-width: 900px) {
+  .ss-role-shell .os-page {
+    overflow-x: hidden;
+    max-width: 100%;
+  }
+
+  .ss-role-shell .os-table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -4px;
+    padding: 0 4px;
+  }
+
+  .ss-role-shell .ss-mobile-subnav a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .ss-role-shell .os-split {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ss-role-shell .os-week {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .ss-role-shell .os-week-col {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .ss-role-shell .os-full-btn {
+    min-height: 44px;
+    padding: 12px;
+  }
+
+  .ss-role-shell .os-chart-strip {
+    flex-wrap: wrap;
+  }
+
+  .ss-role-shell .cg-person-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ss-role-shell .cg-person-card .cg-row-actions {
+    align-self: flex-end;
+  }
+}

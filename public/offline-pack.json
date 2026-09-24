@@ -1,0 +1,47 @@
+{
+  "name": "Smriti Saarthi offline pack",
+  "region": "North-East India",
+  "offline": true,
+  "tasks": [
+    { "id": "med-am", "due": "07:30", "title": "Morning medicine" },
+    { "id": "water", "due": "09:00", "title": "Drink water" },
+    { "id": "brain", "due": "11:00", "title": "Brain activity" },
+    { "id": "lunch", "due": "13:00", "title": "Lunch" },
+    { "id": "walk", "due": "16:30", "title": "Evening walk" },
+    { "id": "med-pm", "due": "20:30", "title": "Night medicine" }
+  ],
+  "helplines": [
+    { "name": "Emergency", "phone": "112" },
+    { "name": "Ambulance", "phone": "108" },
+    { "name": "Police", "phone": "100" },
+    { "name": "Fire", "phone": "101" },
+    { "name": "Ambulance 102", "phone": "102" },
+    { "name": "Health", "phone": "104" },
+    { "name": "Women 181", "phone": "181" },
+    { "name": "Women police", "phone": "1091" },
+    { "name": "Childline", "phone": "1098" },
+    { "name": "Elderline", "phone": "14567" },
+    { "name": "Tele-MANAS", "phone": "14416" },
+    { "name": "Tele-MANAS toll-free", "phone": "18008914416" },
+    { "name": "Legal aid", "phone": "14490" },
+    { "name": "Senior citizens", "phone": "15100" }
+  ],
+  "contacts": [
+    { "name": "Rina", "phone": "9435011820" },
+    { "name": "Doom", "phone": "9864022118" },
+    { "name": "ASHA Anita", "phone": "6001244890" },
+    { "name": "Dr Sharma", "phone": "03762371040" }
+  ],
+  "commands": {
+    "1": "today",
+    "2": "mark next due",
+    "3": "alerts",
+    "4": "call list",
+    "5": "I am OK check-in",
+    "6": "next medicine",
+    "7": "SOS",
+    "8": "language",
+    "9": "safe zone",
+    "H": "helplines"
+  }
+}

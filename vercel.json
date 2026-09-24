@@ -1,0 +1,7 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/((?!api/|keypad\\.html|keypad-manifest\\.json|manifest\\.json|sw\\.js|offline-pack\\.json).*)", "destination": "/index.html" }
+  ]
+}

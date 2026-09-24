@@ -1,0 +1,128 @@
+.ss-about-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(20, 48, 42, 0.42);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.ss-about-panel {
+  position: relative;
+  width: min(440px, 100%);
+  padding: 28px 26px 22px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 20px 48px rgba(20, 48, 42, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.ss-about-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: 1px solid rgba(23, 107, 88, 0.2);
+  background: rgba(246, 250, 247, 0.9);
+  color: #176b58;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ss-about-close:hover,
+.ss-about-close:focus-visible {
+  background: #176b58;
+  color: #fff;
+  outline: none;
+}
+
+.ss-about-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-right: 36px;
+}
+
+.ss-about-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: contain;
+  background: #0b0b0b;
+  border: 1px solid rgba(28, 36, 32, 0.16);
+  flex-shrink: 0;
+}
+
+.ss-about-kicker {
+  margin: 0 0 2px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #176b58;
+}
+
+.ss-about-brand h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 750;
+  color: #1a332b;
+  letter-spacing: -0.02em;
+}
+
+.ss-about-tag {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: rgba(26, 51, 43, 0.62);
+}
+
+.ss-about-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ss-about-copy p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.45;
+  color: #2a433c;
+}
+
+.ss-about-done {
+  margin-top: 20px;
+  width: 100%;
+  min-height: 48px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(160deg, #1f8570 0%, #176b58 70%, #145a4a 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(23, 107, 88, 0.28);
+}
+
+.ss-about-done:hover,
+.ss-about-done:focus-visible {
+  filter: brightness(1.05);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-about-close,
+  .ss-about-done {
+    transition: none;
+  }
+}

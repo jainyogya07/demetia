@@ -1,0 +1,756 @@
+/* Lakeside glass theme — shared across patient / caregiver / doctor shells */
+
+.ss-lakeside,
+.is-home-route {
+  position: relative;
+  isolation: isolate;
+}
+
+.ss-lakeside::before,
+.is-home-route::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(105deg, var(--ss-wash-a, rgba(246, 250, 247, 0.28)) 0%, var(--ss-wash-b, rgba(246, 250, 247, 0.18)) 32%, var(--ss-wash-c, rgba(20, 48, 42, 0.14)) 72%, var(--ss-wash-d, rgba(20, 48, 42, 0.22)) 100%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 30%, rgba(15, 40, 34, 0.18) 100%),
+    linear-gradient(180deg, var(--ss-faith-wash, transparent), var(--ss-faith-wash, transparent));
+  transition: background 0.35s ease;
+}
+
+/* Region scenery sits under the glass scrim; other shell children stay above */
+.ss-lakeside > .ss-region-scenery,
+.is-home-route > .ss-region-scenery {
+  z-index: 0;
+}
+
+.ss-lakeside > *:not(.ss-region-scenery),
+.is-home-route > *:not(.ss-region-scenery) {
+  position: relative;
+  z-index: 2;
+}
+
+/* Glass sidebar — scenery must show through (overrides editorial solid paper) */
+.ss-lakeside.ss-has-region-scenery .sidebar,
+.is-home-route.ss-has-region-scenery .sidebar,
+.ss-theme.ss-lakeside.ss-has-region-scenery .sidebar {
+  background: var(--ss-sidebar-wash, rgba(255, 255, 255, 0.34)) !important;
+  backdrop-filter: blur(22px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(1.2) !important;
+  border-right: 0 !important;
+  box-shadow: 1px 0 0 rgba(255, 255, 255, 0.5);
+  transition:
+    width 0.32s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.35s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ss-lakeside.ss-has-region-scenery .main-content,
+.is-home-route.ss-has-region-scenery .main-content,
+.ss-theme.ss-lakeside.ss-has-region-scenery .main-content {
+  background: transparent !important;
+}
+
+.ss-lakeside .ss-topbar,
+.is-home-route .ss-topbar {
+  background: var(--ss-header-wash, rgba(255, 255, 255, 0.42)) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35) !important;
+  box-shadow: none !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  transition: background 0.35s ease;
+}
+
+.ss-lakeside .ss-home-shell,
+.ss-lakeside .dashboard,
+.ss-lakeside .main-content,
+.ss-lakeside .dashboard-scroll,
+.ss-lakeside .daily-routine-page,
+.ss-lakeside .care-circle-page,
+.ss-lakeside .memory-progress-page,
+.ss-lakeside .ss-lakeside-page,
+.ss-lakeside .bg-hub,
+.ss-lakeside .ss-page-stack,
+.is-home-route .ss-home-shell,
+.is-home-route .dashboard,
+.is-home-route .main-content {
+  background: transparent !important;
+}
+
+.ss-lakeside .routine-stat,
+.ss-lakeside .schedule-card,
+.ss-lakeside .up-next-card,
+.ss-lakeside .reminders-card,
+.ss-lakeside .wellness-card,
+.ss-lakeside .care-overview-card,
+.ss-lakeside .care-card,
+.ss-lakeside .primary-care-card,
+.ss-lakeside .shared-card,
+.ss-lakeside .clinic-panel,
+.ss-lakeside .os-card,
+.ss-lakeside .settings-section,
+.ss-lakeside .granth-card {
+  background: rgba(255, 255, 255, 0.78) !important;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+/* The next routine card is an alerting focal point, so it needs a solid
+   surface rather than the shared pale glass treatment above. */
+.ss-lakeside .up-next-card {
+  background: linear-gradient(145deg, #176b58 0%, #2e8a6f 100%) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  box-shadow: 0 14px 28px rgba(17, 91, 72, 0.24) !important;
+}
+
+.ss-lakeside .up-next-card .up-next-top,
+.ss-lakeside .up-next-card h2,
+.ss-lakeside .up-next-card p,
+.ss-lakeside .up-next-card h3 {
+  color: #ffffff !important;
+  opacity: 1;
+}
+
+.ss-lakeside .up-next-card p {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+.ss-lakeside .up-next-card .up-next-icon {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.ss-lakeside .up-next-card button {
+  background: #ffffff;
+  color: #176b58;
+  box-shadow: 0 3px 10px rgba(12, 65, 51, 0.16);
+}
+
+/* Header language control (visible, not only in profile menu) */
+.ss-header-lang {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.ss-header-lang-btn,
+.ss-header-region-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: #214d42;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ss-header-lang.is-compact .ss-header-lang-btn,
+.ss-header-lang.is-compact .ss-header-region-btn {
+  gap: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  min-height: 36px;
+}
+
+.ss-header-lang.is-compact .ss-header-lang-label {
+  max-width: 4.5rem;
+}
+
+.ss-header-lang.is-compact .ss-header-region-label {
+  max-width: 4.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ss-header-lang-btn:hover,
+.ss-header-region-btn:hover {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.ss-header-region-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}
+
+.ss-header-lang-label {
+  max-width: 7.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 900px) {
+  .ss-header-region-label {
+    display: none;
+  }
+
+  .ss-header-lang-btn {
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .ss-header-lang-label {
+    display: none;
+  }
+
+  .ss-header-left .ss-ask-saarthi-hero-btn .ss-saarthi-btn-copy {
+    display: none;
+  }
+
+  .ss-header-left .ss-ask-saarthi-hero-btn {
+    width: 44px;
+    height: 44px;
+    padding: 6px;
+    justify-content: center;
+  }
+}
+
+.ss-transparent-header {
+  background: transparent !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+.ss-sidebar-brand-block {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+  padding: 2px;
+  border-radius: 16px;
+}
+
+.ss-sidebar-identity-link,
+.ss-sidebar-brand-block .ss-new-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  min-width: 0;
+  padding: 4px;
+  border-radius: 999px;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.ss-sidebar-brand-block.is-logo-only .ss-new-brand-text,
+.ss-sidebar-brand-block.is-logo-only .ss-brand-text {
+  display: none;
+}
+
+.ss-sidebar-brand-block .ss-about-us-btn {
+  width: auto;
+  height: 28px;
+  min-height: 28px;
+  padding: 0 8px;
+  justify-content: center;
+  border-radius: 999px;
+  font-size: 11px;
+  gap: 4px;
+}
+
+.ss-sidebar-brand-block .ss-about-us-btn svg {
+  margin: 0;
+}
+
+.ss-about-us-text {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+@media (max-width: 220px) {
+  .ss-about-us-text {
+    display: none;
+  }
+}
+
+.ss-sidebar-identity-header {
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.ss-sidebar-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.ss-sidebar-identity .ss-brand-mark {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #0b0b0b;
+  border: 1px solid rgba(28, 36, 32, 0.16);
+}
+
+.ss-sidebar-identity .ss-brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.ss-sidebar-identity .ss-brand-name {
+  font-size: 15px;
+  font-weight: 750;
+  color: #1a332b;
+  line-height: 1.15;
+}
+
+.ss-sidebar-identity .ss-brand-sub {
+  font-size: 11px;
+  color: rgba(26, 51, 43, 0.62);
+}
+
+.ss-about-us-inline {
+  align-self: flex-start;
+  margin-left: 8px;
+}
+
+.ss-new-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+}
+
+.ss-new-brand-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #0b0b0b;
+  border: 1px solid rgba(28, 36, 32, 0.16);
+  box-shadow: 0 4px 14px rgba(18, 40, 34, 0.16);
+}
+
+.ss-new-brand-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.ss-new-brand-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.ss-new-brand-text strong {
+  font-size: 16px;
+  color: #1a332b;
+  font-weight: 750;
+  line-height: 1.1;
+}
+
+.ss-new-brand-text span {
+  font-size: 11px;
+  color: rgba(26, 51, 43, 0.6);
+}
+
+.ss-about-us-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(23, 107, 88, 0.22);
+  background: transparent;
+  color: #176b58;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.ss-about-us-btn:hover,
+.ss-about-us-btn:focus-visible {
+  background: #176b58;
+  color: #fff;
+  border-color: transparent;
+  outline: none;
+}
+
+/* Patient navigation rail: keep navigation distinct from the scenic workspace. */
+.ss-theme.ss-lakeside .sidebar {
+  background: linear-gradient(180deg, rgba(251, 253, 251, 0.92), rgba(242, 248, 244, 0.88)) !important;
+  box-shadow: 1px 0 0 rgba(23, 107, 88, 0.08), 10px 0 28px rgba(22, 57, 46, 0.05);
+}
+
+.ss-theme .sidebar-header {
+  padding: 12px 12px 8px;
+}
+
+.ss-theme .ss-sidebar-brand-block {
+  width: 100%;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.ss-theme .ss-new-brand-icon {
+  width: 46px;
+  height: 46px;
+  box-shadow: 0 5px 14px rgba(18, 40, 34, 0.12);
+}
+
+.ss-theme .ss-gpt-new {
+  min-height: 46px;
+  margin: 4px 10px 14px;
+  width: calc(100% - 20px);
+  padding: 11px 13px;
+  border: 1px solid rgba(23, 107, 88, 0.1);
+  border-radius: 14px;
+  background: #eaf5ef;
+  box-shadow: 0 3px 9px rgba(23, 107, 88, 0.06);
+}
+
+.ss-theme .ss-gpt-scroll {
+  padding: 0 8px 12px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(23, 107, 88, 0.24) transparent;
+}
+
+.ss-theme .sidebar-group-block {
+  margin-bottom: 12px;
+}
+
+.ss-theme .sidebar-group-block .ss-rail-kicker {
+  padding: 0 12px 6px;
+  color: #789087;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.ss-theme .sidebar-nav {
+  gap: 4px;
+  padding: 0 2px;
+}
+
+.ss-theme .nav-item {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  min-height: 44px;
+  padding: 10px 12px;
+  column-gap: 12px;
+  border-radius: 12px;
+  color: #285247;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ss-theme .nav-item svg {
+  width: 20px;
+  height: 20px;
+  justify-self: center;
+  color: #397060;
+  stroke-width: 2.1;
+}
+
+.ss-theme .nav-item .ss-rail-copy,
+.ss-theme .nav-item .ss-rail-label {
+  min-width: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.ss-theme .nav-item .ss-rail-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ss-theme .sidebar.is-collapsed .nav-item {
+  display: flex;
+}
+
+.ss-theme .nav-item:hover {
+  background: rgba(23, 107, 88, 0.08);
+}
+
+.ss-theme .nav-item.active {
+  background: #dff1e7;
+  color: #145a49;
+  box-shadow: inset 3px 0 0 #176b58;
+}
+
+.ss-theme .nav-item.active svg {
+  color: #176b58;
+}
+
+.ss-theme .sidebar-footer {
+  gap: 8px;
+  padding: 10px 10px 12px;
+  border-top: 1px solid rgba(23, 107, 88, 0.1);
+  background: rgba(250, 252, 250, 0.66);
+}
+
+.ss-theme .ss-settings-nav {
+  margin: 0;
+}
+
+.ss-theme .ss-emergency-nav {
+  min-height: 64px;
+  padding: 10px 11px;
+  border-radius: 14px;
+  border-color: #f0c1c1;
+  background: #fff2f1;
+}
+
+/* Role switcher */
+.ss-role-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+.ss-role-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  color: #3d5c52;
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+  min-height: 34px;
+}
+
+.ss-role-chip.active {
+  background: #176b58;
+  color: #fff;
+}
+
+.ss-role-switch.is-compact .ss-role-chip {
+  padding: 7px 9px;
+}
+
+/* Contain lakeside wash inside shells — no bleed past sidebar/main */
+.ss-lakeside,
+.is-home-route {
+  overflow: hidden;
+}
+
+.ss-lakeside .main-content,
+.is-home-route .main-content,
+.ss-lakeside .dashboard-scroll,
+.is-home-route .dashboard-scroll {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+.ss-lakeside .ss-bit-card,
+.is-home-route .ss-bit-card,
+.ss-lakeside .voice-companion-card,
+.ss-lakeside .daily-routine-card {
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.ss-lakeside.ss-has-region-scenery .main-content,
+.is-home-route.ss-has-region-scenery .main-content {
+  background: transparent !important;
+}
+
+/* Glass cards over the photo */
+.ss-lakeside .ss-bit-card,
+.is-home-route .ss-bit-card {
+  background: rgba(255, 255, 255, 0.72) !important;
+  backdrop-filter: blur(18px) saturate(1.15);
+  -webkit-backdrop-filter: blur(18px) saturate(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow:
+    0 10px 28px rgba(26, 61, 52, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.75) !important;
+  overflow: hidden;
+}
+
+.ss-home-focus .ss-bit-card .daily-routine-dashboard,
+.ss-home-focus .ss-bit-card .voice-companion-card,
+.ss-home-focus .ss-bit-card > div,
+.ss-home-focus .ss-bit-card > section {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.ss-lakeside .ss-dash-greeting,
+.is-home-route .ss-dash-greeting {
+  display: inline-block;
+  max-width: 100%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  box-shadow: 0 8px 24px rgba(26, 61, 52, 0.08);
+}
+
+.ss-lakeside .ss-dash-greet-title,
+.is-home-route .ss-dash-greet-title {
+  color: #1a3d34;
+  text-shadow: none;
+}
+
+.ss-lakeside .ss-dash-greet-sub,
+.is-home-route .ss-dash-greet-sub {
+  color: #3d5c52;
+  text-shadow: none;
+}
+
+.ss-lakeside .jain-quote-carousel,
+.ss-lakeside .dash-quick-links,
+.is-home-route .jain-quote-carousel,
+.is-home-route .dash-quick-links {
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.ss-lakeside .dash-quick-links,
+.is-home-route .dash-quick-links {
+  border-radius: 18px;
+  padding: 4px;
+}
+
+/* Compact role shells (caregiver / doctor) */
+.ss-role-shell .ss-greeting-block h1,
+.ss-role-shell .ss-greeting-block .ss-bits-title {
+  font-size: clamp(18px, 1.8vw, 22px) !important;
+  font-weight: 650;
+}
+
+.ss-role-shell .ss-greeting-block p {
+  font-size: 13px;
+  color: #5c736a;
+  margin: 4px 0 0;
+  max-width: 42ch;
+}
+
+.ss-role-shell .sidebar-nav {
+  gap: 2px;
+}
+
+.ss-role-shell .ss-rail-kicker {
+  margin: 14px 12px 6px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: rgba(26, 51, 43, 0.45);
+  font-weight: 700;
+}
+
+.ss-role-shell .os-header-live {
+  display: none;
+}
+
+.ss-role-patient-link {
+  text-decoration: none;
+  padding: 8px 14px;
+}
+
+.ss-header-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  min-width: 0;
+  padding: 0 8px;
+}
+
+.ss-header-center .jain-quote-carousel {
+  margin: 0;
+}
+
+.todays-tip-magnet {
+  display: block !important;
+  width: 100%;
+}
+
+.calming-moments-card {
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}
+
+/* Landing preview embeds dashboard without photo — keep solid cards readable */
+.hl-dash-preview .ss-dash-greet-title {
+  color: #1a3d34;
+  text-shadow: none;
+}
+.hl-dash-preview .ss-dash-greet-sub {
+  color: #3d5c52;
+  text-shadow: none;
+}
+.hl-dash-preview .ss-bit-card {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid rgba(23, 107, 88, 0.12) !important;
+}
+
+@media (max-width: 860px) {
+  .ss-lakeside,
+  .is-home-route {
+    background-attachment: scroll !important;
+  }
+
+  .ss-lakeside::before,
+  .is-home-route::before {
+    background:
+      linear-gradient(180deg, rgba(246, 250, 247, 0.52) 0%, rgba(246, 250, 247, 0.28) 42%, rgba(20, 48, 42, 0.22) 100%),
+      linear-gradient(105deg, rgba(246, 250, 247, 0.22) 0%, transparent 55%);
+  }
+
+  .ss-header-right {
+    gap: 6px;
+  }
+
+  .ss-ask-saarthi-hero-btn:not(.is-compact) .ss-saarthi-btn-sub {
+    display: none;
+  }
+
+  .ss-header-center {
+    display: none;
+  }
+
+  .ss-role-shell .sidebar {
+    width: min(288px, 88vw);
+  }
+}

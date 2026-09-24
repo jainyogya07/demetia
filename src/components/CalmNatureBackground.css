@@ -1,0 +1,417 @@
+/* ==========================================================================
+   Smriti Saarthi — Top-Class High-Animated Living Nature Environment
+   ========================================================================== */
+
+.calm-nature-bg {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+  background: #E8F5EE;
+}
+
+/* --- Dynamic Luminous Living Sky --- */
+.nature-sky {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(1300px 700px at 50% 0%, rgba(255, 238, 210, 0.85) 0%, rgba(212, 243, 232, 0.75) 45%, rgba(230, 246, 240, 0.9) 80%, #DEF0E8 100%),
+    linear-gradient(180deg, #CEEAE0 0%, #E3F4ED 45%, #F0F8F4 100%);
+}
+
+/* --- Radiant Sun System with God Rays & Pulsing Halo --- */
+.nature-sun-system {
+  position: absolute;
+  top: -60px;
+  right: 18%;
+  width: 500px;
+  height: 500px;
+  pointer-events: none;
+}
+
+.nature-sun-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 140px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFFDF8 20%, #FFE9B8 60%, rgba(255, 214, 138, 0.4) 100%);
+  box-shadow:
+    0 0 50px rgba(255, 235, 170, 0.8),
+    0 0 100px rgba(255, 220, 140, 0.5),
+    0 0 160px rgba(255, 205, 110, 0.3);
+  animation: sunPulse 6s ease-in-out infinite alternate;
+}
+
+.nature-sun-aura {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 440px;
+  height: 440px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 242, 215, 0.5) 0%, rgba(255, 230, 180, 0.2) 45%, transparent 75%);
+  filter: blur(35px);
+  animation: sunAura 10s ease-in-out infinite alternate;
+}
+
+/* Ethereal rotating godrays / sunbeams */
+.nature-sun-rays {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 650px;
+  height: 650px;
+  transform: translate(-50%, -50%);
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    rgba(255, 245, 215, 0.18) 15deg,
+    transparent 35deg,
+    rgba(255, 240, 195, 0.15) 60deg,
+    transparent 85deg,
+    rgba(255, 245, 215, 0.2) 120deg,
+    transparent 150deg,
+    rgba(255, 240, 200, 0.16) 195deg,
+    transparent 230deg,
+    rgba(255, 245, 215, 0.18) 280deg,
+    transparent 320deg,
+    rgba(255, 240, 200, 0.15) 345deg,
+    transparent 360deg
+  );
+  filter: blur(22px);
+  animation: rotateRays 60s linear infinite;
+}
+
+@keyframes sunPulse {
+  0% { transform: translate(-50%, -50%) scale(0.96); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(1.06); opacity: 1; }
+}
+
+@keyframes sunAura {
+  0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.7; }
+  100% { transform: translate(-50%, -50%) scale(1.12); opacity: 0.95; }
+}
+
+@keyframes rotateRays {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* --- Layered Animated Clouds --- */
+.nature-clouds-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 250%;
+  height: 280px;
+  pointer-events: none;
+}
+
+.cloud {
+  position: absolute;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.85) 0%, rgba(240, 252, 247, 0.65) 100%);
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4);
+  filter: blur(16px);
+  animation: driftClouds linear infinite;
+}
+
+.cloud-1 {
+  top: 35px;
+  left: 4%;
+  width: 440px;
+  height: 80px;
+  animation-duration: 95s;
+}
+
+.cloud-2 {
+  top: 85px;
+  left: 36%;
+  width: 580px;
+  height: 100px;
+  animation-duration: 130s;
+  animation-delay: -40s;
+}
+
+.cloud-3 {
+  top: 25px;
+  left: 68%;
+  width: 360px;
+  height: 70px;
+  animation-duration: 110s;
+  animation-delay: -70s;
+}
+
+.cloud-4 {
+  top: 130px;
+  left: 18%;
+  width: 500px;
+  height: 75px;
+  opacity: 0.65;
+  animation-duration: 150s;
+  animation-delay: -25s;
+}
+
+.cloud-5 {
+  top: 60px;
+  left: 88%;
+  width: 420px;
+  height: 85px;
+  animation-duration: 120s;
+  animation-delay: -95s;
+}
+
+@keyframes driftClouds {
+  0% { transform: translate3d(-8%, 0, 0); }
+  100% { transform: translate3d(-60%, 0, 0); }
+}
+
+/* --- Animated Flying Birds --- */
+.nature-birds-stream {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  height: 120px;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bird {
+  position: absolute;
+  opacity: 0.6;
+  animation: flightPath linear infinite;
+}
+
+.bird-svg {
+  width: 24px;
+  height: 12px;
+  animation: wingFlap 1.4s ease-in-out infinite alternate;
+}
+
+.bird-1 {
+  top: 30px;
+  animation-duration: 38s;
+  animation-delay: 0s;
+}
+
+.bird-2 {
+  top: 50px;
+  transform: scale(0.8);
+  animation-duration: 44s;
+  animation-delay: -14s;
+}
+
+.bird-3 {
+  top: 75px;
+  transform: scale(0.65);
+  animation-duration: 52s;
+  animation-delay: -26s;
+}
+
+@keyframes flightPath {
+  0% { transform: translate3d(-60px, 30px, 0); }
+  35% { transform: translate3d(40vw, 5px, 0); }
+  70% { transform: translate3d(75vw, 25px, 0); }
+  100% { transform: translate3d(110vw, -10px, 0); }
+}
+
+@keyframes wingFlap {
+  0% { transform: scaleY(1); }
+  100% { transform: scaleY(0.45); }
+}
+
+/* --- Multi-Layered Mountain & Hill Panorama --- */
+.nature-mountains-back,
+.nature-hills-mid,
+.nature-meadow-fore {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+.landscape-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Far Mountains */
+.nature-mountains-back {
+  height: 320px;
+  opacity: 0.88;
+  animation: mountainSway 36s ease-in-out infinite alternate;
+}
+
+/* Mid Evergreen Hills */
+.nature-hills-mid {
+  height: 250px;
+  opacity: 0.92;
+  animation: midHillsSway 28s ease-in-out infinite alternate;
+}
+
+/* Foreground Lush Meadow */
+.nature-meadow-fore {
+  height: 160px;
+  opacity: 0.95;
+  animation: meadowSway 22s ease-in-out infinite alternate;
+}
+
+@keyframes mountainSway {
+  0% { transform: translate3d(0, 0, 0) scaleY(1); }
+  100% { transform: translate3d(-14px, -6px, 0) scaleY(1.03); }
+}
+
+@keyframes midHillsSway {
+  0% { transform: translate3d(0, 0, 0) scaleY(1); }
+  100% { transform: translate3d(10px, -8px, 0) scaleY(1.04); }
+}
+
+@keyframes meadowSway {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-8px, -4px, 0); }
+}
+
+/* --- Swaying Botanical Flora at Viewport Edges --- */
+.nature-swaying-flora {
+  position: absolute;
+  bottom: 0;
+  width: 180px;
+  height: 240px;
+  pointer-events: none;
+  z-index: 2;
+  transform-origin: bottom center;
+}
+
+.left-flora {
+  left: -15px;
+  animation: windSwayFloraLeft 7s ease-in-out infinite alternate;
+}
+
+.right-flora {
+  right: -15px;
+  animation: windSwayFloraRight 8.5s ease-in-out infinite alternate;
+}
+
+.flora-svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes windSwayFloraLeft {
+  0% { transform: rotate(0deg) skewX(0deg); }
+  50% { transform: rotate(4deg) skewX(2deg); }
+  100% { transform: rotate(-2deg) skewX(-1deg); }
+}
+
+@keyframes windSwayFloraRight {
+  0% { transform: rotate(0deg) skewX(0deg); }
+  50% { transform: rotate(-4deg) skewX(-2deg); }
+  100% { transform: rotate(2deg) skewX(1deg); }
+}
+
+/* --- Floating Nature Particles Layer --- */
+.nature-particles-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.nature-floating-particle {
+  position: absolute;
+  top: -50px;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: flutterParticle linear infinite;
+}
+
+.particle-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 2px 6px rgba(23, 107, 88, 0.15));
+}
+
+@keyframes flutterParticle {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(var(--leaf-rot, 0deg)) rotateY(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.9;
+  }
+  30% {
+    transform: translate3d(40px, 30vh, 0) rotate(calc(var(--leaf-rot, 0deg) + 60deg)) rotateY(180deg);
+  }
+  65% {
+    transform: translate3d(90px, 68vh, 0) rotate(calc(var(--leaf-rot, 0deg) + 140deg)) rotateY(360deg);
+    opacity: 0.85;
+  }
+  88% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate3d(140px, 110vh, 0) rotate(calc(var(--leaf-rot, 0deg) + 240deg)) rotateY(540deg);
+    opacity: 0;
+  }
+}
+
+/* --- Glowing Nature Fireflies / Light Motes --- */
+.nature-firefly {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, #FFF4A3 20%, rgba(200, 245, 160, 0.8) 60%, transparent 100%);
+  box-shadow: 0 0 12px #FFE566, 0 0 24px rgba(180, 240, 140, 0.6);
+  opacity: 0;
+  animation: fireflyFloat ease-in-out infinite alternate;
+}
+
+@keyframes fireflyFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(0.6);
+    opacity: 0.15;
+  }
+  35% {
+    transform: translate3d(18px, -24px, 0) scale(1.1);
+    opacity: 0.9;
+  }
+  70% {
+    transform: translate3d(-14px, -50px, 0) scale(0.8);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate3d(25px, -80px, 0) scale(1.2);
+    opacity: 0.95;
+  }
+}
+
+/* --- Dementia Accessibility: Respect prefers-reduced-motion --- */
+@media (prefers-reduced-motion: reduce) {
+  .nature-sun-core,
+  .nature-sun-aura,
+  .nature-sun-rays,
+  .cloud,
+  .bird,
+  .bird-svg,
+  .nature-mountains-back,
+  .nature-hills-mid,
+  .nature-meadow-fore,
+  .left-flora,
+  .right-flora,
+  .nature-floating-particle,
+  .nature-firefly {
+    animation: none !important;
+  }
+  .nature-floating-particle,
+  .nature-firefly {
+    display: none !important;
+  }
+}

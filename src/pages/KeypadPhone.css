@@ -1,0 +1,54 @@
+.kp-shell {
+  min-height: 100dvh;
+  background:
+    radial-gradient(900px 420px at 10% -10%, rgba(23, 107, 88, 0.16), transparent 55%),
+    #eef4f1;
+  display: flex;
+  flex-direction: column;
+}
+
+.kp-chrome {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px calc(8px + env(safe-area-inset-top, 0px));
+  font-family: system-ui, sans-serif;
+}
+
+.kp-chrome a {
+  color: #176b58;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.kp-chrome span {
+  font-size: 12px;
+  font-weight: 700;
+  color: #5c6f68;
+}
+
+.kp-frame {
+  flex: 1;
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  border: 0;
+  background: transparent;
+  min-height: 0;
+  height: calc(100dvh - 44px);
+}
+
+@media (min-width: 720px) {
+  .kp-shell {
+    padding: 12px 16px 20px;
+  }
+  .kp-frame {
+    border: 1px solid rgba(23, 107, 88, 0.14);
+    border-radius: 28px;
+    box-shadow: 0 18px 40px rgba(33, 77, 66, 0.1);
+    background: #eef4f1;
+    height: calc(100dvh - 72px);
+    overflow: hidden;
+  }
+}

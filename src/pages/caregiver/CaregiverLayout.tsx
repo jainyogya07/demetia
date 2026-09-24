@@ -41,6 +41,7 @@ const NAV_GROUPS = [
       { to: '/caregiver/memory-journey', icon: Compass, labelKey: 'cgChrome.memoryJourney' },
       { to: '/caregiver/train-ai', icon: BrainCircuit, labelKey: 'cgChrome.trainAi' },
       { to: '/caregiver/documents', icon: FileText, labelKey: 'cgChrome.documents' },
+      { to: '/caregiver/schemes', icon: Heart, labelKey: 'nav.schemes' },
       { to: '/caregiver/profile', icon: UserRound, labelKey: 'cgChrome.profile' },
       { to: '/caregiver/settings', icon: Settings, labelKey: 'cgChrome.settings' },
     ],
@@ -61,6 +62,7 @@ const TITLE_KEYS = {
   '/caregiver/circle': ['cgChrome.careCircle', 'Rina, Doom, Anita Das, Dr. Sharma — call from here.'],
   '/caregiver/notifications': ['Notifications', 'Doctor notes, routine reminders, and care-agent updates.'],
   '/caregiver/documents': ['cgChrome.documents', 'Prescriptions Latveria’s circle can see.'],
+  '/caregiver/schemes': ['nav.schemes', 'Government help for elderly people — pensions, hospitals, helplines.'],
   '/caregiver/profile': ['Profile', 'Rina Devi — primary caregiver.'],
   '/caregiver/spatial-presence': ['cgChrome.safeJourney', 'We’re with you on the walk — Assam or Delhi demo.'],
   '/caregiver/spatial-config': ['cgChrome.familiarPlaces', 'Home garden and known lanes for Latveria.'],
@@ -105,7 +107,7 @@ export default function CaregiverLayout() {
                     to={item.to}
                     end={item.end}
                     className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                    title={t(item.labelKey)}
+                    aria-label={t(item.labelKey)}
                   >
                     <item.icon size={18} />
                     <span className="ss-rail-label">{t(item.labelKey)}</span>
@@ -120,7 +122,7 @@ export default function CaregiverLayout() {
               <NavLink 
                 to="/caregiver/spatial-presence" 
                 className={({isActive}) => `nav-item${isActive ? ' active' : ''}`}
-                title="We’re with you on the walk"
+                aria-label="Safe Journey"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>
                   <span className="ss-rail-label">Safe Journey</span>
@@ -129,7 +131,7 @@ export default function CaregiverLayout() {
               <NavLink 
                 to="/caregiver/spatial-config" 
                 className={({isActive}) => `nav-item${isActive ? ' active' : ''}`}
-                title="Familiar places"
+                aria-label="Familiar places"
               >
                 <MapPin size={20} />
                 <span className="ss-rail-label">Familiar places</span>

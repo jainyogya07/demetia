@@ -1,5 +1,17 @@
 import { isSupabaseConfigured, supabase } from './supabase';
 
+const LOAD_TIMEOUT_MS = 4000;
+
+function withTimeout(promise, ms = LOAD_TIMEOUT_MS) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      const timer = setTimeout(() => reject(new Error('timeout')), ms);
+      promise.finally?.(() => clearTimeout(timer));
+    }),
+  ]);
+}
+
 function ageFromBirthDate(birthDate) {
   if (!birthDate) return null;
   const birth = new Date(birthDate);
@@ -18,8 +30,16 @@ function todayBounds() {
   return { start: start.toISOString(), end: end.toISOString() };
 }
 
-/** Doctor-facing patient list based solely on accepted doctor relationships. */
+/** Doctor-facing patient list based solely on accepted doctor relationships. Never blocks the clinic UI. */
 export async function loadDoctorDashboard() {
+  try {
+    return await withTimeout(loadDoctorDashboardInner());
+  } catch {
+    return [];
+  }
+}
+
+async function loadDoctorDashboardInner() {
   if (!isSupabaseConfigured || !supabase) return [];
   const { data: auth, error: authError } = await supabase.auth.getUser();
   if (authError) throw authError;
@@ -75,6 +95,14 @@ export async function loadDoctorDashboard() {
 
 /** The signed-in clinician profile, used instead of a hard-coded doctor identity. */
 export async function loadDoctorProfile() {
+  try {
+    return await withTimeout(loadDoctorProfileInner());
+  } catch {
+    return null;
+  }
+}
+
+async function loadDoctorProfileInner() {
   if (!isSupabaseConfigured || !supabase) return null;
   const { data: auth, error: authError } = await supabase.auth.getUser();
   if (authError) throw authError;

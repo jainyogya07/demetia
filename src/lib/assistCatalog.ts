@@ -19,7 +19,8 @@ const SCREEN_DEFS = [
   { id: 'games', open: 'games', label: 'Games', say: 'Brain games', aliases: ['game', 'games', 'khel', 'khelo', 'khelna', 'puzzle', 'खेल', 'খেল', 'dimag', 'brain game', 'brain games'] },
   { id: 'stories', open: 'games', gameId: 'story-solver', label: 'Past stories', say: 'Past stories — a memory told aloud', aliases: ['past stor', 'kahani', 'कहानी', 'কথা', 'story', 'stories'] },
   { id: 'routine', open: 'routine', label: 'Routine', say: 'Today’s routine', aliases: ['routine', 'dincharya', 'schedule', 'aaj kya kar', 'today task', 'दिनचर्या', 'ৰুটিন', 'din ka kaam', 'timetable'] },
-  { id: 'medicine', open: 'medicine', label: 'Medicine', say: 'Medicine and schemes', aliases: ['dawa', 'dawai', 'medicine', 'tablet', 'tablets', 'pill', 'pills', 'औषध', 'दवा', 'ঔষধ', 'oushod', 'scheme', 'schemes', 'ayushman', 'nphce'] },
+  { id: 'schemes', open: 'schemes', label: 'Schemes', say: 'Government schemes', aliases: ['scheme', 'schemes', 'ayushman', 'nphce', 'yojana', 'योजना', 'pmjay', 'elderline', 'tele-manas'] },
+  { id: 'medicine', open: 'routine', label: 'Medicine', say: 'Today’s medicines on My Day', aliases: ['dawa', 'dawai', 'medicine', 'tablet', 'tablets', 'pill', 'pills', 'औषध', 'दवा', 'ঔষধ', 'oushod'] },
   { id: 'progress', open: 'progress', label: 'Progress', say: 'Memory progress', aliases: ['progress', 'score', 'kitna yaad', 'memory progress', 'ank', 'scoreboard'] },
   { id: 'care-circle', open: 'care-circle', label: 'Family', say: 'Family care circle', aliases: ['care circle', 'parivar', 'family', 'family circle', 'परिवार', 'ghar wale', 'circle'] },
   { id: 'safety', open: 'safety', label: 'Safety', say: 'Safety — Zoo Road, Guwahati', aliases: ['safety', 'map', 'location', 'gps'] },
@@ -299,7 +300,7 @@ function buildIndex() {
 
   pushEntry(index, {
     key: 'nav:medicine:',
-    dest: { open: 'medicine', kind: 'next-med' },
+    dest: { open: 'routine', kind: 'next-med' },
     label: 'Next medicine',
     say: 'Next medicine time',
     group: 'actions',
@@ -310,7 +311,7 @@ function buildIndex() {
   const items = getRoutineItems();
   for (let i = 0; i < items.length; i += 1) {
     const row = items[i];
-    const open = row.type === 'medicine' ? 'medicine' : row.type === 'brain' ? 'games' : 'routine';
+    const open = row.type === 'medicine' || row.type === 'brain' ? (row.type === 'brain' ? 'games' : 'routine') : 'routine';
     pushEntry(index, {
       key: destKey({ open }),
       dest: { open, kind: 'routine-item', itemId: row.id },

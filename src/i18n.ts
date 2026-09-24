@@ -124,13 +124,14 @@ const en = {
     games: 'My Brain Games',
     ai: 'Talk to Care Agent',
     routine: 'My Daily Routine',
-    medicine: 'Medicine & Health',
+    medicine: 'Schemes',
+    schemes: 'Schemes',
     progress: 'Memory Progress',
     'care-circle': 'My Care Circle',
     safety: 'Safety & Location',
     'memory-book': 'Memory Book',
     language: 'Language & Accessibility',
-    services: 'Care Schemes',
+    services: 'Schemes',
     'support-credits': 'Support Credits',
     documents: 'My Documents',
     settings: 'Settings',
@@ -282,7 +283,8 @@ const hi = {
     games: 'दिमाग के खेल',
     ai: 'केयर एजेंट से बात',
     routine: 'रोज़ का काम',
-    medicine: 'दवाई और सेहत',
+    medicine: 'योजनाएँ',
+    schemes: 'योजनाएँ',
     progress: 'स्मृति की प्रगति',
     'care-circle': 'देखभाल चक्र',
     safety: 'सुरक्षा और जगह',
@@ -1363,7 +1365,7 @@ DICTIONARIES.as = {
     games: 'মগজৰ খেল',
     ai: 'যতন এজেণ্ট',
     routine: 'দৈনিক কাম',
-    medicine: 'দৰব আৰু স্বাস্থ্য',
+    medicine: 'আঁচনি',
     progress: 'স্মৃতিৰ অগ্ৰগতি',
     'care-circle': 'যতন চক্ৰ',
     safety: 'সুৰক্ষা আৰু স্থান',
@@ -1380,7 +1382,7 @@ DICTIONARIES.as = {
 };
 
 const EVERYDAY_MODULES = {
-  hi: { home: 'होम', games: 'दिमाग के खेल', ai: 'केयर एजेंट से बात', routine: 'रोज़ का काम', medicine: 'दवाई और सेहत', progress: 'स्मृति की प्रगति', 'care-circle': 'देखभाल चक्र', safety: 'सुरक्षा और जगह', 'memory-book': 'स्मृति की किताब', language: 'भाषा', documents: 'मेरे दस्तावेज़', settings: 'सेटिंग्स', help: 'अभी मदद' },
+  hi: { home: 'होम', games: 'दिमाग के खेल', ai: 'केयर एजेंट से बात', routine: 'रोज़ का काम', medicine: 'योजनाएँ', progress: 'स्मृति की प्रगति', 'care-circle': 'देखभाल चक्र', safety: 'सुरक्षा और जगह', 'memory-book': 'स्मृति की किताब', language: 'भाषा', documents: 'मेरे दस्तावेज़', settings: 'सेटिंग्स', help: 'अभी मदद' },
   ta: { home: 'முகப்பு', games: 'மூளை விளையாட்டு', ai: 'பராமரிப்பு முகவர்', routine: 'இன்றைய பணி', medicine: 'மருந்து & உடல்நலம்', progress: 'நினைவு முன்னேற்றம்', 'care-circle': 'பராமரிப்பு வட்டம்', safety: 'பாதுகாப்பு', 'memory-book': 'நினைவுப் புத்தகம்', language: 'மொழி', documents: 'ஆவணங்கள்', settings: 'அமைப்புகள்', help: 'அவசர உதவி' },
   te: { home: 'హోమ్', games: 'మెదడు ఆటలు', ai: 'కేర్ ఏజెంట్', routine: 'రోజువారీ పని', medicine: 'మందు & ఆరోగ్యం', progress: 'మెమరీ పురోగతి', 'care-circle': 'కేర్ సర్కిల్', safety: 'భద్రత', 'memory-book': 'మెమరీ బుక్', settings: 'సెట్టింగ్స్', help: 'అత్యవసర సహాయం' },
   bn: { home: 'হোম', games: 'মস্তিষ্কের খেলা', ai: 'কেয়ার এজেন্ট', routine: 'আজকের কাজ', medicine: 'ওষুধ ও স্বাস্থ্য', progress: 'স্মৃতির অগ্রগতি', 'care-circle': 'যত্ন চক্র', safety: 'নিরাপত্তা', 'memory-book': 'স্মৃতির খাতা', settings: 'সেটিংস', help: 'জরুরি সাহায্য' },
@@ -1419,6 +1421,7 @@ const MODULE_TO_NAV = {
   documents: 'documents',
   progress: 'progress',
   settings: 'settings',
+  schemes: 'schemes',
 };
 
 Object.entries(EVERYDAY_MODULES).forEach(([code, mods]) => {

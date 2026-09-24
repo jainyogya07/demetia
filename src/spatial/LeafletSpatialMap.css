@@ -171,8 +171,8 @@
 }
 
 .demo-360-pip {
-  width: min(280px, 38vw);
-  height: 168px;
+  width: min(320px, 42vw);
+  height: 188px;
   border-radius: 14px;
   overflow: hidden;
   box-shadow: 0 12px 32px rgba(8, 20, 16, 0.35);

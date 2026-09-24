@@ -287,9 +287,10 @@
 .up-next-card {
   padding: 24px;
   border-radius: 20px;
-  color: white;
-  background: linear-gradient(135deg, #23634f, #3f9373);
-  box-shadow: 0 10px 25px rgba(47, 118, 96, 0.18);
+  color: #14352c;
+  background: #eef6f2;
+  box-shadow: 0 10px 25px rgba(47, 118, 96, 0.12);
+  min-height: 280px;
 }
 
 .up-next-top {
@@ -310,7 +311,8 @@
   height: 55px;
   margin: 22px 0 15px;
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.16);
+  background: rgba(20, 53, 44, 0.1);
+  color: #14352c;
 }
 
 .up-next-card h2 {
@@ -338,10 +340,10 @@
   gap: 7px;
   width: 100%;
   padding: 12px;
-  border: none;
+  border: 1px solid #c5ddd4;
   border-radius: 10px;
-  background: white;
-  color: #276a53;
+  background: #ffffff;
+  color: #14352c;
   font-weight: 700;
   cursor: pointer;
 }

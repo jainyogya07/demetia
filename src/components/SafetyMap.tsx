@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import '../spatial/LeafletSpatialMap.css';
 import { getActiveDemoCity } from '../spatial/demoWalk';
 
-const CARTO = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+const OSM = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
 
 function walkerIcon(heading = 0) {
   return L.divIcon({
@@ -36,11 +36,11 @@ export default function SafetyMap({
     if (!hostRef.current || mapRef.current) return undefined;
     const map = L.map(hostRef.current, {
       scrollWheelZoom: false,
-      attributionControl: false,
+      attributionControl: true,
       zoomControl: false,
     }).setView([homePin.lat, homePin.lng], 16);
-    L.tileLayer(CARTO, {
-      attribution: '&copy; OpenStreetMap &copy; CARTO',
+    L.tileLayer(OSM, {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       maxZoom: 19,
     }).addTo(map);
     mapRef.current = map;

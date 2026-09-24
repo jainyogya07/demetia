@@ -92,10 +92,52 @@
 .ss-lakeside .os-card,
 .ss-lakeside .settings-section,
 .ss-lakeside .granth-card {
-  background: rgba(255, 255, 255, 0.78) !important;
+  background: rgba(255, 255, 255, 0.86) !important;
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  color: #14352c !important;
+}
+
+.ss-lakeside .up-next-card,
+.ss-lakeside .insight-card,
+.ss-lakeside .primary-care-card,
+.ss-lakeside .shared-card,
+.ss-lakeside .wellness-card {
+  color: #14352c !important;
+}
+
+.ss-lakeside .up-next-card h2,
+.ss-lakeside .up-next-card h3,
+.ss-lakeside .up-next-card p,
+.ss-lakeside .up-next-top {
+  color: #14352c !important;
+  opacity: 1;
+}
+
+.ss-lakeside .up-next-icon {
+  background: rgba(20, 53, 44, 0.12) !important;
+  color: #14352c !important;
+}
+
+.ss-lakeside .up-next-card button {
+  background: #f7fbf8 !important;
+  color: #14352c !important;
+  border: 1px solid #c5ddd4;
+  font-weight: 700;
+}
+
+.ss-lakeside .nav-item {
+  transition: background-color 0.16s ease, color 0.16s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-lakeside .sidebar,
+  .ss-lakeside .nav-item,
+  .ss-lakeside.ss-has-region-scenery .sidebar,
+  .ss-theme.ss-lakeside.ss-has-region-scenery .sidebar {
+    transition: none !important;
+  }
 }
 
 /* Header language control (visible, not only in profile menu) */

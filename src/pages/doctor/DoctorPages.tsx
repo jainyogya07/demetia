@@ -1,7 +1,7 @@
 // @ts-nocheck — leftover JS-shaped module; runtime unchanged
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useParams, Navigate, useSearchParams } from 'react-router-dom';
-import { Search, ExternalLink } from 'lucide-react';
+import { Search, ExternalLink, CalendarDays, ClipboardCheck, ShieldCheck, UserRound } from 'lucide-react';
 import AvatarSlot from '../../components/AvatarSlot';
 import CognitiveDetectionPanel from './CognitiveDetectionPanel';
 import {
@@ -13,6 +13,7 @@ import {
 } from '../../data/doctorPlaceholders';
 import { upsertDoctorNote } from '../../lib/caregiverStore';
 import { bffFetch, bffSilent } from '../../lib/bff';
+import { loadDoctorDashboard, loadDoctorProfile } from '../../lib/doctorDashboardApi';
 
 const TABS = [
   { id: 'profile', label: 'Profile' },
@@ -166,10 +167,18 @@ export function DoctorPatients() {
   const [pane, setPane] = useState('list');
   const [params] = useSearchParams();
   const [rosterHint, setRosterHint] = useState<unknown>(null);
+  const [livePatients, setLivePatients] = useState([]);
   useEffect(() => {
     bffFetch('/api/v1/doctor/roster').then((row) => {
       if (row?.total) setRosterHint(row.total);
     });
+  }, []);
+  useEffect(() => {
+    let alive = true;
+    loadDoctorDashboard()
+      .then((rows) => { if (alive) setLivePatients(rows || []); })
+      .catch(() => { if (alive) setLivePatients([]); });
+    return () => { alive = false; };
   }, []);
   const focusAlert = params.get('alert');
   const list = DR_PATIENTS.filter((p) => {
@@ -182,6 +191,28 @@ export function DoctorPatients() {
   return (
     <div className="os-page">
       <SyncBar asOf={`${DR_LIVE.asOf} · ${DR_LIVE.clock}`} lastSync={DR_LIVE.lastSync} extra={DR_LIVE.feed} />
+      {livePatients.length > 0 && (
+        <Panel title="Connected records (signed-in doctor)">
+          <div className="doctor-profile-grid">
+            {livePatients.map((patient) => {
+              const completion = patient.routineTotal ? Math.round((patient.routineDone / patient.routineTotal) * 100) : 0;
+              return (
+                <Link key={patient.id} className="doctor-patient-card" to={`/doctor/patients/${patient.id}/profile`}>
+                  <header>
+                    <AvatarSlot name={patient.name} size={44} label={patient.name} />
+                    <div><h3>{patient.name}</h3><p>{patient.age ? `${patient.age} years` : 'Age not added'}</p></div>
+                  </header>
+                  <div className="doctor-card-stats">
+                    <span><CalendarDays size={15} /><b>{patient.routineDone}/{patient.routineTotal}</b> today</span>
+                    <span><ClipboardCheck size={15} /><b>{patient.adlScore ?? '—'}</b> latest ADL</span>
+                  </div>
+                  <div className="doctor-progress"><i style={{ width: `${completion}%` }} /></div>
+                </Link>
+              );
+            })}
+          </div>
+        </Panel>
+      )}
       <div className="os-kpis">
         <Stat label="People in care" value={rosterHint || DR_PATIENTS.length} hint="Latveria, Binod, Moni" />
         <Stat label="Tasks due" value={DR_TASKS.filter((t) => !t.done).length} hint="Today + held" />
@@ -568,7 +599,37 @@ function CalendarTab({ patient }) {
 
 export function DoctorPatient() {
   const { patientId, tab } = useParams();
+  const [livePatients, setLivePatients] = useState([]);
+  useEffect(() => {
+    let alive = true;
+    loadDoctorDashboard()
+      .then((rows) => { if (alive) setLivePatients(rows || []); })
+      .catch(() => { if (alive) setLivePatients([]); });
+    return () => { alive = false; };
+  }, []);
   const patient = DR_PATIENTS.find((row) => row.id === patientId);
+  const livePatient = livePatients.find((row) => row.id === patientId);
+  if (!patient && livePatient) {
+    const completion = livePatient.routineTotal ? Math.round((livePatient.routineDone / livePatient.routineTotal) * 100) : 0;
+    return (
+      <div className="os-page">
+        <SyncBar asOf="Connected record" lastSync="just now" extra="Accepted doctor relationship" />
+        <Link className="doctor-back-link" to="/doctor">← Back to clinic board</Link>
+        <section className="doctor-live-profile">
+          <AvatarSlot name={livePatient.name} size={72} label={livePatient.name} />
+          <div>
+            <p className="os-kicker">Live patient record</p>
+            <h2>{livePatient.name}</h2>
+            <p>{livePatient.age ? `${livePatient.age} years` : 'Age not added'} · routine {livePatient.routineDone}/{livePatient.routineTotal || 0} today</p>
+          </div>
+        </section>
+        <div className="doctor-detail-grid">
+          <Panel title="Routine"><p>{livePatient.routineTotal ? `${completion}% completed today` : 'No routine on file yet.'}</p></Panel>
+          <Panel title="Latest ADL"><p>{livePatient.adlScore ?? '—'} {livePatient.riskBand ? `· ${String(livePatient.riskBand).replace(/_/g, ' ')}` : ''}</p></Panel>
+        </div>
+      </div>
+    );
+  }
   if (!patient) return <Navigate to="/doctor" replace />;
   const active = TABS.some((item) => item.id === tab) ? tab : 'profile';
   if (!tab) return <Navigate to={`/doctor/patients/${patientId}/profile`} replace />;
@@ -687,9 +748,34 @@ export function DoctorCalendar() {
 }
 
 export function DoctorProfile() {
+  const [profile, setProfile] = useState(null);
+  const [patientCount, setPatientCount] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    Promise.all([loadDoctorProfile(), loadDoctorDashboard()]).then(([doctor, patients]) => {
+      if (!alive) return;
+      setProfile(doctor);
+      setPatientCount(patients.length);
+    }).catch(() => { if (alive) setPatientCount(0); });
+    return () => { alive = false; };
+  }, []);
   return (
     <div className="os-page">
       <SyncBar asOf={`${DR_LIVE.asOf} · ${DR_LIVE.clock}`} lastSync={DR_LIVE.lastSync} extra={DR_CLINIC.site} />
+      {profile && (
+        <section className="doctor-live-profile doctor-personal-profile">
+          <AvatarSlot name={profile.name} size={64} label={profile.name} />
+          <div>
+            <p className="os-kicker">Signed-in doctor</p>
+            <h2>{profile.name}</h2>
+            <p>{profile.email}{profile.phone ? ` · ${profile.phone}` : ''}</p>
+          </div>
+          <UserRound size={22} className="doctor-profile-icon" />
+        </section>
+      )}
+      {patientCount != null && (
+        <p className="os-meta" style={{ marginTop: 8 }}><ShieldCheck size={14} /> {patientCount} connected patient{patientCount === 1 ? '' : 's'} on this account</p>
+      )}
       <section className="os-chart-strip">
         <AvatarSlot name={DR_CLINIC.name} photoUrl={DR_CLINIC.photoUrl} size={72} label={DR_CLINIC.name} />
         <div className="os-chart-id">

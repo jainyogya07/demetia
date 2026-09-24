@@ -882,3 +882,31 @@
     height: 155px;
   }
 }
+
+.memory-choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin: 16px 0 8px;
+}
+
+.memory-choice-btn {
+  min-height: 52px;
+  min-width: 120px;
+  padding: 12px 20px;
+  border-radius: 16px;
+  border: 2px solid rgba(23, 107, 88, 0.28);
+  background: #fff;
+  color: #1a3d34;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.memory-choice-btn.is-on,
+.memory-choice-btn:focus-visible {
+  border-color: #176b58;
+  background: rgba(23, 107, 88, 0.12);
+}

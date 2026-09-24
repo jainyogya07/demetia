@@ -639,3 +639,65 @@
     width: min(288px, 88vw);
   }
 }
+
+/* Viewport fit: header, sidebar, scrollable main — never clip under chrome/FAB */
+.app-container.ss-theme {
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+}
+
+.app-container.ss-theme .main-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-container.ss-theme .top-bar.ss-topbar {
+  height: auto !important;
+  min-height: 56px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 8;
+  overflow: visible;
+}
+
+.app-container.ss-theme .dashboard-scroll {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  padding-top: 12px;
+  padding-bottom: 112px;
+}
+
+.app-container.ss-theme .tab-contents-wrapper {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.cg-outlet {
+  min-height: 0;
+  width: 100%;
+}
+
+.cg-route-fallback,
+.cg-calendar-page,
+.cg-week-board {
+  min-width: 0;
+}
+
+.cg-week-board {
+  min-height: 160px;
+}
+
+.cg-route-fallback {
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  border-radius: 16px;
+}

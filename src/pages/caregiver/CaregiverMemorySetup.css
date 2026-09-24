@@ -176,10 +176,79 @@
   .route-form {
     flex-direction: column;
   }
+}
 
-  .route-heading {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
+.caregiver-memory-setup {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 4px 4px 32px;
+  color: #244c59;
+}
+
+.caregiver-memory-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.caregiver-memory-card,
+.caregiver-memory-setup .caregiver-memory-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 20px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.caregiver-memory-setup .setup-section {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid #e1ebeb;
+}
+
+.caregiver-memory-setup label {
+  display: block;
+  font-weight: 700;
+  margin: 12px 0 6px;
+}
+
+.caregiver-memory-setup input,
+.caregiver-memory-setup select,
+.caregiver-memory-setup textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid #d7e4e5;
+  border-radius: 12px;
+  font: inherit;
+}
+
+.setup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.caregiver-primary-btn,
+.caregiver-secondary-btn,
+.caregiver-back-btn {
+  min-height: 44px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: 0;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.caregiver-primary-btn {
+  background: #176b58;
+  color: #fff;
+}
+
+.caregiver-secondary-btn,
+.caregiver-back-btn {
+  background: rgba(23, 107, 88, 0.1);
+  color: #176b58;
 }

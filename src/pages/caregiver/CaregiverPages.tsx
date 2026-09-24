@@ -215,14 +215,14 @@ function WeekBoard() {
 
   return (
     <>
-      <div className="os-week">
+      <div className="os-week cg-week-board">
         {calendar.map((col) => (
           <div key={col.day} className={`os-week-col ${col.today ? 'today' : ''}`}>
             <header>
               <span>{col.day}</span>
               {col.today ? <LiveDot label="Today" /> : null}
             </header>
-            {col.items.length === 0 ? <p className="os-empty">Quiet</p> : col.items.map((item) => (
+            {(col.items || []).length === 0 ? <p className="os-empty">Quiet</p> : (col.items || []).map((item) => (
               <motion.article
                 key={item.id}
                 layout
@@ -1098,16 +1098,17 @@ export function CgDocuments() {
 export function CgCalendar() {
   useStoreTick();
   const calendar = getCalendar();
-  const today = calendar.find((d) => d.today);
+  const today = calendar.find((d) => d.today) || calendar[0];
+  const todayItems = Array.isArray(today?.items) ? today.items : [];
   return (
-    <div className="os-page">
+    <div className="os-page cg-calendar-page">
       <SyncBar asOf={`${CG_LIVE.asOf} · ${CG_LIVE.clock}`} lastSync={CG_LIVE.lastSync} extra="Week 24–30 Aug" />
       <div className="os-kpis">
-        <Stat label="Today" value={today?.day || 'Tue 25'} hint={today?.items[0]?.label} />
+        <Stat label="Today" value={today?.day || 'Tue'} hint={todayItems[0]?.label || 'Morning meds'} />
         <Stat label="Clinic" value="10:15" hint="Dr. Sharma · OPD" />
-        <Stat label="Story" value="16:00" hint="Stay for the whole breath" />
+        <Stat label="ASHA" value="Wed 11:00" hint="Anita Das visit" />
       </div>
-      <Panel title="Household week">
+      <Panel title="Household week — meds, Dr. Sharma, ASHA">
         <WeekBoard />
       </Panel>
     </div>

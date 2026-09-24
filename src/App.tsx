@@ -30,15 +30,8 @@ import CareCirclePage from './pages/CareCircle';
 import HomeLanding from './pages/HomeLanding';
 import KeypadPhone from './pages/KeypadPhone';
 import CaregiverLayout from './pages/caregiver/CaregiverLayout';
-import CaregiverAssessment from './pages/caregiver/CaregiverAssessment';
-import CaregiverMemorySetup from './pages/caregiver/CaregiverMemorySetup';
+import { caregiverChildRoutes } from './pages/caregiver/caregiverRoutes';
 import SpatialPresence from './pages/caregiver/SpatialPresence';
-import SpatialConfig from './pages/caregiver/SpatialConfig';
-import {
-  CgOverview, CgRoutine, CgSafety, CgProgress, CgCircle, CgDocuments, CgSettings,
-  CgCalendar, CgProfile,
-} from './pages/caregiver/CaregiverPages';
-import TrainAiPage from './pages/caregiver/TrainAiPage';
 import NotificationsPage from './pages/NotificationsPage';
 import DoctorLayout from './pages/doctor/DoctorLayout';
 import {
@@ -912,22 +905,7 @@ function App() {
         <Route path="/spatial-analysis" element={<SpatialPresence />} />
         <Route path="/safe-journey" element={<SpatialPresence />} />
       <Route path="/caregiver" element={<CaregiverLayout />}>
-        <Route index element={<CgOverview />} />
-        <Route path="routine" element={<CgRoutine />} />
-        <Route path="safety" element={<CgSafety />} />
-        <Route path="progress" element={<CgProgress />} />
-        <Route path="circle" element={<CgCircle />} />
-        <Route path="documents" element={<CgDocuments />} />
-        <Route path="schemes" element={<SchemesPage />} />
-        <Route path="calendar" element={<CgCalendar />} />
-        <Route path="profile" element={<CgProfile />} />
-        <Route path="settings" element={<CgSettings />} />
-        <Route path="train-ai" element={<TrainAiPage />} />
-        <Route path="notifications" element={<NotificationsPage />} />
-        <Route path="assessment" element={<CaregiverAssessment />} />
-        <Route path="memory-journey" element={<CaregiverMemorySetup />} />
-        <Route path="spatial-presence" element={<SpatialPresence />} />
-        <Route path="spatial-config" element={<SpatialConfig />} />
+        {caregiverChildRoutes()}
       </Route>
       <Route path="/doctor" element={<DoctorLayout />}>
         <Route index element={<DoctorPatients />} />

@@ -12,7 +12,6 @@ import DashAurora from '../../components/bits/DashAurora';
 import BlurText from '../../components/bits/BlurText';
 import RegionSceneryBackground from '../../components/RegionSceneryBackground';
 import { useI18n } from '../../I18nContext';
-import { AnimatePresence, motion } from 'motion/react';
 
 const NAV_GROUPS = [
   {
@@ -154,17 +153,9 @@ export default function DoctorLayout() {
           ))}
         </nav>
         <div className="dashboard-scroll">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={pathname}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -6 }}
-              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
+          <div className="cg-outlet" key={pathname}>
+            <Outlet />
+          </div>
         </div>
       </main>
     </div>

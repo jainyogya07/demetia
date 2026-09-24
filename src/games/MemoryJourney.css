@@ -4,7 +4,7 @@
    ========================================================= */
 
 .mj-wrapper {
-  min-height: 80vh;
+  min-height: min(80vh, 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,6 +13,13 @@
   background: radial-gradient(circle at 50% 20%, rgba(35, 115, 102, 0.08), transparent 70%), #f7faf9;
   font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #173b37;
+}
+
+.dashboard-scroll .mj-wrapper {
+  min-height: 0;
+  background: transparent;
+  padding: 8px 0 24px;
+  align-items: flex-start;
 }
 
 .mj-card {

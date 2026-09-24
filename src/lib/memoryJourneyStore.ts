@@ -57,6 +57,12 @@ export function saveMemoryJourneyConfig(
   patientId,
   config
 ) {
+  // Accept either (patientId, config) or a single config object with patientId.
+  if (patientId && typeof patientId === 'object' && config == null) {
+    config = patientId;
+    patientId = config.patientId;
+  }
+
   if (!patientId) {
     throw new Error(
       'patientId is required'
@@ -64,7 +70,7 @@ export function saveMemoryJourneyConfig(
   }
 
   const cleanedConfig = {
-    ...config,
+    ...(config || {}),
 
     patientId,
 

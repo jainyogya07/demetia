@@ -37,6 +37,7 @@ const UI_TEXT = {
     completed: "Memory Check Complete",
     score: "Your Score",
     continue: "Continue to Dashboard",
+    next: "Next",
     monitoring:
       "This activity is for memory and cognitive monitoring. It is not a medical diagnosis.",
     microphoneError:
@@ -64,6 +65,7 @@ const UI_TEXT = {
     completed: "स्मृति जाँच पूरी हुई",
     score: "आपका स्कोर",
     continue: "डैशबोर्ड पर जाएँ",
+    next: "आगे",
     monitoring:
       "यह गतिविधि स्मृति और संज्ञानात्मक निगरानी के लिए है। यह कोई चिकित्सीय निदान नहीं है।",
     microphoneError:
@@ -370,6 +372,7 @@ function MemoryQuiz({ onComplete, onSkip }) {
   const [microphoneError, setMicrophoneError] = useState("");
 
   const recognitionRef = useRef<any>(null);
+  const advanceTimerRef = useRef<any>(null);
   const { speak, stop: stopSpeech } = useGameSpeech({ lang: language });
 
   const patientName = PATIENT?.name || "";
@@ -399,7 +402,7 @@ function MemoryQuiz({ onComplete, onSkip }) {
       en: [
         {
           text: "What is your name?",
-          answers: [patientName],
+          answers: [patientName, "Latveria"].filter(Boolean),
         },
         {
           text: daughterName
@@ -430,11 +433,13 @@ function MemoryQuiz({ onComplete, onSkip }) {
           text:
             "Which one can you eat: an apple or a chair?",
           answers: ["apple", "an apple"],
+          choices: ["Apple", "Chair"],
         },
         {
           text:
             "What do we use for sleeping: a bed or a table?",
           answers: ["bed", "a bed"],
+          choices: ["Bed", "Table"],
         },
         {
           text:
@@ -823,6 +828,9 @@ function MemoryQuiz({ onComplete, onSkip }) {
       window.speechSynthesis.getVoices();
     }
     return () => {
+      if (advanceTimerRef.current) {
+        window.clearTimeout(advanceTimerRef.current);
+      }
       try {
         recognitionRef.current?.stop();
       } catch {
@@ -923,29 +931,37 @@ function MemoryQuiz({ onComplete, onSkip }) {
     }
   };
 
-  const checkAnswer = () => {
-    if (!spokenAnswer.trim()) {
+  const checkAnswer = (overrideAnswer) => {
+    const filled = String(overrideAnswer ?? spokenAnswer ?? "").trim();
+    if (!filled) {
       setFeedback(t.noSpeech);
       setFeedbackType("warning");
       return;
     }
 
-    const correct = answerMatches(
-      spokenAnswer,
-      question?.answers || []
+    if (advanceTimerRef.current) {
+      window.clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
+
+    const accepted = (question?.answers || []).filter((answer) =>
+      String(answer || "").trim()
     );
+    const correct = accepted.length > 0 && answerMatches(filled, accepted);
 
     if (correct) {
-      setScore(
-        (previousScore) => previousScore + 1
-      );
-
+      setScore((previousScore) => previousScore + 1);
       setFeedback(t.correct);
       setFeedbackType("correct");
     } else {
       setFeedback(t.tryAgain);
       setFeedbackType("wrong");
     }
+
+    // Any filled answer advances — not only "I don't know".
+    advanceTimerRef.current = window.setTimeout(() => {
+      goToNextQuestion();
+    }, correct ? 650 : 850);
   };
 
   const finishQuiz = () => {
@@ -959,6 +975,10 @@ function MemoryQuiz({ onComplete, onSkip }) {
   };
 
   const goToNextQuestion = () => {
+    if (advanceTimerRef.current) {
+      window.clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
     stopListening();
 
     if ("speechSynthesis" in window) {
@@ -982,6 +1002,10 @@ function MemoryQuiz({ onComplete, onSkip }) {
   };
 
   const skipQuestion = () => {
+    if (advanceTimerRef.current) {
+      window.clearTimeout(advanceTimerRef.current);
+      advanceTimerRef.current = null;
+    }
     stopListening();
 
     if ("speechSynthesis" in window) {
@@ -1206,6 +1230,24 @@ function MemoryQuiz({ onComplete, onSkip }) {
 
           <h2>{question?.text || ""}</h2>
 
+          {Array.isArray(question?.choices) && question.choices.length > 0 ? (
+            <div className="memory-choice-row">
+              {question.choices.map((choice) => (
+                <button
+                  key={choice}
+                  type="button"
+                  className={`memory-choice-btn${spokenAnswer === choice ? " is-on" : ""}`}
+                  onClick={() => {
+                    setSpokenAnswer(choice);
+                    checkAnswer(choice);
+                  }}
+                >
+                  {choice}
+                </button>
+              ))}
+            </div>
+          ) : null}
+
           <button
             className="hear-question-button"
             onClick={speakQuestion}
@@ -1246,6 +1288,12 @@ function MemoryQuiz({ onComplete, onSkip }) {
             className="memory-type-answer"
             value={spokenAnswer}
             onChange={(event) => setSpokenAnswer(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                checkAnswer();
+              }
+            }}
             placeholder="Type here if the mic does not hear you"
             autoComplete="off"
           />
@@ -1279,7 +1327,7 @@ function MemoryQuiz({ onComplete, onSkip }) {
         {/* BUTTONS */}
         <div className="memory-action-row">
 
-          {feedbackType === "correct" ? (
+          {feedbackType === "correct" || feedbackType === "wrong" ? (
             <button
               type="button"
               className="memory-check-button"
@@ -1287,13 +1335,13 @@ function MemoryQuiz({ onComplete, onSkip }) {
             >
               {currentQuestion + 1 >= questions.length
                 ? t.continue
-                : "→"}
+                : (t.next || "Next")}
             </button>
           ) : (
             <button
               type="button"
               className="memory-check-button"
-              onClick={checkAnswer}
+              onClick={() => checkAnswer()}
               disabled={!spokenAnswer.trim()}
             >
               {t.checkAnswer}

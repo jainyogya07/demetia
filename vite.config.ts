@@ -77,6 +77,7 @@ function inlineApi(): Plugin {
 }
 
 export default defineConfig(() => ({
+  envPrefix: ['VITE_', 'NEXT_PUBLIC_'],
   plugins: [killDevServiceWorker(), react(), inlineApi()],
   server: {
     proxy: {

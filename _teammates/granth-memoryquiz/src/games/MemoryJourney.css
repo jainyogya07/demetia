@@ -1,0 +1,216 @@
+.memory-journey-page {
+  min-height: 100vh;
+  background: #f4f8f7;
+  color: #244c59;
+  padding: 24px;
+  box-sizing: border-box;
+  font-family: Inter, Arial, sans-serif;
+}
+
+.memory-card {
+  width: min(760px, 100%);
+  margin: 40px auto;
+  background: white;
+  border-radius: 24px;
+  padding: 36px;
+  box-sizing: border-box;
+  text-align: center;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+}
+
+.memory-card h1 {
+  font-size: 34px;
+  margin-bottom: 18px;
+}
+
+.memory-card h2 {
+  font-size: 28px;
+  margin-bottom: 18px;
+}
+
+.memory-card p {
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+.mj-large-text {
+  font-size: 25px !important;
+  font-weight: 600;
+  margin: 25px 0;
+}
+
+.mj-primary-button,
+.mj-secondary-button {
+  border: none;
+  border-radius: 16px;
+  padding: 18px 28px;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 8px;
+  min-width: 180px;
+}
+
+.mj-primary-button {
+  background: #2f7d72;
+  color: white;
+}
+
+.mj-secondary-button {
+  background: #e7eeee;
+  color: #244c59;
+}
+
+.mj-direction-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 30px;
+}
+
+.mj-direction-button {
+  min-height: 150px;
+  border: none;
+  border-radius: 24px;
+  background: #eaf4f2;
+  color: #244c59;
+  font-size: 70px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.mj-direction-button span {
+  font-size: 22px;
+  margin-top: 8px;
+}
+
+.mj-direction-button:active {
+  transform: scale(0.97);
+}
+
+.mj-landmark-icon,
+.mj-success-icon {
+  font-size: 70px;
+  margin-bottom: 20px;
+}
+
+.mj-landmark-image {
+  max-width: 320px;
+  width: 100%;
+  max-height: 240px;
+  object-fit: cover;
+  border-radius: 20px;
+  margin: 20px auto;
+}
+
+.mj-yes-no {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.mj-topbar {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.mj-scene {
+  max-width: 900px;
+  height: 300px;
+  margin: 0 auto;
+  background: #dfeee9;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.mj-road {
+  width: 85%;
+  height: 110px;
+  background: #d2c7b4;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-size: 45px;
+}
+
+.mj-character {
+  font-size: 55px;
+}
+
+.mj-summary {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin: 30px 0;
+}
+
+.mj-summary div {
+  display: flex;
+  flex-direction: column;
+}
+
+.mj-summary strong {
+  font-size: 38px;
+}
+
+.mj-summary span {
+  font-size: 16px;
+  margin-top: 6px;
+}
+
+.mj-note {
+  font-size: 15px !important;
+  opacity: 0.75;
+  margin-top: 30px;
+}
+
+@media (max-width: 600px) {
+  .memory-journey-page {
+    padding: 12px;
+  }
+
+  .memory-card {
+    padding: 24px 16px;
+    margin: 20px auto;
+  }
+
+  .memory-card h1 {
+    font-size: 28px;
+  }
+
+  .memory-card h2 {
+    font-size: 24px;
+  }
+
+  .mj-large-text {
+    font-size: 21px !important;
+  }
+
+  .mj-direction-grid {
+    gap: 12px;
+  }
+
+  .mj-direction-button {
+    min-height: 120px;
+    font-size: 55px;
+  }
+
+  .mj-direction-button span {
+    font-size: 18px;
+  }
+
+  .mj-scene {
+    height: 220px;
+  }
+}

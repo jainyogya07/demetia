@@ -785,6 +785,12 @@ html, body, #root {
   height: 100%;
 }
 
+@media (max-width: 860px) {
+  .dashboard-scroll.dashboard-scroll-fill:has(.spatial-presence-dashboard) {
+    padding: 0;
+  }
+}
+
 .ss-tab-fill {
   flex: 1;
   min-height: 0;

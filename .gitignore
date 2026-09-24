@@ -7,3 +7,17 @@ dist
 *.log
 _from-amongus-auth/
 backend/.env
+# Rust build output
+services/spatial-rust/target/
+# Go binaries
+services/detection-go/bin/
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+# Android build
+android/.gradle/
+android/build/
+android/app/build/
+

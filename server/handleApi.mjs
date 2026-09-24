@@ -1,6 +1,10 @@
-import { MEMORIES_FALLBACK } from '../src/data/memoriesFallback.js';
+import { createRequire } from 'node:module';
+
+const require = createRequire(import.meta.url);
+const MEMORIES_FALLBACK = require('../src/data/memoriesFallback.json');
 import { createAuthHandlers } from './auth.mjs';
 import { apiPath, hasDatabaseUrl, json, readBody, withDb } from './httpKit.mjs';
+import { handleV1 } from './v1.mjs';
 
 const auth = createAuthHandlers({ withDb, json, readBody });
 
@@ -13,6 +17,8 @@ export async function handleApiRequest(req, res) {
 
   const path = apiPath(req);
   if (!path.startsWith('/api')) return false;
+
+  if (await handleV1(req, res, path)) return true;
 
   if (await auth.handle(req, res, path)) return true;
 

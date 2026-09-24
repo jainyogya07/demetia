@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Smriti Saarthi</title>
+  <style>
+    :root { --ink:#214d42; --sage:#176b58; --sand:#f4f7f5; --line:rgba(23,107,88,.16); --muted:#5c6f68; }
+    * { box-sizing: border-box; }
+    body { margin: 0; width: 320px; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--sand); color: var(--ink); }
+    header { padding: 14px 14px 8px; display: flex; justify-content: space-between; align-items: center; }
+    h1 { margin: 0; font-size: 15px; }
+    .sub { margin: 2px 0 0; font-size: 11px; color: var(--muted); }
+    section { padding: 0 14px 12px; }
+    h2 { margin: 0 0 8px; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--sage); }
+    ul { list-style: none; margin: 0; padding: 0; }
+    li { font-size: 13px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+    .helplines { display: flex; flex-wrap: wrap; gap: 6px; }
+    a.chip { text-decoration: none; background: #fff; border: 1px solid var(--line); color: var(--ink); font-weight: 700; font-size: 11px; padding: 6px 8px; border-radius: 999px; }
+    .open { display: block; margin: 4px 14px 14px; text-align: center; text-decoration: none; background: var(--sage); color: #fff; font-weight: 800; font-size: 13px; padding: 10px; border-radius: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Smriti Saarthi</h1>
+      <p class="sub">Care pack · offline numbers</p>
+    </div>
+  </header>
+  <section>
+    <h2>Today’s tasks</h2>
+    <ul id="tasks"></ul>
+  </section>
+  <section>
+    <h2>Helplines</h2>
+    <div class="helplines" id="helplines"></div>
+  </section>
+  <a class="open" id="open-app" href="https://localhost/" target="_blank" rel="noreferrer">Open full app</a>
+  <script src="popup.js"></script>
+</body>
+</html>

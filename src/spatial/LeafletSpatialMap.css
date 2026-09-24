@@ -1,0 +1,334 @@
+.demo-spatial-map {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 280px;
+  overflow: hidden;
+  background: #e7efe6;
+}
+
+.demo-spatial-map .leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: #e4eee2;
+  font-family: inherit;
+}
+
+.demo-spatial-map .leaflet-control-zoom {
+  border: none !important;
+  box-shadow: 0 8px 24px rgba(20, 48, 42, 0.16) !important;
+  margin-left: 14px !important;
+  margin-bottom: 14px !important;
+}
+
+.demo-spatial-map .leaflet-control-zoom a {
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  color: #145a4a !important;
+  border: none !important;
+}
+
+.demo-map-chip {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #145a4a;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 8px 24px rgba(20, 48, 42, 0.14);
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+}
+
+.demo-map-chip .pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #1f8570;
+  box-shadow: 0 0 0 0 rgba(31, 133, 112, 0.6);
+  animation: demo-chip-pulse 1.6s ease-out infinite;
+}
+
+@keyframes demo-chip-pulse {
+  70% { box-shadow: 0 0 0 8px rgba(31, 133, 112, 0); }
+}
+
+.demo-map-metrics {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  right: 120px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.demo-map-metrics .demo-city-switcher {
+  pointer-events: auto;
+}
+
+.demo-city-switcher {
+  display: inline-flex;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 24px rgba(20, 48, 42, 0.14);
+}
+
+.demo-city-switcher button {
+  border: none;
+  background: transparent;
+  color: #214d42;
+  font-size: 15px;
+  font-weight: 750;
+  min-height: 40px;
+  min-width: 88px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.demo-city-switcher button.is-on {
+  background: #176b58;
+  color: #fff;
+}
+
+.demo-city-switcher.is-compact button {
+  min-height: 36px;
+  min-width: 76px;
+  font-size: 14px;
+}
+
+.demo-map-metrics .demo-map-chip {
+  position: static;
+}
+
+.demo-metric-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: min(560px, calc(100% - 8px));
+}
+
+.demo-metric-pill {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 650;
+  color: #214d42;
+  box-shadow: 0 4px 14px rgba(20, 48, 42, 0.1);
+}
+
+.demo-metric-pill.watch {
+  background: #fff6e4;
+  color: #8a5a12;
+}
+
+.demo-copy-banner {
+  max-width: min(420px, 70%);
+  background: rgba(232, 245, 233, 0.94);
+  color: #1b5e4a;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  box-shadow: 0 6px 16px rgba(20, 48, 42, 0.08);
+}
+
+.demo-copy-banner.watch {
+  background: rgba(255, 248, 230, 0.95);
+  color: #7a4e10;
+}
+
+.demo-map-dock {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 500;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.demo-map-dock > * {
+  pointer-events: auto;
+}
+
+.demo-360-pip {
+  width: min(280px, 38vw);
+  height: 168px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(8, 20, 16, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  background: #0d1c18;
+}
+
+.demo-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 10px 28px rgba(20, 48, 42, 0.16);
+}
+
+.demo-controls button,
+.demo-controls select {
+  border: none;
+  background: #eef6f3;
+  color: #145a4a;
+  font-weight: 700;
+  font-size: 12px;
+  border-radius: 8px;
+  padding: 7px 10px;
+  cursor: pointer;
+}
+
+.demo-controls button.primary {
+  background: #176b58;
+  color: #fff;
+}
+
+.demo-controls button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.demo-legend {
+  position: absolute;
+  right: 14px;
+  bottom: 96px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 11px;
+  font-weight: 650;
+  color: #214d42;
+  box-shadow: 0 8px 20px rgba(20, 48, 42, 0.12);
+  pointer-events: none;
+}
+
+.demo-legend span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.demo-legend i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.demo-walker {
+  width: 28px;
+  height: 28px;
+  transform-origin: 50% 50%;
+}
+
+.demo-walker-cone {
+  position: absolute;
+  left: 50%;
+  top: 1px;
+  width: 18px;
+  height: 18px;
+  margin-left: -9px;
+  background: conic-gradient(from 220deg, rgba(23, 107, 88, 0) 0deg, rgba(23, 107, 88, 0.45) 70deg, rgba(23, 107, 88, 0) 140deg);
+  border-radius: 50%;
+}
+
+.demo-walker-dot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 14px;
+  height: 14px;
+  margin: -7px 0 0 -7px;
+  border-radius: 50%;
+  background: #176b58;
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 4px rgba(23, 107, 88, 0.22), 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+@media (max-width: 820px) {
+  .demo-spatial-map {
+    min-height: 52vh;
+  }
+
+  .demo-360-pip {
+    width: 100%;
+    max-width: none;
+    height: 104px;
+  }
+
+  .demo-map-metrics {
+    left: 10px;
+    right: 10px;
+    top: max(8px, env(safe-area-inset-top, 0px));
+  }
+
+  .demo-map-dock {
+    left: 10px;
+    right: 10px;
+    bottom: max(10px, env(safe-area-inset-bottom, 0px));
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .demo-controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .demo-controls button,
+  .demo-controls select {
+    min-height: 44px;
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+
+  .demo-city-switcher button {
+    min-height: 44px;
+    min-width: 96px;
+    font-size: 16px;
+  }
+
+  .demo-metric-pill {
+    font-size: 12px;
+    padding: 6px 11px;
+  }
+
+  .demo-copy-banner {
+    max-width: 100%;
+    font-size: 13px;
+  }
+
+  .demo-legend {
+    display: none;
+  }
+}

@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smriti Saathi — App Flow</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,500;0,600;1,500&family=Noto+Sans+Devanagari:wght@400;600;700&family=Nunito+Sans:wght@400;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-1: #EEF4EC;
+            --bg-2: #E2EDE4;
+            --surface: #FFFFFF;
+            --ink: #22322E;
+            --ink-soft: #5C6E67;
+            --primary: #2F6B5E;
+            --primary-dark: #1E463C;
+            --gold: #E7A33C;
+            --gold-soft: #FBEBCF;
+            --rose: #C9788A;
+            --rose-soft: #F6E4E8;
+            --sky: #6EA6AC;
+            --sky-soft: #E1EEEF;
+            --line: rgba(47, 107, 94, 0.14);
+            --shadow: 0 24px 60px -20px rgba(30, 60, 52, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(60% 50% at 15% 10%, #F3F8EF 0%, transparent 60%),
+                radial-gradient(55% 45% at 85% 90%, #E4EFEA 0%, transparent 60%),
+                linear-gradient(180deg, var(--bg-1), var(--bg-2));
+            font-family: 'Nunito Sans', 'Noto Sans Devanagari', sans-serif;
+            color: var(--ink);
+            overflow: hidden;
+        }
+
+        body.lang-hi {
+            font-family: 'Noto Sans Devanagari', 'Nunito Sans', sans-serif;
+        }
+
+        .stage {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            min-height: 640px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 18px 14px 22px;
+        }
+
+        /* ---------- Ambient floating blobs (depth) ---------- */
+        .ambient {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(50px);
+            opacity: .55;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .ambient.a1 {
+            width: 280px;
+            height: 280px;
+            left: -90px;
+            top: -70px;
+            background: radial-gradient(circle, #DCEEE0, transparent 70%);
+            animation: float1 16s ease-in-out infinite;
+        }
+
+        .ambient.a2 {
+            width: 260px;
+            height: 260px;
+            right: -80px;
+            bottom: -60px;
+            background: radial-gradient(circle, #F7E3D4, transparent 70%);
+            animation: float2 19s ease-in-out infinite;
+        }
+
+        .ambient.a3 {
+            width: 200px;
+            height: 200px;
+            left: 6%;
+            bottom: -40px;
+            background: radial-gradient(circle, #F0E1E6, transparent 70%);
+            animation: float3 21s ease-in-out infinite;
+        }
+
+        @keyframes float1 {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(24px, 30px);
+            }
+        }
+
+        @keyframes float2 {
+
+            0%,
+            100% {
+                transform: translate(0, 0);
+            }
+
+            50% {
+                transform: translate(-26px, -22px);
+            }
+        }
+
+        @keyframes float3 {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(16px, -18px) scale(1.08);
+            }
+        }
+
+        /* ---------- Brand header ---------- */
+        .brand {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            pointer-events: none;
+            text-align: center;
+            opacity: 0;
+            animation: introFade .7s ease .1s forwards;
+        }
+
+        .brand .mark {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 600;
+            font-size: clamp(19px, 2.6vw, 25px);
+            letter-spacing: 0.2px;
+            background: linear-gradient(100deg, var(--primary-dark) 0%, var(--gold) 45%, var(--primary-dark) 90%);
+            background-size: 220% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shimmerText 7s linear infinite;
+        }
+
+        @keyframes shimmerText {
+            to {
+                background-position: -220% center;
+            }
+        }
+
+        .brand .sub {
+            font-size: 12px;
+            color: var(--ink-soft);
+            letter-spacing: 0.4px;
+        }
+
+        @keyframes introFade {
+            from {
+                opacity: 0;
+                transform: translateY(-6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .control {
+            position: absolute;
+            top: 20px;
+            right: 22px;
+            z-index: 6;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 6px 16px -8px rgba(30, 60, 52, 0.4);
+            transition: transform .2s ease;
+            opacity: 0;
+            animation: introFade .7s ease .15s forwards;
+        }
+
+        .control:hover {
+            transform: scale(1.08);
+        }
+
+        .control:active {
+            transform: scale(0.94);
+        }
+
+        .control svg {
+            width: 16px;
+            height: 16px;
+            fill: var(--primary-dark);
+        }
+
+        /* ---------- Language toggle ---------- */
+        .lang-toggle {
+            position: absolute;
+            top: 20px;
+            left: 22px;
+            z-index: 6;
+            display: flex;
+            align-items: center;
+            position: absolute;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            padding: 3px;
+            cursor: pointer;
+            user-select: none;
+            box-shadow: 0 6px 16px -8px rgba(30, 60, 52, 0.4);
+            opacity: 0;
+            animation: introFade .7s ease .15s forwards;
+        }
+
+        .lang-toggle .lang-track {
+            position: relative;
+            display: flex;
+        }
+
+        .lang-toggle .lang-thumb {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 36px;
+            height: 100%;
+            background: var(--primary);
+            border-radius: 999px;
+            z-index: 0;
+            transition: transform .4s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .lang-toggle.hi .lang-thumb {
+            transform: translateX(36px);
+        }
+
+        .lang-opt {
+            position: relative;
+            z-index: 1;
+            width: 36px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--ink-soft);
+            transition: color .3s ease;
+            padding: 7px 0;
+        }
+
+        .lang-opt.active {
+            color: #fff;
+        }
+
+        /* ---------- Orbit: phone + memory-thread ring share ONE center ---------- */
+        .orbit {
+            position: relative;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: clamp(44px, 8.5vw, 62px) clamp(78px, 15vw, 108px) clamp(66px, 12.5vw, 92px);
+            opacity: 0;
+            transform: scale(.92) translateY(14px);
+            animation: introPop .8s cubic-bezier(.22, 1, .36, 1) .05s forwards;
+        }
+
+        @keyframes introPop {
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        .phone-halo {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 78%;
+            height: 88%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(231, 163, 60, 0.16), transparent 68%);
+            animation: halo 4.5s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        @keyframes halo {
+
+            0%,
+            100% {
+                opacity: .55;
+                transform: translate(-50%, -50%) scale(0.94);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1.04);
+            }
+        }
+
+        .thread-wrap {
+            position: absolute;
+            inset: 0;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .thread-wrap svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            overflow: visible;
+        }
+
+        .thread-path {
+            fill: none;
+            stroke: url(#threadGrad);
+            stroke-width: 1.5;
+            stroke-dasharray: 4 7;
+            stroke-linecap: round;
+            animation: dashflow 14s linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes dashflow {
+            to {
+                stroke-dashoffset: -300;
+            }
+        }
+
+        .spark {
+            filter: drop-shadow(0 0 3px rgba(231, 163, 60, 0.9));
+        }
+
+        .node {
+            transition: filter .4s ease;
+        }
+
+        .node-btn {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+        }
+
+        .node-ring {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1.4px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 18px -10px rgba(30, 60, 52, 0.35);
+            transition: border-color .4s ease, background .4s ease, box-shadow .4s ease, transform .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .node-btn:hover .node-ring {
+            transform: scale(1.1);
+            border-color: var(--sky);
+        }
+
+        .node-ring .ico {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: var(--ink-soft);
+            stroke-width: 1.7;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke .4s ease;
+        }
+
+        .node.active .node-ring {
+            border-color: var(--gold);
+            background: var(--gold-soft);
+            box-shadow: 0 0 0 6px rgba(231, 163, 60, 0.16), 0 10px 22px -10px rgba(231, 163, 60, 0.6);
+            transform: scale(1.18);
+        }
+
+        .node.active .node-ring .ico {
+            stroke: var(--primary-dark);
+        }
+
+        .node.active.pulse .node-ring {
+            animation: nodePulse 1.8s ease-in-out infinite;
+        }
+
+        @keyframes nodePulse {
+
+            0%,
+            100% {
+                box-shadow: 0 0 0 6px rgba(231, 163, 60, 0.16), 0 10px 22px -10px rgba(231, 163, 60, 0.6);
+            }
+
+            50% {
+                box-shadow: 0 0 0 11px rgba(231, 163, 60, 0.08), 0 10px 22px -10px rgba(231, 163, 60, 0.6);
+            }
+        }
+
+        /* ---------- Phone mockup ---------- */
+        .phone-wrap {
+            position: relative;
+            z-index: 3;
+            animation: idleFloat 6s ease-in-out infinite;
+        }
+
+        @keyframes idleFloat {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-7px);
+            }
+        }
+
+        .phone {
+            position: relative;
+            height: min(52vh, 440px);
+            width: auto;
+            aspect-ratio: 9/18.5;
+            background: linear-gradient(160deg, #233B34, #12211C);
+            border-radius: 38px;
+            padding: 12px;
+            box-shadow: var(--shadow), inset 0 0 0 2px rgba(255, 255, 255, 0.04);
+        }
+
+        .phone::before {
+            /* notch */
+            content: "";
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 16px;
+            background: #12211C;
+            border-radius: 0 0 14px 14px;
+            z-index: 4;
+        }
+
+        .screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: var(--surface);
+            border-radius: 26px;
+            overflow: hidden;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.03);
+        }
+
+        /* scene base */
+        .scene {
+            position: absolute;
+            inset: 0;
+            padding: 34px 16px 16px;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(8px) scale(.985);
+            transition: opacity .5s ease, transform .5s cubic-bezier(.22, .9, .32, 1);
+        }
+
+        .scene.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+            z-index: 2;
+        }
+
+        .scene .s-eyebrow {
+            font-size: 10.5px;
+            letter-spacing: 1px;
+            color: var(--primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        .scene .s-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 12px;
+            opacity: 0;
+            transform: translateY(6px);
+        }
+
+        .scene.active .s-eyebrow {
+            animation: fadeUp .45s ease .05s forwards;
+        }
+
+        .scene.active .s-title {
+            animation: fadeUp .5s ease .12s forwards;
+        }
+
+        /* ---- Scene: Auth ---- */
+        .avatar-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 6px;
+        }
+
+        .avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(160deg, var(--sky-soft), var(--surface));
+            border: 2px solid var(--sky);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            opacity: 0;
+            transform: scale(.7);
+        }
+
+        .scene.active#auth .avatar {
+            animation: popIn .5s cubic-bezier(.34, 1.56, .64, 1) .1s forwards;
+        }
+
+        @keyframes popIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .avatar svg {
+            width: 30px;
+            height: 30px;
+            stroke: var(--primary-dark);
+            fill: none;
+            stroke-width: 1.6;
+        }
+
+        .hello {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 2px;
+        }
+
+        .hello-sub {
+            font-size: 11.5px;
+            color: var(--ink-soft);
+            margin-bottom: 16px;
+        }
+
+        .auth-btn {
+            position: relative;
+            width: 86%;
+            padding: 11px 10px;
+            border-radius: 14px;
+            background: var(--primary);
+            color: #fff;
+            text-align: center;
+            font-weight: 700;
+            font-size: 12.5px;
+            box-shadow: 0 10px 20px -10px rgba(47, 107, 94, 0.7);
+            overflow: hidden;
+        }
+
+        .auth-btn::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            background: linear-gradient(100deg, transparent 20%, rgba(255, 255, 255, .35) 40%, transparent 60%);
+            transform: translateX(-120%);
+        }
+
+        .scene.active#auth .auth-btn::after {
+            animation: sheen 2.6s ease 1.6s infinite;
+        }
+
+        @keyframes sheen {
+            to {
+                transform: translateX(120%);
+            }
+        }
+
+        .tap {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid var(--primary-dark);
+            left: 50%;
+            top: 50%;
+            margin: -10px 0 0 -10px;
+            opacity: 0;
+        }
+
+        .scene.active#auth .tap {
+            animation: tapBtn 3.6s ease-in-out .4s 1;
+        }
+
+        @keyframes tapBtn {
+            0% {
+                opacity: 0;
+                transform: translate(30px, 26px) scale(1);
+            }
+
+            18% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+
+            30% {
+                transform: translate(0, 0) scale(0.8);
+            }
+
+            42% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+            }
+        }
+
+        .auth-success {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 14px;
+            font-size: 11.5px;
+            color: var(--primary-dark);
+            font-weight: 700;
+            opacity: 0;
+        }
+
+        .scene.active#auth .auth-success {
+            animation: fadeUp .5s ease .95s forwards;
+        }
+
+        .auth-success svg {
+            width: 15px;
+            height: 15px;
+            stroke: var(--primary);
+            fill: none;
+            stroke-width: 2.4;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ---- Scene: Reminders ---- */
+        .r-card {
+            display: flex;
+            gap: 9px;
+            align-items: flex-start;
+            background: var(--bg-1);
+            border: 1px solid var(--line);
+            border-radius: 13px;
+            padding: 9px 10px;
+            margin-bottom: 8px;
+            opacity: 0;
+            transform: translateY(10px) scale(.97);
+        }
+
+        .scene.active#reminders .r-card-1 {
+            animation: cardIn .5s cubic-bezier(.22, 1, .36, 1) .2s forwards;
+        }
+
+        .scene.active#reminders .r-card-2 {
+            animation: cardIn .5s cubic-bezier(.22, 1, .36, 1) .75s forwards;
+        }
+
+        .scene.active#reminders .r-card-3 {
+            animation: cardIn .5s cubic-bezier(.22, 1, .36, 1) 1.3s forwards;
+        }
+
+        @keyframes cardIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .r-ico {
+            width: 26px;
+            height: 26px;
+            border-radius: 9px;
+            background: var(--gold-soft);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: none;
+        }
+
+        .r-ico svg {
+            width: 14px;
+            height: 14px;
+            stroke: var(--gold);
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .r-txt .t1 {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--ink);
+        }
+
+        .r-txt .t2 {
+            font-size: 10.5px;
+            color: var(--ink-soft);
+            margin-top: 1px;
+        }
+
+        .bell {
+            position: absolute;
+            top: 8px;
+            right: 14px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .bell svg {
+            width: 100%;
+            height: 100%;
+            stroke: var(--gold);
+            fill: none;
+            stroke-width: 2;
+            transform-origin: 50% 0%;
+        }
+
+        .scene.active#reminders .bell svg {
+            animation: swing 1.4s ease-in-out infinite;
+        }
+
+        @keyframes swing {
+
+            0%,
+            100% {
+                transform: rotate(-8deg);
+            }
+
+            50% {
+                transform: rotate(8deg);
+            }
+        }
+
+        /* ---- Scene: Voice ---- */
+        .mic-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2px;
+        }
+
+        .mic-ring {
+            position: relative;
+            width: 58px;
+            height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .mic-ring::before,
+        .mic-ring::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 1.6px solid var(--rose);
+            opacity: 0;
+        }
+
+        .scene.active#voice .mic-ring::before {
+            animation: ripple 2.1s ease-out infinite;
+        }
+
+        .scene.active#voice .mic-ring::after {
+            animation: ripple 2.1s ease-out .7s infinite;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0.6);
+                opacity: .7;
+            }
+
+            100% {
+                transform: scale(1.7);
+                opacity: 0;
+            }
+        }
+
+        .mic-core {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: var(--rose);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            box-shadow: 0 8px 18px -8px rgba(201, 120, 138, 0.7);
+        }
+
+        .mic-core svg {
+            width: 17px;
+            height: 17px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 2.2;
+        }
+
+        .wave {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 16px;
+            margin-bottom: 12px;
+        }
+
+        .wave span {
+            width: 3px;
+            background: var(--rose);
+            border-radius: 2px;
+            height: 4px;
+        }
+
+        .scene.active#voice .wave span {
+            animation: bar 1s ease-in-out infinite;
+        }
+
+        .wave span:nth-child(1) {
+            animation-delay: .0s;
+        }
+
+        .wave span:nth-child(2) {
+            animation-delay: .12s;
+        }
+
+        .wave span:nth-child(3) {
+            animation-delay: .24s;
+        }
+
+        .wave span:nth-child(4) {
+            animation-delay: .36s;
+        }
+
+        .wave span:nth-child(5) {
+            animation-delay: .48s;
+        }
+
+        @keyframes bar {
+
+            0%,
+            100% {
+                height: 4px;
+            }
+
+            50% {
+                height: 16px;
+            }
+        }
+
+        .bubble {
+            max-width: 88%;
+            padding: 8px 11px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            opacity: 0;
+            margin-bottom: 6px;
+            line-height: 1.35;
+            transform: translateY(6px) scale(.96);
+        }
+
+        .bubble.me {
+            background: var(--rose-soft);
+            color: #7a3f4b;
+            align-self: flex-start;
+            border-bottom-left-radius: 3px;
+        }
+
+        .bubble.her {
+            background: var(--primary);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 3px;
+        }
+
+        .scene.active#voice .bubble.me {
+            animation: bubbleIn .4s cubic-bezier(.34, 1.56, .64, 1) 1.1s forwards;
+        }
+
+        .scene.active#voice .bubble.her {
+            animation: bubbleIn .4s cubic-bezier(.34, 1.56, .64, 1) 2.3s forwards;
+        }
+
+        @keyframes bubbleIn {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .bubbles {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* ---- Scene: Tasks ---- */
+        .t-row {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 2px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .t-box {
+            width: 18px;
+            height: 18px;
+            border-radius: 6px;
+            border: 1.6px solid var(--sky);
+            flex: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .t-box svg {
+            width: 11px;
+            height: 11px;
+            stroke: #fff;
+            fill: none;
+            stroke-width: 3;
+            opacity: 0;
+        }
+
+        .t-label {
+            font-size: 12px;
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        .scene.active#tasks .t-row-1 .t-box {
+            animation: check .35s ease .4s forwards;
+        }
+
+        .scene.active#tasks .t-row-1 .t-box svg {
+            animation: pop .3s ease .45s forwards;
+        }
+
+        .scene.active#tasks .t-row-1 .t-label {
+            animation: strike .35s ease .5s forwards;
+        }
+
+        .scene.active#tasks .t-row-2 .t-box {
+            animation: check .35s ease 1.3s forwards;
+        }
+
+        .scene.active#tasks .t-row-2 .t-box svg {
+            animation: pop .3s ease 1.35s forwards;
+        }
+
+        .scene.active#tasks .t-row-2 .t-label {
+            animation: strike .35s ease 1.4s forwards;
+        }
+
+        .scene.active#tasks .t-row-3 .t-box {
+            animation: check .35s ease 2.2s forwards;
+        }
+
+        .scene.active#tasks .t-row-3 .t-box svg {
+            animation: pop .3s ease 2.25s forwards;
+        }
+
+        .scene.active#tasks .t-row-3 .t-label {
+            animation: strike .35s ease 2.3s forwards;
+        }
+
+        @keyframes check {
+            to {
+                background: var(--sky);
+                border-color: var(--sky);
+            }
+        }
+
+        @keyframes pop {
+            from {
+                opacity: 0;
+                transform: scale(.4);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes strike {
+            to {
+                color: var(--ink-soft);
+                text-decoration: line-through;
+            }
+        }
+
+        .t-progress {
+            margin-top: 10px;
+            height: 6px;
+            border-radius: 4px;
+            background: var(--bg-1);
+            overflow: hidden;
+        }
+
+        .t-progress i {
+            display: block;
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--sky), var(--primary));
+            border-radius: 4px;
+        }
+
+        .scene.active#tasks .t-progress i {
+            animation: fillbar 1.2s ease 2.35s forwards;
+        }
+
+        @keyframes fillbar {
+            to {
+                width: 100%;
+            }
+        }
+
+        /* ---- Scene: Dashboard ---- */
+        .d-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 2px;
+        }
+
+        .d-card {
+            background: var(--bg-1);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 9px;
+            opacity: 0;
+            transform: translateY(8px) scale(.97);
+        }
+
+        .scene.active#dash .d-card:nth-child(1) {
+            animation: cardIn .45s cubic-bezier(.22, 1, .36, 1) .15s forwards;
+        }
+
+        .scene.active#dash .d-card:nth-child(2) {
+            animation: cardIn .45s cubic-bezier(.22, 1, .36, 1) .4s forwards;
+        }
+
+        .scene.active#dash .d-card:nth-child(3) {
+            animation: cardIn .45s cubic-bezier(.22, 1, .36, 1) .65s forwards;
+            grid-column: 1/3;
+        }
+
+        .d-num {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary-dark);
+        }
+
+        .d-lbl {
+            font-size: 9.5px;
+            color: var(--ink-soft);
+            font-weight: 700;
+            margin-top: 1px;
+        }
+
+        .ring {
+            width: 30px;
+            height: 30px;
+        }
+
+        .ring circle {
+            fill: none;
+            stroke-width: 4;
+        }
+
+        .ring .bg {
+            stroke: var(--sky-soft);
+        }
+
+        .ring .fg {
+            stroke: var(--gold);
+            stroke-linecap: round;
+            stroke-dasharray: 75;
+            stroke-dashoffset: 75;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .scene.active#dash .ring .fg {
+            animation: ringfill 1.2s ease .8s forwards;
+        }
+
+        @keyframes ringfill {
+            to {
+                stroke-dashoffset: 8;
+            }
+        }
+
+        .d-send {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .d-send svg {
+            width: 15px;
+            height: 15px;
+            stroke: var(--primary);
+            fill: none;
+            stroke-width: 2;
+            flex: none;
+        }
+
+        .d-send span {
+            font-size: 10.5px;
+            color: var(--ink);
+            font-weight: 600;
+        }
+
+        /* ---------- Caption ---------- */
+        .caption {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            margin-top: 14px;
+            min-height: 52px;
+            max-width: 340px;
+        }
+
+        .cap-head {
+            font-size: 15px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity .4s ease, transform .4s ease;
+        }
+
+        .cap-sub {
+            font-size: 12px;
+            color: var(--ink-soft);
+            margin-top: 3px;
+            opacity: 0;
+            transform: translateY(4px);
+            transition: opacity .4s ease .06s, transform .4s ease .06s;
+            font-weight: 600;
+        }
+
+        .caption.show .cap-head,
+        .caption.show .cap-sub {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ---------- Progress dots ---------- */
+        .dots {
+            position: relative;
+            z-index: 3;
+            display: flex;
+            gap: 14px;
+            margin-top: 6px;
+            opacity: 0;
+            animation: introFade .7s ease .3s forwards;
+        }
+
+        .dot {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 1px solid var(--line);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color .35s ease, background .35s ease, box-shadow .35s ease, transform .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+
+        .dot:hover {
+            transform: translateY(-2px);
+        }
+
+        .dot svg {
+            width: 13px;
+            height: 13px;
+            stroke: var(--ink-soft);
+            fill: none;
+            stroke-width: 2;
+            transition: stroke .35s ease;
+        }
+
+        .dot.on {
+            border-color: var(--gold);
+            background: var(--gold-soft);
+            box-shadow: 0 0 0 4px rgba(231, 163, 60, 0.15);
+            transform: scale(1.08);
+        }
+
+        .dot.on svg {
+            stroke: var(--primary-dark);
+        }
+
+        @media (max-width:380px) {
+            .orbit {
+                padding: clamp(36px, 8vw, 50px) clamp(58px, 14vw, 80px) clamp(52px, 12vw, 70px);
+            }
+
+            .caption {
+                margin-top: 10px;
+            }
+
+            .dots {
+                margin-top: 4px;
+                gap: 10px;
+            }
+
+            .dot {
+                width: 26px;
+                height: 26px;
+            }
+
+            .node-ring {
+                width: 34px;
+                height: 34px;
+            }
+
+            .node-ring .ico {
+                width: 14px;
+                height: 14px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.001s !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.2s !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="stage">
+
+        <div class="ambient a1"></div>
+        <div class="ambient a2"></div>
+        <div class="ambient a3"></div>
+
+        <div class="lang-toggle" id="langToggle" title="Change language / भाषा बदलें">
+            <div class="lang-track">
+                <div class="lang-thumb"></div>
+                <div class="lang-opt active" data-lang="en">EN</div>
+                <div class="lang-opt" data-lang="hi">हिं</div>
+            </div>
+        </div>
+
+        <div class="brand">
+            <div class="mark" data-en="Smriti Saathi" data-hi="स्मृति साथी">Smriti Saathi</div>
+            <div class="sub" data-en="Together every moment, every memory safe" data-hi="हर पल साथ, हर याद सुरक्षित">
+                Together every moment, every memory safe</div>
+        </div>
+
+        <div class="control" id="playToggle" title="Pause/Play">
+            <svg id="iconPause" viewBox="0 0 24 24">
+                <rect x="6" y="5" width="4" height="14" rx="1"></rect>
+                <rect x="14" y="5" width="4" height="14" rx="1"></rect>
+            </svg>
+            <svg id="iconPlay" style="display:none" viewBox="0 0 24 24">
+                <path d="M7 5l12 7-12 7V5z"></path>
+            </svg>
+        </div>
+
+        <!-- orbit: phone + surrounding memory-thread nodes share one exact center -->
+        <div class="orbit">
+            <div class="phone-halo"></div>
+
+            <div class="thread-wrap">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                    <defs>
+                        <linearGradient id="threadGrad" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#6EA6AC" />
+                            <stop offset="50%" stop-color="#E7A33C" />
+                            <stop offset="100%" stop-color="#C9788A" />
+                        </linearGradient>
+                    </defs>
+                    <path id="threadPath" class="thread-path" vector-effect="non-scaling-stroke"
+                        d="M50,3 C76,6 92,10 95,22 C97,32 99,42 100,52 C99,64 90,82 50,97 C10,82 1,64 0,52 C1,42 3,32 5,22 C8,10 24,6 50,3 Z" />
+                    <circle class="spark" r="1.6" style="fill:var(--gold)">
+                        <animateMotion dur="7s" repeatCount="indefinite" rotate="auto">
+                            <mpath href="#threadPath" />
+                        </animateMotion>
+                    </circle>
+                    <circle class="spark" r="1.3" style="fill:var(--sky)" opacity="0.85">
+                        <animateMotion dur="7s" begin="-3.5s" repeatCount="indefinite" rotate="auto">
+                            <mpath href="#threadPath" />
+                        </animateMotion>
+                    </circle>
+                </svg>
+            </div>
+
+            <!-- node buttons, each pinned to a fixed spot around the phone -->
+            <div class="node node-btn" data-scene="auth" style="top:3%; left:50%;">
+                <div class="node-ring"><svg class="ico" viewBox="0 0 14 16">
+                        <rect x="0" y="6" width="14" height="9" rx="2" />
+                        <path d="M3 6V4a4 4 0 0 1 8 0v2" />
+                    </svg></div>
+            </div>
+            <div class="node node-btn" data-scene="dash" style="top:22%; left:95%;">
+                <div class="node-ring"><svg class="ico" viewBox="0 0 12 12">
+                        <rect x="0" y="0" width="5" height="5" rx="1" />
+                        <rect x="7" y="0" width="5" height="5" rx="1" />
+                        <rect x="0" y="7" width="5" height="5" rx="1" />
+                        <rect x="7" y="7" width="5" height="5" rx="1" />
+                    </svg></div>
+            </div>
+            <div class="node node-btn" data-scene="reminders" style="top:52%; left:100%;">
+                <div class="node-ring"><svg class="ico" viewBox="0 0 24 24">
+                        <path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6" />
+                        <path d="M10 21a2 2 0 0 0 4 0" />
+                    </svg></div>
+            </div>
+            <div class="node node-btn" data-scene="tasks" style="top:52%; left:0%;">
+                <div class="node-ring"><svg class="ico" viewBox="0 0 24 24">
+                        <path d="M20 6L9 17l-5-5" />
+                    </svg></div>
+            </div>
+            <div class="node node-btn" data-scene="voice" style="top:97%; left:50%;">
+                <div class="node-ring"><svg class="ico" viewBox="0 0 24 24">
+                        <rect x="9" y="2" width="6" height="12" rx="3" />
+                        <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+                    </svg></div>
+            </div>
+
+            <!-- phone -->
+            <div class="phone-wrap">
+                <div class="phone">
+                    <div class="screen">
+
+                        <div class="scene active" id="auth">
+                            <div class="s-eyebrow" data-en="IDENTITY" data-hi="पहचान">IDENTITY</div>
+                            <div class="s-title" data-en="Secure Sign In" data-hi="सुरक्षित प्रवेश">Secure Sign In</div>
+                            <div class="avatar-wrap">
+                                <div class="avatar"><svg viewBox="0 0 24 24">
+                                        <circle cx="12" cy="8" r="4" />
+                                        <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
+                                    </svg></div>
+                                <div class="hello" data-en="Hello, Sunita ji 👋" data-hi="नमस्ते, सुनीता जी 👋">Hello,
+                                    Sunita ji 👋</div>
+                                <div class="hello-sub" data-en="Your family is with you"
+                                    data-hi="आपका परिवार आपके साथ है">Your family is with you</div>
+                                <div class="auth-btn"><span data-en="Verify &amp; Get Started"
+                                        data-hi="पहचानें और शुरू करें">Verify &amp; Get Started</span>
+                                    <div class="tap"></div>
+                                </div>
+                                <div class="auth-success"><svg viewBox="0 0 24 24">
+                                        <path d="M20 6L9 17l-5-5" />
+                                    </svg><span data-en="Signed in successfully" data-hi="प्रवेश सफल रहा">Signed in
+                                        successfully</span></div>
+                            </div>
+                        </div>
+
+                        <div class="scene" id="reminders" style="position:relative;">
+                            <div class="bell"><svg viewBox="0 0 24 24">
+                                    <path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6" />
+                                    <path d="M10 21a2 2 0 0 0 4 0" />
+                                </svg></div>
+                            <div class="s-eyebrow" data-en="REMIND" data-hi="याद दिलाना">REMIND</div>
+                            <div class="s-title" data-en="Today's reminders" data-hi="आज के रिमाइंडर">Today's reminders
+                            </div>
+                            <div class="r-card r-card-1">
+                                <div class="r-ico"><svg viewBox="0 0 24 24">
+                                        <path d="M12 2v4M8 4v2M16 4v2" />
+                                        <rect x="5" y="6" width="14" height="15" rx="3" />
+                                        <path d="M9 13h6M9 17h4" />
+                                    </svg></div>
+                                <div class="r-txt">
+                                    <div class="t1" data-en="💊 Medicine time" data-hi="💊 दवाई का समय">💊 Medicine time
+                                    </div>
+                                    <div class="t2" data-en="9:00 AM" data-hi="सुबह 9:00 बजे">9:00 AM</div>
+                                </div>
+                            </div>
+                            <div class="r-card r-card-2">
+                                <div class="r-ico"><svg viewBox="0 0 24 24">
+                                        <path d="M9 2v3M15 2v3" />
+                                        <rect x="4" y="4" width="16" height="17" rx="3" />
+                                        <path d="M4 10h16" />
+                                    </svg></div>
+                                <div class="r-txt">
+                                    <div class="t1" data-en="🩺 Doctor appointment" data-hi="🩺 डॉक्टर अपॉइंटमेंट">🩺
+                                        Doctor appointment</div>
+                                    <div class="t2" data-en="Tomorrow, 3:00 PM" data-hi="कल, दोपहर 3:00 बजे">Tomorrow,
+                                        3:00 PM</div>
+                                </div>
+                            </div>
+                            <div class="r-card r-card-3">
+                                <div class="r-ico"><svg viewBox="0 0 24 24">
+                                        <path
+                                            d="M12 21s-7-4.35-9.5-8.5C.5 8.5 3 5 6.5 5c2 0 3.5 1.2 5.5 3.2C14 6.2 15.5 5 17.5 5 21 5 23.5 8.5 21.5 12.5 19 16.65 12 21 12 21z" />
+                                    </svg></div>
+                                <div class="r-txt">
+                                    <div class="t1" data-en="💧 Drink water" data-hi="💧 पानी पीना">💧 Drink water</div>
+                                    <div class="t2" data-en="Every 2 hours" data-hi="हर 2 घंटे में">Every 2 hours</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="scene" id="voice">
+                            <div class="s-eyebrow" data-en="TALK TO VOICE" data-hi="आवाज़ से बात">TALK TO VOICE</div>
+                            <div class="s-title" data-en="Just speak, your partner listens."
+                                data-hi="बस बोलिए, साथी सुनता है">Just speak, your partner listens.</div>
+                            <div class="mic-zone">
+                                <div class="mic-ring">
+                                    <div class="mic-core"><svg viewBox="0 0 24 24">
+                                            <rect x="9" y="2" width="6" height="12" rx="3" />
+                                            <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+                                        </svg></div>
+                                </div>
+                                <div class="wave"><span></span><span></span><span></span><span></span><span></span>
+                                </div>
+                            </div>
+                            <div class="bubbles">
+                                <div class="bubble her" data-en="It's time to drink water. 💧"
+                                    data-hi="पानी पीने का समय हो गया है 💧">It's time to drink water. 💧</div>
+                                <div class="bubble me" data-en="Okay, I will remember it. 💛"
+                                    data-hi="ठीक है, याद रखूंगी 💛">Okay, I will remember it. 💛</div>
+                            </div>
+                        </div>
+
+                        <div class="scene" id="tasks">
+                            <div class="s-eyebrow" data-en="TASKS" data-hi="कार्य सूची">TASKS</div>
+                            <div class="s-title" data-en="Today's little tasks" data-hi="आज के छोटे-छोटे काम">Today's
+                                little tasks</div>
+                            <div class="t-row t-row-1">
+                                <div class="t-box"><svg viewBox="0 0 24 24">
+                                        <path d="M20 6L9 17l-5-5" />
+                                    </svg></div>
+                                <div class="t-label" data-en="Morning walk" data-hi="सुबह की सैर">Morning walk</div>
+                            </div>
+                            <div class="t-row t-row-2">
+                                <div class="t-box"><svg viewBox="0 0 24 24">
+                                        <path d="M20 6L9 17l-5-5" />
+                                    </svg></div>
+                                <div class="t-label" data-en="Have breakfast" data-hi="नाश्ता करें">Have breakfast</div>
+                            </div>
+                            <div class="t-row t-row-3">
+                                <div class="t-box"><svg viewBox="0 0 24 24">
+                                        <path d="M20 6L9 17l-5-5" />
+                                    </svg></div>
+                                <div class="t-label" data-en="Read a book" data-hi="किताब पढ़ें">Read a book</div>
+                            </div>
+                            <div class="t-progress"><i></i></div>
+                        </div>
+
+                        <div class="scene" id="dash">
+                            <div class="s-eyebrow" data-en="DASHBOARD" data-hi="डैशबोर्ड">DASHBOARD</div>
+                            <div class="s-title" data-en="Today's summary" data-hi="आज का सारांश">Today's summary</div>
+                            <div class="d-grid">
+                                <div class="d-card">
+                                    <div class="d-num">3/3</div>
+                                    <div class="d-lbl" data-en="Tasks completed" data-hi="काम पूरे हुए">Tasks completed
+                                    </div>
+                                </div>
+                                <div class="d-card">
+                                    <svg class="ring" viewBox="0 0 36 36">
+                                        <circle class="bg" cx="18" cy="18" r="12" />
+                                        <circle class="fg" cx="18" cy="18" r="12" />
+                                    </svg>
+                                    <div class="d-lbl" data-en="Today's mood 😊" data-hi="आज का मूड 😊">Today's mood 😊
+                                    </div>
+                                </div>
+                                <div class="d-card d-send"><svg viewBox="0 0 24 24">
+                                        <path d="M22 2L11 13" />
+                                        <path d="M22 2l-7 20-4-9-9-4 20-7z" />
+                                    </svg><span data-en="Notified son Rahul"
+                                        data-hi="बेटे राहुल को सूचना भेज दी गई">Notified son Rahul</span></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="caption show" id="caption">
+            <div class="cap-head" id="capHead">Start with secure sign-in</div>
+            <div class="cap-sub" id="capSub">One tap to enter — no complicated passwords</div>
+        </div>
+
+        <div class="dots" id="dots">
+            <div class="dot on" data-i="0"><svg viewBox="0 0 24 24">
+                    <rect x="4" y="10" width="16" height="10" rx="2" />
+                    <path d="M7 10V7a5 5 0 0 1 10 0v3" />
+                </svg></div>
+            <div class="dot" data-i="1"><svg viewBox="0 0 24 24">
+                    <path d="M6 8a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6" />
+                    <path d="M10 21a2 2 0 0 0 4 0" />
+                </svg></div>
+            <div class="dot" data-i="2"><svg viewBox="0 0 24 24">
+                    <rect x="9" y="2" width="6" height="12" rx="3" />
+                    <path d="M5 11a7 7 0 0 0 14 0M12 18v3" />
+                </svg></div>
+            <div class="dot" data-i="3"><svg viewBox="0 0 24 24">
+                    <path d="M20 6L9 17l-5-5" />
+                </svg></div>
+            <div class="dot" data-i="4"><svg viewBox="0 0 24 24">
+                    <rect x="3" y="3" width="7" height="7" />
+                    <rect x="14" y="3" width="7" height="7" />
+                    <rect x="3" y="14" width="7" height="7" />
+                    <rect x="14" y="14" width="7" height="7" />
+                </svg></div>
+        </div>
+
+    </div>
+
+    <script>
+        const scenes = [
+            {
+                id: 'auth', dur: 4600,
+                head: { en: 'Start with secure sign-in', hi: 'सुरक्षित पहचान से शुरुआत' },
+                sub: { en: 'One tap to enter — no complicated passwords', hi: 'एक टैप में प्रवेश — कोई जटिल पासवर्ड नहीं' }
+            },
+            {
+                id: 'reminders', dur: 5200,
+                head: { en: 'Never miss medicine or appointments', hi: 'दवाई और अपॉइंटमेंट कभी नहीं भूलेंगे' },
+                sub: { en: 'Saathi reminds you of everything important, right on time', hi: 'हर ज़रूरी काम समय पर याद दिलाता है साथी' }
+            },
+            {
+                id: 'voice', dur: 5000,
+                head: { en: 'Just speak it out loud', hi: 'बस आवाज़ में बात कीजिए' },
+                sub: { en: 'No need to type — Saathi listens and understands', hi: 'टाइप करने की ज़रूरत नहीं, साथी सुनता और समझता है' }
+            },
+            {
+                id: 'tasks', dur: 4600,
+                head: { en: 'Small daily tasks, one simple list', hi: 'दिनभर के छोटे काम, आसान सूची में' },
+                sub: { en: 'Every finished task ticks itself off', hi: 'हर पूरा काम खुद-ब-खुद टिक हो जाता है' }
+            },
+            {
+                id: 'dash', dur: 4600,
+                head: { en: 'Your whole day, at a glance', hi: 'एक नज़र में पूरा दिन' },
+                sub: { en: 'Family gets every update automatically too', hi: 'परिवार को भी हर अपडेट अपने-आप मिल जाता है' }
+            },
+        ];
+
+        const sceneEls = Object.fromEntries(scenes.map(s => [s.id, document.getElementById(s.id)]));
+        const dotEls = [...document.querySelectorAll('.dot')];
+        const nodeEls = [...document.querySelectorAll('.node')];
+        const capHead = document.getElementById('capHead');
+        const capSub = document.getElementById('capSub');
+        const captionBox = document.getElementById('caption');
+        const langToggle = document.getElementById('langToggle');
+
+        let idx = 0, timer = null, playing = true, lang = 'en';
+
+        function refreshCaption(i) {
+            captionBox.classList.remove('show');
+            setTimeout(() => {
+                capHead.textContent = scenes[i].head[lang];
+                capSub.textContent = scenes[i].sub[lang];
+                captionBox.classList.add('show');
+            }, 180);
+        }
+
+        function paint(i) {
+            const activeId = scenes[i].id;
+            scenes.forEach((s, k) => sceneEls[s.id].classList.toggle('active', k === i));
+            dotEls.forEach((d, k) => d.classList.toggle('on', k === i));
+            nodeEls.forEach(n => {
+                const isActive = n.dataset.scene === activeId;
+                n.classList.toggle('active', isActive);
+                n.classList.toggle('pulse', isActive);
+            });
+            refreshCaption(i);
+        }
+
+        function forceReplay(i) {
+            const el = sceneEls[scenes[i].id];
+            el.style.animation = 'none';
+            void el.offsetWidth;
+            el.style.animation = '';
+        }
+
+        function next() {
+            idx = (idx + 1) % scenes.length;
+            advanceTo(idx);
+        }
+
+        function advanceTo(i) {
+            forceReplay(i);
+            paint(i);
+            clearTimeout(timer);
+            if (playing) { timer = setTimeout(next, scenes[i].dur); }
+        }
+
+        function start() { advanceTo(idx); }
+
+        document.getElementById('playToggle').addEventListener('click', () => {
+            playing = !playing;
+            document.getElementById('iconPause').style.display = playing ? 'block' : 'none';
+            document.getElementById('iconPlay').style.display = playing ? 'none' : 'block';
+            if (playing) { timer = setTimeout(next, 2600); }
+            else { clearTimeout(timer); }
+        });
+
+        dotEls.forEach(d => d.addEventListener('click', () => {
+            idx = parseInt(d.dataset.i, 10);
+            advanceTo(idx);
+        }));
+
+        nodeEls.forEach(n => n.addEventListener('click', () => {
+            const i = scenes.findIndex(s => s.id === n.dataset.scene);
+            if (i > -1) { idx = i; advanceTo(idx); }
+        }));
+
+        function setLang(newLang) {
+            lang = newLang;
+            document.documentElement.lang = lang;
+            document.title = lang === 'en' ? 'Smriti Saathi — App Flow' : 'स्मृति साथी — ऐप फ्लो';
+            document.body.classList.toggle('lang-hi', lang === 'hi');
+            langToggle.classList.toggle('hi', lang === 'hi');
+            document.querySelectorAll('.lang-opt').forEach(o => o.classList.toggle('active', o.dataset.lang === lang));
+            document.querySelectorAll('[data-en]').forEach(el => {
+                el.textContent = lang === 'en' ? el.dataset.en : el.dataset.hi;
+            });
+            refreshCaption(idx);
+        }
+
+        langToggle.addEventListener('click', () => setLang(lang === 'en' ? 'hi' : 'en'));
+
+        const q = new URLSearchParams(window.location.search).get('lang');
+        if (q === 'hi') setLang('hi');
+
+        start();
+    </script>
+</body>
+
+</html>

@@ -57,22 +57,41 @@ export function pgClientConfig(connectionString = getDatabaseUrl()) {
   return config;
 }
 
-export function json(res, status, body) {
+export function json(res, status, body, extraHeaders = {}) {
+  if (res.headersSent || res.writableEnded) return;
   const payload = JSON.stringify(body ?? {});
+  const origin = process.env.CORS_ORIGIN?.trim() || '*';
   res.writeHead(status, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Origin': origin,
+    'Access-Control-Allow-Methods': 'GET,POST,PATCH,PUT,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    ...extraHeaders,
   });
   res.end(payload);
 }
 
-export async function readBody(req) {
+export async function readBody(req, { limitBytes = 800_000, timeoutMs = 4_000 } = {}) {
   const chunks = [];
-  for await (const chunk of req) chunks.push(chunk);
-  const raw = Buffer.concat(chunks).toString('utf8');
-  return raw ? JSON.parse(raw) : {};
+  let size = 0;
+  const collect = (async () => {
+    for await (const chunk of req) {
+      size += chunk.length;
+      if (size > limitBytes) throw new Error('body too large');
+      chunks.push(chunk);
+    }
+    const raw = Buffer.concat(chunks).toString('utf8');
+    return raw ? JSON.parse(raw) : {};
+  })();
+  let timer;
+  const timeout = new Promise((_, reject) => {
+    timer = setTimeout(() => reject(new Error('body timeout')), timeoutMs);
+  });
+  try {
+    return await Promise.race([collect, timeout]);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 export async function withDb(fn) {

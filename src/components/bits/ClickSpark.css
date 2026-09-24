@@ -12,17 +12,23 @@
 }
 .ss-spark {
   position: absolute;
-  width: 6px;
-  height: 6px;
+  width: var(--spark-size, 6px);
+  height: var(--spark-size, 6px);
   border-radius: 50%;
   pointer-events: none;
-  z-index: 8;
+  z-index: 9999;
   transform: translate(-50%, -50%);
   animation: ss-spark-fly linear forwards;
+  flex-shrink: 0;
+  display: block;
 }
 @keyframes ss-spark-fly {
-  to {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
     opacity: 0;
-    transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) scale(0.2);
+    transform: translate(calc(-50% + var(--sx)), calc(-50% + var(--sy))) scale(0.1);
   }
 }

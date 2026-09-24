@@ -1,0 +1,1 @@
+{"rustc":10820361931904586630,"features":"[]","declared_features":"[\"rayon\", \"serde\"]","target":2329561659577142596,"profile":5347358027863023418,"path":415874764811825639,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"debug/.fingerprint/sif-itree-3a104eb35df6c548/dep-lib-sif_itree","checksum":false}}],"rustflags":[],"config":2069994364910194474,"compile_kind":0}

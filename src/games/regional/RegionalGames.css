@@ -479,3 +479,80 @@
   .rg-sort-zone { max-width: 100%; min-width: 0; width: 100%; }
   .rg-match-grid { grid-template-columns: repeat(3, 1fr); }
 }
+
+/* =========================================================
+   FORCED "LAKESIDE" THEME OVERRIDES (PROFESSIONAL UI)
+   Overrides all regional hardcoded colors to maintain 
+   the professional Dementia Care green aesthetic.
+   ========================================================= */
+
+/* Generic Buttons & Text */
+button[style*="background"] {
+  background: linear-gradient(135deg, #176b58, #2a9d8f) !important;
+  color: #fff !important;
+}
+div[style*="color: rgb"], p[style*="color: rgb"], span[style*="color: rgb"] {
+  color: #176b58 !important;
+}
+
+/* Rhythm Tap Game */
+.rg-rhythm-track, .rg-rhythm-hitzone {
+  border-color: #176b58 !important;
+}
+.rg-rhythm-feedback {
+  color: #176b58 !important;
+}
+
+/* Match Game */
+.rg-match-card {
+  color: #176b58 !important;
+}
+.rg-match-card.is-matched {
+  background: #e8f5e9 !important;
+  border-color: #176b58 !important;
+}
+.rg-match-icon {
+  color: #176b58 !important;
+}
+
+/* Sorting Game */
+.rg-sort-zone {
+  border-color: #176b58 !important;
+  background: rgba(23, 107, 88, 0.05) !important;
+}
+.rg-sort-zone-title {
+  color: #176b58 !important;
+}
+.rg-sort-item {
+  color: #176b58 !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid #176b58 !important;
+}
+
+/* Tracing Game */
+.rg-trace-path {
+  stroke: rgba(23, 107, 88, 0.4) !important;
+}
+.rg-trace-draw {
+  stroke: #176b58 !important;
+}
+.rg-trace-dot {
+  background: #176b58 !important;
+  border-color: #e8f5e9 !important;
+}
+
+/* Navigation Game */
+.rg-nav-cell.is-goal {
+  background: rgba(23, 107, 88, 0.2) !important;
+  border-color: #176b58 !important;
+}
+.rg-nav-cell.is-player {
+  background: rgba(23, 107, 88, 0.8) !important;
+  border-color: #176b58 !important;
+  color: #fff !important;
+}
+
+/* Global Backgrounds (Removing pinks, oranges) */
+.rg-engine {
+  background: #f8faf9 !important;
+}

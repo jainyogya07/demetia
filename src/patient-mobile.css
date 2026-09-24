@@ -309,6 +309,16 @@
     align-items: stretch;
     gap: 8px;
   }
+
+  .ss-safety-page {
+    padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .ss-safety-page .ss-text-btn,
+  .ss-safety-page .ss-mini-btn,
+  .ss-safety-page .ss-full-btn {
+    min-height: 44px;
+  }
 }
 
 @media (max-width: 860px) {

@@ -8,6 +8,8 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
+    "start": "node server/api.mjs",
+    "test": "node --test server/v1.test.mjs",
     "generate:schemes": "node scripts/generate_scheme_assets.mjs",
     "db:ping": "node scripts/db.mjs ping",
     "db:migrate": "node scripts/db.mjs migrate",
@@ -26,11 +28,13 @@
     "@capacitor/cli": "^8.5.1",
     "@capacitor/core": "^8.5.1",
     "@googlemaps/js-api-loader": "^2.1.1",
+    "@supabase/supabase-js": "^2.117.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.31.0",
     "motion": "^13.2.0",
     "nodemailer": "^9.0.5",
     "ogl": "^1.0.11",
+    "pdf-lib": "^1.17.1",
     "pg": "^8.23.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
@@ -39,10 +43,13 @@
     "socket.io-client": "^4.8.3"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.22",
+    "@types/node": "^26.6.2",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.4",
     "oxlint": "^1.75.0",
+    "typescript": "^7.0.2",
     "vite": "^8.2.0"
   }
 }

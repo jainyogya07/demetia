@@ -42,6 +42,8 @@ export function saveMemoryQuizResult(result) {
 
 /** Demo / video seed — 8 of 10 so caregiver Progress shows a real score. */
 export function seedMemoryQuizForDemo() {
+  const existing = loadMemoryQuizResult();
+  if (existing && Number.isFinite(Number(existing.score))) return existing;
   const row = {
     score: 8,
     totalQuestions: 10,

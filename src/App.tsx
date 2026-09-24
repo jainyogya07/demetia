@@ -56,7 +56,7 @@ import { notifyCompanionOpen } from './lib/voiceBus';
 import { useI18n } from './I18nContext';
 import { usePrefs } from './PrefsContext';
 import { EMERGENCY_LINES } from './i18n';
-import { memoryQuizDoneToday, markMemoryQuizDay, saveMemoryQuizResult } from './lib/memoryQuiz';
+import { memoryQuizDoneToday, markMemoryQuizDay, saveMemoryQuizResult, seedMemoryQuizForDemo } from './lib/memoryQuiz';
 import { applyMemoryQuizToAssessment } from './lib/assessmentStore';
 import JainQuoteCarousel from './components/JainQuoteCarousel';
 import HeaderProfileMenu from './components/HeaderProfileMenu';
@@ -304,7 +304,15 @@ function UserWorkspace({ boot }: { boot?: string }) {
   const pendingAssistRef = useRef(false);
   const [, setAssistLive] = useState(false);
   const [activeGameId, setActiveGameId] = useState<string | null>(null);
-  const [showMemoryQuiz, setShowMemoryQuiz] = useState(() => !memoryQuizDoneToday());
+  const [showMemoryQuiz, setShowMemoryQuiz] = useState(() => {
+    try {
+      const row = seedMemoryQuizForDemo();
+      applyMemoryQuizToAssessment(row, row.patientId);
+    } catch {
+      /* local seed still writes the quiz result */
+    }
+    return false;
+  });
   const [showGuide, setShowGuide] = useState(false);
   const [showAboutUs, setShowAboutUs] = useState(false);
   const tabsRef = useRef([{ ...MODULES[0], instanceId: 'home-main' }]);

@@ -39,3 +39,18 @@ export function saveMemoryQuizResult(result) {
   }
   return result;
 }
+
+/** Demo / video seed — 8 of 10 so caregiver Progress shows a real score. */
+export function seedMemoryQuizForDemo() {
+  const row = {
+    score: 8,
+    totalQuestions: 10,
+    percentage: 80,
+    language: 'en',
+    patientId: 'aita',
+    patientName: 'Latveria',
+    completedAt: new Date().toISOString(),
+    seeded: true,
+  };
+  return saveMemoryQuizResult(row);
+}

@@ -692,13 +692,23 @@
   color: #3e817a;
 }
 
-.memory-score-circle span {
-  margin-top: 4px;
+.memory-choice-btn.is-actual {
+  border-color: #2f6f4e;
+  background: #e8f6ee;
+  box-shadow: 0 0 0 2px rgba(47, 111, 78, 0.25);
+}
 
-  font-size: 20px;
+.memory-score-actual {
+  margin: 0 auto 18px;
+  max-width: 28rem;
+  font-size: 1.35rem;
   font-weight: 700;
+  color: #14352c;
+  line-height: 1.35;
+}
 
-  color: #68838a;
+.memory-score-actual strong {
+  color: #1d5c3a;
 }
 
 .memory-quiz-complete h2 {

@@ -81,7 +81,7 @@ function HomeLanding() {
   const [trackIndex, setTrackIndex] = useState(0);
   const [musicTab, setMusicTab] = useState('calm');
   const [musicOn, setMusicOn] = useState(false);
-  const [narrow, setNarrow] = useState(false);
+  const [narrow, setNarrow] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= 860 : false));
   const [stage, setStage] = useState('day');
   const [installPrompt, setInstallPrompt] = useState<unknown>(null);
   const [appInstalled, setAppInstalled] = useState(false);
@@ -320,7 +320,8 @@ function HomeLanding() {
             key={flowLang}
             className="hl-hero-flow hl-hero-flow-below"
             src={`/hero-flow.html?lang=${flowLang}`}
-            title="Smriti Saathi app flow"
+            title="Smriti Saarthi app flow"
+            loading="lazy"
           />
         </section>
       </Reveal>
@@ -349,9 +350,27 @@ function HomeLanding() {
                 <Link className="hl-btn-primary" to="/user">{copy.tryDash} <ArrowRight size={16} /></Link>
               </div>
               <div className="hl-dash-preview ss-theme">
-                <AppNavContext.Provider value={previewNav}>
-                  <UserDashboard />
-                </AppNavContext.Provider>
+                {narrow ? (
+                  <div className="hl-mob-preview-card">
+                    <div className="hl-mob-preview-header">
+                      <span className="hl-mob-preview-badge">✨ {copy.tabDay} Preview</span>
+                      <h3>{lang === 'hi' ? 'दैनिक देखभाल व शांत दिनचर्या' : 'Daily Care & Mindful Routine'}</h3>
+                      <p>{copy.lede}</p>
+                    </div>
+                    <div className="hl-mob-preview-pills">
+                      <span>🌅 {lang === 'hi' ? 'सुबह की दवा व नाश्ता' : 'Morning Meds & Breakfast'}</span>
+                      <span>🧘 {lang === 'hi' ? 'मन की शांति व संगीत' : 'Mindful Calm & Music'}</span>
+                      <span>📞 {lang === 'hi' ? 'परिवार से त्वरित संपर्क' : 'Instant Family Connect'}</span>
+                    </div>
+                    <Link className="hl-btn-primary hl-mob-preview-cta" to="/user">
+                      {copy.tryDash} <ArrowRight size={16} />
+                    </Link>
+                  </div>
+                ) : (
+                  <AppNavContext.Provider value={previewNav}>
+                    <UserDashboard />
+                  </AppNavContext.Provider>
+                )}
               </div>
             </div>
           )}

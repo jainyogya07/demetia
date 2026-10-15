@@ -159,8 +159,21 @@
   opacity: 0.28;
   pointer-events: none;
 }
+.ss-aurora-layer.ss-aurora-static-fallback {
+  display: block !important;
+  opacity: 0.65;
+  background:
+    radial-gradient(800px 360px at 20% 0%, rgba(23, 107, 88, 0.10), transparent 60%),
+    radial-gradient(600px 320px at 85% 10%, rgba(42, 157, 143, 0.07), transparent 55%);
+}
 @media (max-width: 860px) {
-  .ss-aurora-layer { display: none; }
+  .ss-aurora-layer:not(.ss-aurora-static-fallback) { display: none; }
+  .ss-glass,
+  .ss-theme .voice-agent-card.ss-voice-card,
+  .ss-theme .sidebar {
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+  }
 }
 .ss-theme .ss-topbar {
   position: relative;

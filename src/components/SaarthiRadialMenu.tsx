@@ -27,13 +27,29 @@ import './SaarthiRadialMenu.css';
 const PATIENT_ID = 'aita';
 const POS_KEY = 'ss-saarthi-widget-pos';
 const WIDGET_SIZE = 96;
+const WIDGET_SIZE_MOBILE = 62;
 const HEADER_SAFE = 72;
 const EDGE_PAD = 12;
 const DRAG_THRESHOLD = 8;
 
-/** Radii sized so 72px / 64px bubbles never collide (gap > combined radii + padding). */
+/** Desktop radii */
 const INNER_RADIUS = 150;
 const OUTER_RADIUS = 250;
+
+/** Mobile radii — compact to fit cleanly on 360-410px mobile screens without clipping */
+const INNER_RADIUS_MOBILE = 86;
+const OUTER_RADIUS_MOBILE = 146;
+
+function useIsMobile(breakpoint = 860) {
+  const [mobile, setMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= breakpoint : false));
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const onChange = () => setMobile(mql.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, [breakpoint]);
+  return mobile;
+}
 
 /**
  * Two clear rings with fixed 36° spacing and 18° ring interleave.
@@ -55,31 +71,35 @@ const OUTER_ITEMS = [
   { id: 'documents', labelKey: 'radial.papers', hint: 'Opening Papers…', icon: FileText, angle: 324, color: '#4A6B62', action: 'module' },
 ];
 
-function defaultPos() {
+function defaultPos(isMobile = false) {
   if (typeof window === 'undefined') return { x: 24, y: 240 };
+  const size = isMobile ? WIDGET_SIZE_MOBILE : WIDGET_SIZE;
+  const bottomPad = isMobile ? 80 : 110;
   return {
-    x: Math.max(EDGE_PAD, window.innerWidth - WIDGET_SIZE - 20),
-    y: Math.max(HEADER_SAFE, window.innerHeight - WIDGET_SIZE - 110),
+    x: Math.max(EDGE_PAD, window.innerWidth - size - (isMobile ? 14 : 20)),
+    y: Math.max(HEADER_SAFE, window.innerHeight - size - bottomPad),
   };
 }
 
-function clampPos(x, y) {
+function clampPos(x, y, isMobile = false) {
   if (typeof window === 'undefined') return { x, y };
-  const maxX = Math.max(EDGE_PAD, window.innerWidth - WIDGET_SIZE - EDGE_PAD);
-  const maxY = Math.max(HEADER_SAFE, window.innerHeight - WIDGET_SIZE - EDGE_PAD);
+  const size = isMobile ? WIDGET_SIZE_MOBILE : WIDGET_SIZE;
+  const bottomPad = isMobile ? 74 : EDGE_PAD;
+  const maxX = Math.max(EDGE_PAD, window.innerWidth - size - EDGE_PAD);
+  const maxY = Math.max(HEADER_SAFE, window.innerHeight - size - bottomPad);
   return {
     x: Math.min(maxX, Math.max(EDGE_PAD, x)),
     y: Math.min(maxY, Math.max(HEADER_SAFE, y)),
   };
 }
 
-function loadPos() {
+function loadPos(isMobile = false) {
   try {
     const raw = localStorage.getItem(POS_KEY);
     if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (Number.isFinite(parsed?.x) && Number.isFinite(parsed?.y)) {
-      return clampPos(parsed.x, parsed.y);
+      return clampPos(parsed.x, parsed.y, isMobile);
     }
   } catch {
     /* ignore */
@@ -108,8 +128,12 @@ const STAGGER = 0.055;
 export default function SaarthiRadialMenu() {
   const reduceMotion = useReducedMotion();
   const { t } = useI18n();
+  const isMobile = useIsMobile(860);
+  const currentInnerRadius = isMobile ? INNER_RADIUS_MOBILE : INNER_RADIUS;
+  const currentOuterRadius = isMobile ? OUTER_RADIUS_MOBILE : OUTER_RADIUS;
+
   const [isOpen, setIsOpen] = useState(false);
-  const [pos, setPos] = useState(() => loadPos() || defaultPos());
+  const [pos, setPos] = useState(() => loadPos(typeof window !== 'undefined' && window.innerWidth <= 860) || defaultPos(typeof window !== 'undefined' && window.innerWidth <= 860));
   const [severity, setSeverity] = useState(() => getFriendlySeverity(PATIENT_ID));
   const [dragging, setDragging] = useState(false);
   const [announce, setAnnounce] = useState('');
@@ -142,15 +166,23 @@ export default function SaarthiRadialMenu() {
   }, []);
 
   useEffect(() => {
+    if (isMobile) return undefined;
     refreshSeverity();
     return subscribeAssessmentChange(refreshSeverity);
-  }, [refreshSeverity]);
+  }, [refreshSeverity, isMobile]);
 
   useEffect(() => {
-    const onResize = () => setPos((prev) => clampPos(prev.x, prev.y));
+    if (isMobile) return undefined;
+    const onResize = () => setPos((prev) => clampPos(prev.x, prev.y, isMobile));
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
-  }, []);
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (!isMobile) {
+      setPos((prev) => clampPos(prev.x, prev.y, isMobile));
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     function handleOutsideClick(event) {
@@ -228,7 +260,7 @@ export default function SaarthiRadialMenu() {
 
     d.moved = true;
     if (isOpen) setIsOpen(false);
-    setPos(clampPos(d.originX + dx, d.originY + dy));
+    setPos(clampPos(d.originX + dx, d.originY + dy, isMobile));
   };
 
   const endDrag = (e) => {
@@ -241,7 +273,7 @@ export default function SaarthiRadialMenu() {
 
     if (wasMoved) {
       setPos((prev) => {
-        const next = clampPos(prev.x, prev.y);
+        const next = clampPos(prev.x, prev.y, isMobile);
         savePos(next);
         return next;
       });
@@ -302,6 +334,7 @@ export default function SaarthiRadialMenu() {
     const isCurrent = item.action !== 'help' && currentModuleId === item.id;
     const Icon = item.icon;
     const label = t(item.labelKey);
+    const iconSize = isMobile ? (ringClass === 'is-outer' ? 14 : 17) : (ringClass === 'is-outer' ? 20 : 24);
 
     return (
       <motion.button
@@ -320,12 +353,14 @@ export default function SaarthiRadialMenu() {
       >
         <span className="radial-node-glow" aria-hidden="true" />
         <div className="radial-node-icon">
-          <Icon size={ringClass === 'is-outer' ? 20 : 24} strokeWidth={2.25} />
+          <Icon size={iconSize} strokeWidth={2.25} />
         </div>
         <span className="radial-node-label">{label}</span>
       </motion.button>
     );
   };
+
+  if (isMobile) return null;
 
   return (
     <>
@@ -404,8 +439,8 @@ export default function SaarthiRadialMenu() {
                 exit="hidden"
                 variants={ringVariants}
               >
-                {INNER_ITEMS.map((item) => renderNode(item, INNER_RADIUS, 'is-inner'))}
-                {OUTER_ITEMS.map((item) => renderNode(item, OUTER_RADIUS, 'is-outer'))}
+                {INNER_ITEMS.map((item) => renderNode(item, currentInnerRadius, 'is-inner'))}
+                {OUTER_ITEMS.map((item) => renderNode(item, currentOuterRadius, 'is-outer'))}
               </motion.div>
             </motion.div>
           )}

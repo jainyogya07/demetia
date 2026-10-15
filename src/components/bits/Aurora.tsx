@@ -75,7 +75,7 @@ export default function Aurora({
   useEffect(() => {
     const ctn = ctnDom.current;
     if (!ctn) return undefined;
-    const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: true });
+    const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: false, dpr: 1 });
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
@@ -85,7 +85,7 @@ export default function Aurora({
     const geometry = new Triangle(gl);
     if (geometry.attributes.uv) delete geometry.attributes.uv;
 
-    const toStops = (stops) => stops.map((hex) => {
+    const toStops = (stops: string[]) => stops.map((hex) => {
       const c = new Color(hex);
       return [c.r, c.g, c.b];
     });
@@ -97,7 +97,7 @@ export default function Aurora({
         uTime: { value: 0 },
         uAmplitude: { value: amplitude },
         uColorStops: { value: toStops(colorStops) },
-        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
+        uResolution: { value: [ctn.offsetWidth || 300, ctn.offsetHeight || 300] },
         uBlend: { value: blend },
         uLightMode: { value: lightMode ? 1 : 0 },
       },
@@ -108,14 +108,28 @@ export default function Aurora({
     const resize = () => {
       const width = ctn.offsetWidth;
       const height = ctn.offsetHeight;
-      renderer.setSize(width, height);
-      program.uniforms.uResolution.value = [width, height];
+      if (width <= 0 || height <= 0) return;
+      // Ambient aurora wave looks even softer at half resolution while slashing GPU pixel fills by 75%
+      const w = Math.max(1, Math.floor(width * 0.5));
+      const h = Math.max(1, Math.floor(height * 0.5));
+      renderer.setSize(w, h);
+      gl.canvas.style.width = '100%';
+      gl.canvas.style.height = '100%';
+      program.uniforms.uResolution.value = [w, h];
     };
     window.addEventListener('resize', resize);
 
     let animateId = 0;
-    const update = (t) => {
+    let lastRenderTime = 0;
+    const FRAME_INTERVAL = 1000 / 30; // 30 FPS cap is silky smooth for calm background waves
+
+    const update = (t: number) => {
       animateId = requestAnimationFrame(update);
+      // Skip rendering if page is backgrounded or canvas is hidden
+      if (document.hidden || ctn.offsetParent === null) return;
+      if (t - lastRenderTime < FRAME_INTERVAL) return;
+      lastRenderTime = t;
+
       const next = propsRef.current;
       program.uniforms.uTime.value = t * 0.001 * (next.speed ?? 1);
       program.uniforms.uAmplitude.value = next.amplitude ?? 1;

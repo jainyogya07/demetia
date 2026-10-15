@@ -41,19 +41,27 @@ void main() {
 `;
 
 export default function Particles({
-  particleCount = 90,
+  particleCount = 36,
   particleSpread = 8,
   speed = 0.12,
   particleColors = ['#176b58', '#2a9d8f', '#c5ddd4'],
-  particleBaseSize = 90,
+  particleBaseSize = 80,
   className = '',
+}: {
+  particleCount?: number;
+  particleSpread?: number;
+  speed?: number;
+  particleColors?: string[];
+  particleBaseSize?: number;
+  className?: string;
+  [key: string]: any;
 }) {
   const wrapRef = useRef<any>(null);
 
   useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return undefined;
-    const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio || 1, 1.5), alpha: true });
+    const renderer = new Renderer({ dpr: 1, alpha: true, antialias: false });
     const gl = renderer.gl;
     wrap.appendChild(gl.canvas);
     gl.clearColor(0, 0, 0, 0);
@@ -101,6 +109,7 @@ export default function Particles({
     let raf = 0;
     const resize = () => {
       const { width, height } = wrap.getBoundingClientRect();
+      if (width <= 0 || height <= 0) return;
       renderer.setSize(width, height);
       camera.perspective({ aspect: gl.canvas.width / gl.canvas.height });
     };
@@ -109,17 +118,25 @@ export default function Particles({
     resize();
 
     const t0 = performance.now();
-    const loop = () => {
+    let lastRender = 0;
+    const FRAME_INTERVAL = 1000 / 30; // 30 FPS cap for subtle particle drift
+
+    const loop = (time: number) => {
+      raf = requestAnimationFrame(loop);
+      if (document.hidden || wrap.offsetParent === null) return;
+      if (time - lastRender < FRAME_INTERVAL) return;
+      lastRender = time;
+
       program.uniforms.uTime.value = ((performance.now() - t0) / 1000) * speed;
       renderer.render({ scene, camera });
-      raf = requestAnimationFrame(loop);
     };
-    loop();
+    loop(performance.now());
 
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
       if (gl.canvas.parentNode === wrap) wrap.removeChild(gl.canvas);
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
   }, [particleCount, particleSpread, speed, particleBaseSize, particleColors]);
 

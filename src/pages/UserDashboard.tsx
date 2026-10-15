@@ -16,7 +16,24 @@ import { usePrefs } from '../PrefsContext';
 import { useAuth } from '../context/AuthContext';
 import { user } from '../data/user';
 import { getDashboardSummary } from '../lib/bff';
+import MobileUserDashboard from './MobileUserDashboard';
 import '../components/UnifiedDashboard.css';
+
+function useIsMobile(breakpoint = 860) {
+  const [mobile, setMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= breakpoint : false));
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
+    const mql = window.matchMedia(`(max-width: ${breakpoint}px)`);
+    const onChange = () => setMobile(mql.matches);
+    if (mql.addEventListener) mql.addEventListener('change', onChange);
+    else if ((mql as any).addListener) (mql as any).addListener(onChange);
+    return () => {
+      if (mql.removeEventListener) mql.removeEventListener('change', onChange);
+      else if ((mql as any).removeListener) (mql as any).removeListener(onChange);
+    };
+  }, [breakpoint]);
+  return mobile;
+}
 
 function greetingChromeKey() {
   const hour = new Date().getHours();
@@ -36,6 +53,7 @@ function Card({ delay, children }) {
 }
 
 function UserDashboard() {
+  const isMobile = useIsMobile(860);
   const { openModule } = useAppNav();
   const { t } = useI18n();
   const { prefs } = usePrefs();
@@ -63,6 +81,18 @@ function UserDashboard() {
       default: break;
     }
   };
+
+  if (isMobile) {
+    return (
+      <div className="granth-home ss-home-focus">
+        <MobileUserDashboard
+          summary={summary}
+          greeting={greeting}
+          displayName={displayName}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="granth-home ss-home-focus">

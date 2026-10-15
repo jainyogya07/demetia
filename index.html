@@ -16,23 +16,41 @@
     <title>स्मृति सारथी — Smriti Saarthi</title>
     <script>
       (function () {
-        var local = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-        if (!local || !('serviceWorker' in navigator)) return;
-        var already = sessionStorage.getItem('ss-sw-kill') === '1';
-        var controlled = !!navigator.serviceWorker.controller;
-        navigator.serviceWorker.getRegistrations().then(function (regs) {
-          return Promise.all(regs.map(function (reg) { return reg.unregister(); }));
-        }).then(function () {
-          if (!window.caches) return;
-          return caches.keys().then(function (keys) {
-            return Promise.all(keys.map(function (key) { return caches.delete(key); }));
-          });
-        }).then(function () {
-          if (controlled && !already) {
-            sessionStorage.setItem('ss-sw-kill', '1');
-            location.reload();
+        // Universal self-recovery from stale PWA cache / missing chunk errors
+        window.addEventListener('error', function (e) {
+          var msg = (e && e.message) || '';
+          if (msg.indexOf('Loading chunk') !== -1 || msg.indexOf('Unexpected token') !== -1 || msg.indexOf('is not a function') !== -1) {
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(function (regs) {
+                regs.forEach(function (r) { r.unregister(); });
+              });
+            }
+            if (window.caches) {
+              caches.keys().then(function (names) {
+                names.forEach(function (name) { caches.delete(name); });
+              });
+            }
+            if (!sessionStorage.getItem('ss-reload-recovery')) {
+              sessionStorage.setItem('ss-reload-recovery', '1');
+              location.reload();
+            }
           }
-        }).catch(function () {});
+        });
+
+        // Unregister broken service worker cache on reload if requested
+        if (location.search.indexOf('reset=1') !== -1 || sessionStorage.getItem('ss-force-clean') === '1') {
+          sessionStorage.removeItem('ss-force-clean');
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function (regs) {
+              regs.forEach(function (r) { r.unregister(); });
+            });
+          }
+          if (window.caches) {
+            caches.keys().then(function (names) {
+              names.forEach(function (name) { caches.delete(name); });
+            });
+          }
+        }
       })();
     </script>
   </head>

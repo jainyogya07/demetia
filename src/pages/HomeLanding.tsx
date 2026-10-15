@@ -143,11 +143,16 @@ function HomeLanding() {
   };
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
     const media = window.matchMedia('(max-width: 860px)');
     const sync = () => setNarrow(media.matches);
     sync();
-    media.addEventListener('change', sync);
-    return () => media.removeEventListener('change', sync);
+    if (media.addEventListener) media.addEventListener('change', sync);
+    else if ((media as any).addListener) (media as any).addListener(sync);
+    return () => {
+      if (media.removeEventListener) media.removeEventListener('change', sync);
+      else if ((media as any).removeListener) (media as any).removeListener(sync);
+    };
   }, []);
 
   useEffect(() => {

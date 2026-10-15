@@ -6,10 +6,15 @@ export default function DashAurora() {
   const [isMobile, setIsMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= 860 : false));
 
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
     const mql = window.matchMedia('(max-width: 860px)');
     const onChange = () => setIsMobile(mql.matches);
-    mql.addEventListener('change', onChange);
-    return () => mql.removeEventListener('change', onChange);
+    if (mql.addEventListener) mql.addEventListener('change', onChange);
+    else if ((mql as any).addListener) (mql as any).addListener(onChange);
+    return () => {
+      if (mql.removeEventListener) mql.removeEventListener('change', onChange);
+      else if ((mql as any).removeListener) (mql as any).removeListener(onChange);
+    };
   }, []);
 
   if (isMobile) {

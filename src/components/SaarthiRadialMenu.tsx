@@ -43,10 +43,15 @@ const OUTER_RADIUS_MOBILE = 146;
 function useIsMobile(breakpoint = 860) {
   const [mobile, setMobile] = useState(() => (typeof window !== 'undefined' ? window.innerWidth <= breakpoint : false));
   useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
     const mql = window.matchMedia(`(max-width: ${breakpoint}px)`);
     const onChange = () => setMobile(mql.matches);
-    mql.addEventListener('change', onChange);
-    return () => mql.removeEventListener('change', onChange);
+    if (mql.addEventListener) mql.addEventListener('change', onChange);
+    else if ((mql as any).addListener) (mql as any).addListener(onChange);
+    return () => {
+      if (mql.removeEventListener) mql.removeEventListener('change', onChange);
+      else if ((mql as any).removeListener) (mql as any).removeListener(onChange);
+    };
   }, [breakpoint]);
   return mobile;
 }

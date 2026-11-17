@@ -16,7 +16,6 @@ import Reveal from '../components/bits/Reveal';
 import { useRegionScenery } from '../hooks/useRegionScenery';
 import { useSceneryCrossfade } from '../hooks/useSceneryCrossfade';
 import { landingCopyFor } from '../i18n/landingCopy';
-import { apiRequest } from '../lib/apiClient';
 import './HomeLanding.css';
 
 const FEATURE_META = [
@@ -63,11 +62,22 @@ const previewCache = new Map();
 async function songPreview(track) {
   const q = track.query || `${track.title} ${track.artist}`;
   if (previewCache.has(q)) return previewCache.get(q);
-  const local = await apiRequest(`/api/music-preview?q=${encodeURIComponent(q)}`);
-  const preview = local?.previewUrl || '';
-  if (preview) {
-    previewCache.set(q, preview);
-    return preview;
+  const urls = [
+    `/api/music-preview?q=${encodeURIComponent(q)}`,
+    `https://itunes.apple.com/search?term=${encodeURIComponent(q)}&entity=song&limit=1&country=IN`,
+  ];
+  for (const url of urls) {
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      const preview = data.previewUrl || data.results?.[0]?.previewUrl || '';
+      if (preview) {
+        previewCache.set(q, preview);
+        return preview;
+      }
+    } catch {
+      /* try next */
+    }
   }
   previewCache.set(q, '');
   return '';
@@ -143,16 +153,11 @@ function HomeLanding() {
   };
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.matchMedia) return undefined;
     const media = window.matchMedia('(max-width: 860px)');
     const sync = () => setNarrow(media.matches);
     sync();
-    if (media.addEventListener) media.addEventListener('change', sync);
-    else if ((media as any).addListener) (media as any).addListener(sync);
-    return () => {
-      if (media.removeEventListener) media.removeEventListener('change', sync);
-      else if ((media as any).removeListener) (media as any).removeListener(sync);
-    };
+    media.addEventListener('change', sync);
+    return () => media.removeEventListener('change', sync);
   }, []);
 
   useEffect(() => {
@@ -325,8 +330,7 @@ function HomeLanding() {
             key={flowLang}
             className="hl-hero-flow hl-hero-flow-below"
             src={`/hero-flow.html?lang=${flowLang}`}
-            title="Smriti Saarthi app flow"
-            loading="lazy"
+            title="Smriti Saathi app flow"
           />
         </section>
       </Reveal>
@@ -355,27 +359,9 @@ function HomeLanding() {
                 <Link className="hl-btn-primary" to="/user">{copy.tryDash} <ArrowRight size={16} /></Link>
               </div>
               <div className="hl-dash-preview ss-theme">
-                {narrow ? (
-                  <div className="hl-mob-preview-card">
-                    <div className="hl-mob-preview-header">
-                      <span className="hl-mob-preview-badge">✨ {copy.tabDay} Preview</span>
-                      <h3>{lang === 'hi' ? 'दैनिक देखभाल व शांत दिनचर्या' : 'Daily Care & Mindful Routine'}</h3>
-                      <p>{copy.lede}</p>
-                    </div>
-                    <div className="hl-mob-preview-pills">
-                      <span>🌅 {lang === 'hi' ? 'सुबह की दवा व नाश्ता' : 'Morning Meds & Breakfast'}</span>
-                      <span>🧘 {lang === 'hi' ? 'मन की शांति व संगीत' : 'Mindful Calm & Music'}</span>
-                      <span>📞 {lang === 'hi' ? 'परिवार से त्वरित संपर्क' : 'Instant Family Connect'}</span>
-                    </div>
-                    <Link className="hl-btn-primary hl-mob-preview-cta" to="/user">
-                      {copy.tryDash} <ArrowRight size={16} />
-                    </Link>
-                  </div>
-                ) : (
-                  <AppNavContext.Provider value={previewNav}>
-                    <UserDashboard />
-                  </AppNavContext.Provider>
-                )}
+                <AppNavContext.Provider value={previewNav}>
+                  <UserDashboard />
+                </AppNavContext.Provider>
               </div>
             </div>
           )}

@@ -1,4 +1,4 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
   DEFAULT_LANG,
   LANG_STORAGE_KEY,
@@ -8,17 +8,8 @@ import {
   translate,
 } from './i18n';
 import { detectAndResolveLang } from './lib/regionLanguage';
-import type { LanguageMeta, TranslateVars } from './types/app';
 
-export interface I18nContextValue {
-  lang: string;
-  language: LanguageMeta;
-  languages?: typeof LANGUAGES;
-  setLang: (code: string) => void;
-  t: (path: string, vars?: TranslateVars) => string;
-}
-
-const I18nContext = createContext<I18nContextValue>({
+const I18nContext = createContext({
   lang: DEFAULT_LANG,
   language: getLanguage(DEFAULT_LANG),
   setLang: () => {},
@@ -35,10 +26,10 @@ function readStoredLang() {
   return DEFAULT_LANG;
 }
 
-export function I18nProvider({ children }: { children: ReactNode }) {
+export function I18nProvider({ children }) {
   const [lang, setLangState] = useState(readStoredLang);
 
-  const setLang = useCallback((code: string) => {
+  const setLang = useCallback((code) => {
     const resolved = normalizeLang(code);
     setLangState(resolved);
     try {
@@ -77,7 +68,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     return () => { cancelled = true; };
   }, [setLang]);
 
-  const t = useCallback((path: string, vars?: TranslateVars) => translate(lang, path, vars), [lang]);
+  const t = useCallback((path, vars) => translate(lang, path, vars), [lang]);
 
   const value = useMemo(() => {
     const language = getLanguage(lang);

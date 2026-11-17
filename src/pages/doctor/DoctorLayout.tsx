@@ -12,6 +12,7 @@ import DashAurora from '../../components/bits/DashAurora';
 import BlurText from '../../components/bits/BlurText';
 import RegionSceneryBackground from '../../components/RegionSceneryBackground';
 import { useI18n } from '../../I18nContext';
+import { AnimatePresence, motion } from 'motion/react';
 
 const NAV_GROUPS = [
   {
@@ -94,7 +95,7 @@ export default function DoctorLayout() {
                       const onChart = item.to === '/doctor' && pathname.startsWith('/doctor/patients');
                       return `nav-item ${isActive || onChart ? 'active' : ''}`;
                     }}
-                    aria-label={t(item.labelKey)}
+                    title={t(item.labelKey)}
                   >
                     <item.icon size={18} />
                     <span className="ss-rail-label">{t(item.labelKey)}</span>
@@ -153,9 +154,17 @@ export default function DoctorLayout() {
           ))}
         </nav>
         <div className="dashboard-scroll">
-          <div className="cg-outlet" key={pathname}>
-            <Outlet />
-          </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
     </div>

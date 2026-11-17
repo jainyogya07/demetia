@@ -4,33 +4,33 @@ import { MEMORIES_FALLBACK } from '../data/memoriesFallback';
 import { cancelFieldIds, enqueueFieldType, focusField, whenTypeQueueIdle } from '../lib/fieldTypeQueue';
 import { hideAlbum, hiddenAlbums, hiddenMemoryIds, hideMemory } from '../lib/memoryAlbums';
 import { pickSpokenField } from '../lib/sarthiAssist';
-import { apiRequest } from '../lib/apiClient';
 import './MemoryBookPage.css';
 
 async function fetchMemories() {
   try {
     const { loadSupabaseMemories } = await import('../lib/memoriesApi');
-    const supabaseRows = await Promise.race([
-      loadSupabaseMemories(),
-      new Promise((resolve) => setTimeout(() => resolve(null), 4000)),
-    ]);
+    const supabaseRows = await loadSupabaseMemories();
     if (Array.isArray(supabaseRows) && supabaseRows.length) {
       return { rows: supabaseRows, source: 'supabase' };
     }
   } catch {
     /* optional overlay — fall through to Postgres / local */
   }
-  const v1 = await apiRequest('/api/v1/memories');
-  const v1Rows = v1?.memories || v1;
-  if (Array.isArray(v1Rows) && v1Rows.length) {
-    return { rows: v1Rows, source: v1?.source || 'api' };
+  try {
+    const res = await fetch('/api/v1/memories');
+    if (!res.ok) throw new Error('api');
+    const data = await res.json();
+    const rows = data.memories || data;
+    if (!Array.isArray(rows) || !rows.length) throw new Error('empty');
+    return { rows, source: data.source || 'api' };
+  } catch {
+    const res = await fetch('/api/memories');
+    if (!res.ok) throw new Error('api');
+    const data = await res.json();
+    const rows = data.memories || data;
+    if (!Array.isArray(rows) || !rows.length) throw new Error('empty');
+    return { rows, source: data.source || 'api' };
   }
-  const legacy = await apiRequest('/api/memories');
-  const rows = legacy?.memories || legacy;
-  if (Array.isArray(rows) && rows.length) {
-    return { rows, source: legacy?.source || 'api' };
-  }
-  return { rows: MEMORIES_FALLBACK, source: 'fallback' };
 }
 
 function foldQuery(value) {
@@ -186,12 +186,14 @@ export default function MemoryBookPage() {
       /* optional overlay */
     }
     try {
-    const data = await apiRequest('/api/v1/memories', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    });
-    if (!data?.memory && !data?.source) throw new Error('save failed');
-    const row = data.memory || { ...payload, id: `${Date.now()}` };
+      const res = await fetch('/api/v1/memories', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'save failed');
+      const row = data.memory || { ...payload, id: `${Date.now()}` };
       setMemories((prev) => [row, ...prev]);
       setSource('api');
       setNotice('');

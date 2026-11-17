@@ -22,7 +22,7 @@ import {
   pingLive,
   subscribeLive,
 } from '../lib/liveState';
-import { bffFetch, bffSilent } from '../lib/bff';
+import { bffFetch } from '../lib/bff';
 import './DailyRoutineDashboard.css';
 
 const TIME_ICONS = {
@@ -79,7 +79,7 @@ export default function DailyRoutineDashboard() {
     }
     pingLive();
     // Non-blocking sync to polyglot Node.js backend
-    bffSilent('PATCH', `/api/v1/routine/tasks/${encodeURIComponent(item.id)}/toggle`);
+    fetch(`/api/v1/routine/tasks/${encodeURIComponent(item.id)}/toggle`, { method: 'PATCH' }).catch(() => {});
   };
 
 

@@ -53,18 +53,11 @@ export const SCREEN_GUIDES = {
     tap: 'Aaj ka kaam dekhne ke liye Daily Routine card, baat ke liye Speak, photos ke liye Memory Book.',
     next: 'Sabse pehle aaj ki list dekho, phir dawa ya ek chhota game.',
   },
-  schemes: {
-    title: 'Schemes',
-    what: 'Yahan sarkari yojanaein hain — pension, Ayushman, Elderline. Roz ki dawa Daily Routine / My Day par hai.',
-    how: 'Bade cards padho: naam, kiske liye, kaise apply, helpline. Official page tab kholo jab samajh aa jaye.',
-    tap: 'Pehle scheme ka naam padho. Helpline number tap karke call ho sakta hai.',
-    next: 'Jo scheme chahiye uska official page family ke saath dekho. Dawa My Day par tick karo.',
-  },
   medicine: {
-    title: 'Schemes',
+    title: 'Medicine and Health',
     what: 'Yahan health schemes aur support dikhta hai. Roz ki dawa ka time Daily Routine par hai.',
     how: 'Scheme cards padho. Jo scheme chahiye us par tap karke details kholo. Dose time change yahan nahi hota.',
-    tap: 'Pehle scheme ka naam padho. Call ya official page tab dabao jab samajh aa jaye.',
+    tap: 'Pehle scheme ka naam padho. Call ya apply wale button tab dabao jab samajh aa jaye.',
     next: 'Agli dawa ka time Routine screen par tick karo jab le lo.',
   },
   routine: {
@@ -200,7 +193,7 @@ export function readScreen(moduleId, gameId) {
   }
   if (moduleId === 'games' && gameId) return `${guide.what} ${guide.how}`;
   if (moduleId === 'games') return 'Games list. Ek tile par Start dabao. Match pairs easy hai.';
-  if (moduleId === 'schemes' || moduleId === 'medicine') return 'Schemes page. Sarkari yojanaein yahan. Roz ki dawa Routine par.';
+  if (moduleId === 'medicine') return 'Medicine page. Schemes yahan. Roz ki dawa Routine par.';
   return `${guide.what} ${guide.tap}`;
 }
 
@@ -213,8 +206,7 @@ export function helpForTopic(raw) {
   const text = String(raw || '').toLowerCase();
   const hits = [
     [/memory book|purani photo|tasveer|album/, 'memory-book'],
-    [/dawa|medicine|tablet/, 'routine'],
-    [/scheme|yojana|ayushman/, 'schemes'],
+    [/dawa|medicine|tablet|scheme/, 'medicine'],
     [/routine|dincharya|task|kaam/, 'routine'],
     [/game|khel|puzzle/, 'games'],
     [/progress|score/, 'progress'],
@@ -243,8 +235,7 @@ export function namedScreenFromText(raw) {
   const map = [
     [/memory book|purani photo|tasveer|\balbum\b/, 'memory-book'],
     [/routine|dincharya/, 'routine'],
-    [/scheme|yojana|ayushman|nphce/, 'schemes'],
-    [/medicine|dawa|health/, 'routine'],
+    [/medicine|dawa|health|scheme/, 'medicine'],
     [/game|khel/, 'games'],
     [/progress|score/, 'progress'],
     [/family|care circle|parivar/, 'care-circle'],

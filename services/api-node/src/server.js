@@ -5,6 +5,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeSockets } from './websocket/socketManager.js';
 import spatialRoutes from './routes/spatialRoutes.js';
+import bffRoutes from './routes/bffRoutes.js';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ initializeSockets(io);
 
 // Setup REST Routes
 app.use('/api/spatial', spatialRoutes);
+app.use('/api/v1', bffRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

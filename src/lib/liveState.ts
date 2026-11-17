@@ -1,20 +1,8 @@
-import type {
-  CheckInRow,
-  CircleMember,
-  GameLogEntry,
-  ProgressSnapshot,
-  RoutineItem,
-  RoutineStatus,
-  RoutineTemplateItem,
-} from '../types/app';
-
 const ROUTINE_KEY = 'ss-routine-done-v1';
 const GAME_LOG_KEY = 'ss-game-log-v1';
 export const CHECKIN_KEY = 'smriti-safety-checkins';
 
-type DoneMap = Record<string, Record<string, string>>;
-
-export const ROUTINE_TEMPLATE: RoutineTemplateItem[] = [
+export const ROUTINE_TEMPLATE = [
   { id: 'med-am', hour: 7, minute: 30, title: 'Morning Medicine', subtitle: 'Take your prescribed medicine', type: 'medicine' },
   { id: 'water', hour: 9, minute: 0, title: 'Drink Water', subtitle: 'Stay hydrated', type: 'water' },
   { id: 'brain', hour: 11, minute: 0, title: 'Brain Activity', subtitle: "Complete today's memory activity", type: 'brain' },
@@ -23,23 +11,23 @@ export const ROUTINE_TEMPLATE: RoutineTemplateItem[] = [
   { id: 'med-pm', hour: 20, minute: 30, title: 'Night Medicine', subtitle: 'Take your night medicine', type: 'medicine' },
 ];
 
-export const CIRCLE_MEMBERS: CircleMember[] = [
+export const CIRCLE_MEMBERS = [
   { id: 'rina', name: 'Rina', relation: 'Daughter', role: 'Primary Caregiver', location: 'Guwahati', type: 'primary', phone: '9876543210' },
   { id: 'doom', name: 'Doom', relation: 'Son', role: 'Family Member', location: 'Shillong', type: 'family', phone: '9876500001' },
   { id: 'mina', name: 'Mina', relation: 'Community Health Worker', role: 'Health Support', location: 'Local Health Centre', type: 'health', phone: '9876500002' },
 ];
 
-function readJson<T>(key: string, fallback: T): T {
+function readJson(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
     const parsed = raw ? JSON.parse(raw) : fallback;
-    return (parsed ?? fallback) as T;
+    return parsed ?? fallback;
   } catch {
     return fallback;
   }
 }
 
-function writeJson(key: string, value: unknown) {
+function writeJson(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
@@ -54,17 +42,17 @@ export function todayKey(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-export function loadCheckIns(): CheckInRow[] {
-  const parsed = readJson<unknown>(CHECKIN_KEY, []);
-  return Array.isArray(parsed) ? (parsed as CheckInRow[]) : [];
+export function loadCheckIns() {
+  const parsed = readJson(CHECKIN_KEY, []);
+  return Array.isArray(parsed) ? parsed : [];
 }
 
-export function minutesSince(iso?: string | null) {
+export function minutesSince(iso) {
   if (!iso) return null;
   return Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
 }
 
-export function formatWhen(iso: string) {
+export function formatWhen(iso) {
   try {
     return new Date(iso).toLocaleString('en-IN', {
       day: 'numeric',
@@ -77,14 +65,14 @@ export function formatWhen(iso: string) {
   }
 }
 
-export function getRoutineItems(now = new Date()): RoutineItem[] {
-  const doneMap = readJson<DoneMap>(ROUTINE_KEY, {});
+export function getRoutineItems(now = new Date()) {
+  const doneMap = readJson(ROUTINE_KEY, {});
   const done = doneMap[todayKey(now)] || {};
   return ROUTINE_TEMPLATE.map((item) => {
     const dueAt = new Date(now);
     dueAt.setHours(item.hour, item.minute, 0, 0);
     const completed = Boolean(done[item.id]);
-    let status: RoutineStatus = 'upcoming';
+    let status = 'upcoming';
     if (completed) status = 'completed';
     else if (now >= dueAt) status = 'due';
     return {
@@ -97,16 +85,16 @@ export function getRoutineItems(now = new Date()): RoutineItem[] {
   });
 }
 
-export function markRoutineDone(id: string, now = new Date()) {
-  const all = readJson<DoneMap>(ROUTINE_KEY, {});
+export function markRoutineDone(id, now = new Date()) {
+  const all = readJson(ROUTINE_KEY, {});
   const day = todayKey(now);
   const row = { ...(all[day] || {}), [id]: now.toISOString() };
   writeJson(ROUTINE_KEY, { ...all, [day]: row });
   return getRoutineItems(now);
 }
 
-export function unmarkRoutineDone(id: string, now = new Date()) {
-  const all = readJson<DoneMap>(ROUTINE_KEY, {});
+export function unmarkRoutineDone(id, now = new Date()) {
+  const all = readJson(ROUTINE_KEY, {});
   const day = todayKey(now);
   const row = { ...(all[day] || {}) };
   delete row[id];
@@ -114,18 +102,8 @@ export function unmarkRoutineDone(id: string, now = new Date()) {
   return getRoutineItems(now);
 }
 
-export function recordGamePlay({
-  gameId,
-  title,
-  score,
-  category = 'Memory',
-}: {
-  gameId: string;
-  title: string;
-  score: number | string;
-  category?: string;
-}) {
-  const log = readJson<GameLogEntry[]>(GAME_LOG_KEY, []);
+export function recordGamePlay({ gameId, title, score, category = 'Memory' }) {
+  const log = readJson(GAME_LOG_KEY, []);
   const next = [
     {
       id: `${Date.now()}`,
@@ -141,12 +119,12 @@ export function recordGamePlay({
   return next;
 }
 
-export function loadGameLog(): GameLogEntry[] {
-  const log = readJson<unknown>(GAME_LOG_KEY, []);
-  return Array.isArray(log) ? (log as GameLogEntry[]) : [];
+export function loadGameLog() {
+  const log = readJson(GAME_LOG_KEY, []);
+  return Array.isArray(log) ? log : [];
 }
 
-export function getProgressSnapshot(now = new Date()): ProgressSnapshot {
+export function getProgressSnapshot(now = new Date()) {
   const routine = getRoutineItems(now);
   const done = routine.filter((r) => r.completed).length;
   const log = loadGameLog();
@@ -162,7 +140,7 @@ export function getProgressSnapshot(now = new Date()): ProgressSnapshot {
       const d = new Date(now);
       d.setDate(d.getDate() - i);
       const key = todayKey(d);
-      const dayDone = readJson<DoneMap>(ROUTINE_KEY, {})[key];
+      const dayDone = readJson(ROUTINE_KEY, {})[key];
       const played = log.some((row) => row.at?.slice(0, 10) === key);
       if (dayDone && Object.keys(dayDone).length) n += 1;
       else if (played) n += 1;
@@ -176,7 +154,7 @@ export function getProgressSnapshot(now = new Date()): ProgressSnapshot {
     d.setDate(d.getDate() - (6 - i));
     const key = todayKey(d);
     const plays = log.filter((row) => row.at?.slice(0, 10) === key).length;
-    const rdone = Object.keys(readJson<DoneMap>(ROUTINE_KEY, {})[key] || {}).length;
+    const rdone = Object.keys(readJson(ROUTINE_KEY, {})[key] || {}).length;
     return Math.min(100, 38 + plays * 12 + rdone * 6);
   });
   return {
@@ -194,7 +172,7 @@ export function getProgressSnapshot(now = new Date()): ProgressSnapshot {
   };
 }
 
-export function recordCheckIn({ lat, lng, place }: { lat?: number; lng?: number; place?: string }) {
+export function recordCheckIn({ lat, lng, place }) {
   const row = {
     id: `${Date.now()}`,
     at: new Date().toISOString(),
@@ -227,7 +205,7 @@ export function getCircleStatus(now = new Date()) {
   });
 }
 
-export function subscribeLive(onChange: () => void) {
+export function subscribeLive(onChange) {
   const handler = () => onChange();
   window.addEventListener('storage', handler);
   window.addEventListener('ss-live', handler);

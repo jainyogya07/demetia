@@ -3,12 +3,8 @@
 import { getRoutineItems, markRoutineDone, pingLive } from './liveState';
 import { addNotification } from './notificationStore';
 
-import type { AlarmPrefs, RoutineItem } from '../types/app';
-
 const FIRED_KEY = 'ss-alarm-fired-v1';
 const PREFS_KEY = 'ss-alarm-prefs-v1';
-
-type FiredMap = Record<string, Record<string, string>>;
 
 function dayKey(date = new Date()) {
   const y = date.getFullYear();
@@ -17,16 +13,16 @@ function dayKey(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-function readJson<T>(key: string, fallback: T): T {
+function readJson(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
+    return raw ? JSON.parse(raw) : fallback;
   } catch {
     return fallback;
   }
 }
 
-function writeJson(key: string, value: unknown) {
+function writeJson(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
@@ -34,8 +30,8 @@ function writeJson(key: string, value: unknown) {
   }
 }
 
-export function getAlarmPrefs(): AlarmPrefs {
-  const row = readJson<Partial<AlarmPrefs>>(PREFS_KEY, {});
+export function getAlarmPrefs() {
+  const row = readJson(PREFS_KEY, {});
   return {
     enabled: row.enabled === true,
     sound: row.sound !== false,
@@ -43,27 +39,27 @@ export function getAlarmPrefs(): AlarmPrefs {
   };
 }
 
-export function setAlarmPrefs(patch: Partial<AlarmPrefs>) {
+export function setAlarmPrefs(patch) {
   const next = { ...getAlarmPrefs(), ...patch };
   writeJson(PREFS_KEY, next);
   return next;
 }
 
-function firedMap(): FiredMap {
-  return readJson<FiredMap>(FIRED_KEY, {});
+function firedMap() {
+  return readJson(FIRED_KEY, {});
 }
 
-function markFired(id: string, now = new Date()) {
+function markFired(id, now = new Date()) {
   const all = firedMap();
   const day = dayKey(now);
   writeJson(FIRED_KEY, { ...all, [day]: { ...(all[day] || {}), [id]: now.toISOString() } });
 }
 
-function wasFired(id: string, now = new Date()) {
+function wasFired(id, now = new Date()) {
   return Boolean(firedMap()[dayKey(now)]?.[id]);
 }
 
-export function clearAlarmFired(id: string, now = new Date()) {
+export function clearAlarmFired(id, now = new Date()) {
   const all = firedMap();
   const day = dayKey(now);
   const row = { ...(all[day] || {}) };
@@ -79,12 +75,12 @@ export function getDueAlarms(now = new Date()) {
     if (item.completed || item.status !== 'due') return false;
     if (wasFired(item.id, now)) return false;
     if (isSnoozing(item.id)) return false;
-    const ageMin = (now.getTime() - item.dueAt.getTime()) / 60000;
+    const ageMin = (now - item.dueAt) / 60000;
     return ageMin >= 0 && ageMin <= 90;
   });
 }
 
-let audioCtx: AudioContext | undefined;
+let audioCtx;
 
 function beep() {
   try {
@@ -119,7 +115,7 @@ export async function ensureNotifyPermission() {
   }
 }
 
-function pushNotify(item: RoutineItem) {
+function pushNotify(item) {
   const prefs = getAlarmPrefs();
   if (!prefs.notify || !('Notification' in window) || Notification.permission !== 'granted') return;
   try {
@@ -127,7 +123,7 @@ function pushNotify(item: RoutineItem) {
       body: `${item.time} — ${item.subtitle || 'Smriti Saarthi reminder'}`,
       tag: `ss-alarm-${item.id}`,
       renotify: true,
-    } as NotificationOptions);
+    });
     setTimeout(() => n.close(), 20000);
   } catch {
     /* ignore */
@@ -155,17 +151,17 @@ export function fireNextAlarm(now = new Date()) {
   return item;
 }
 
-export function snoozeAlarm(id: string, minutes = 10) {
+export function snoozeAlarm(id, minutes = 10) {
   clearAlarmFired(id);
   writeJson(`ss-alarm-snooze-${id}`, Date.now() + minutes * 60 * 1000);
 }
 
-export function isSnoozing(id: string) {
+export function isSnoozing(id) {
   const until = readJson(`ss-alarm-snooze-${id}`, 0);
   return typeof until === 'number' && until > Date.now();
 }
 
-export function completeAlarm(id: string) {
+export function completeAlarm(id) {
   markRoutineDone(id);
   markFired(id);
   try {
@@ -176,7 +172,7 @@ export function completeAlarm(id: string) {
   pingLive();
 }
 
-export function dismissAlarm(id: string) {
+export function dismissAlarm(id) {
   markFired(id);
   pingLive();
 }

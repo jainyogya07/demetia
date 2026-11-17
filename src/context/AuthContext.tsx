@@ -1,51 +1,26 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import type { AuthSession } from '../types/app';
+import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 
 const STORAGE_KEY = 'ss-auth-session';
+const AuthContext = createContext(null);
 
-export type AuthMode = 'login' | 'signup';
-
-export interface AuthGate {
-  gate?: string;
-}
-
-export interface AuthContextValue {
-  session: AuthSession | null;
-  signIn: (next: Partial<AuthSession> & { phone: string }) => void;
-  signOut: () => void;
-  authOpen: boolean;
-  authMode: AuthMode;
-  authGate: string | null;
-  openAuth: (mode?: string, opts?: AuthGate) => void;
-  closeAuth: () => void;
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null);
-
-function isSession(value: unknown): value is AuthSession {
-  if (!value || typeof value !== 'object') return false;
-  const row = value as Record<string, unknown>;
-  return row.verified === true && typeof row.phone === 'string';
-}
-
-function readSession(): AuthSession | null {
+function readSession() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed: unknown = raw ? JSON.parse(raw) : null;
-    if (isSession(parsed)) return parsed;
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (parsed?.verified && parsed?.phone) return parsed;
     return null;
   } catch {
     return null;
   }
 }
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<AuthSession | null>(readSession);
+export function AuthProvider({ children }) {
+  const [session, setSession] = useState(readSession);
   const [authOpen, setAuthOpen] = useState(false);
-  const [authMode, setAuthMode] = useState<AuthMode>('signup');
-  const [authGate, setAuthGate] = useState<string | null>(null);
+  const [authMode, setAuthMode] = useState('signup');
+  const [authGate, setAuthGate] = useState(null);
 
-  const openAuth = useCallback((mode = 'signup', opts: AuthGate = {}) => {
+  const openAuth = useCallback((mode = 'signup', opts = {}) => {
     setAuthMode(mode === 'login' ? 'login' : 'signup');
     setAuthGate(opts.gate || null);
     setAuthOpen(true);
@@ -56,8 +31,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAuthGate(null);
   }, []);
 
-  const signIn = useCallback((next: Partial<AuthSession> & { phone: string }) => {
-    const row: AuthSession = {
+  const signIn = useCallback((next) => {
+    const row = {
       id: next.id,
       firstName: next.firstName || '',
       lastName: next.lastName || '',
@@ -68,7 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role: next.role || 'user',
       verified: true,
       at: new Date().toISOString(),
-      householdCode: next.householdCode,
     };
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(row));

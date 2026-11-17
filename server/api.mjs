@@ -4,13 +4,11 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadEnv } from '../scripts/loadEnv.mjs';
 import { handleApiRequest } from './handleApi.mjs';
-import { hasDatabaseUrl } from './httpKit.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 loadEnv(root);
 
-const PORT = Number(process.env.PORT || process.env.API_PORT || 8787);
-const HOST = process.env.HOST || (process.env.PORT ? '0.0.0.0' : '127.0.0.1');
+const PORT = Number(process.env.API_PORT || 8787);
 
 const server = createServer(async (req, res) => {
   const handled = await handleApiRequest(req, res);
@@ -20,9 +18,9 @@ const server = createServer(async (req, res) => {
   }
 });
 
-server.listen(PORT, HOST, () => {
-  console.log(`API on http://${HOST}:${PORT}`);
-  if (!hasDatabaseUrl()) {
+server.listen(PORT, '127.0.0.1', () => {
+  console.log(`API on http://127.0.0.1:${PORT}`);
+  if (!process.env.DATABASE_URL?.trim()) {
     console.log('DATABASE_URL is not set — auth OTP is on-screen; memories use fallback.');
   }
 });

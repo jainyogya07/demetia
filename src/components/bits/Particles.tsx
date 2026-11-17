@@ -61,8 +61,14 @@ export default function Particles({
   useEffect(() => {
     const wrap = wrapRef.current;
     if (!wrap) return undefined;
-    const renderer = new Renderer({ dpr: 1, alpha: true, antialias: false });
-    const gl = renderer.gl;
+    let renderer: any;
+    try {
+      renderer = new Renderer({ dpr: 1, alpha: true, antialias: false });
+    } catch {
+      return undefined;
+    }
+    const gl = renderer?.gl;
+    if (!gl) return undefined;
     wrap.appendChild(gl.canvas);
     gl.clearColor(0, 0, 0, 0);
 

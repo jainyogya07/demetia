@@ -4,7 +4,6 @@ import { useAppNav } from "../AppNavContext";
 import { useLanguage } from "../context/LanguageContext";
 import { MEMORIES_FALLBACK } from "../data/memoriesFallback";
 import { hideAlbum, hiddenAlbums, MEMORY_ALBUMS } from "../lib/memoryAlbums";
-import { apiRequest } from "../lib/apiClient";
 
 function MemoryBook() {
   const { openModule } = useAppNav();
@@ -13,10 +12,13 @@ function MemoryBook() {
   const [hidden, setHidden] = useState(() => hiddenAlbums());
 
   useEffect(() => {
-    apiRequest("/api/memories").then((data) => {
-      const list = data?.memories || [];
-      if (list.length) setRows(list);
-    });
+    fetch("/api/memories")
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data) => {
+        const list = data.memories || [];
+        if (list.length) setRows(list);
+      })
+      .catch(() => setRows(MEMORIES_FALLBACK));
   }, []);
 
   useEffect(() => {

@@ -46,7 +46,7 @@ function Sidebar({ openTabs, setOpenTabs }) {
     },
     {
       name: t("medicineHealth"),
-      path: "/schemes",
+      path: "/medicine-health",
       icon: Pill,
     },
     {

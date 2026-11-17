@@ -5,10 +5,7 @@
  * cognitive-motor detection engine (/auth-api/detection/evaluate).
  */
 
-import type { FaqQuestion } from '../types/app';
-import { apiRequest } from './apiClient';
-
-export const FAQ_QUESTIONS: FaqQuestion[] = [
+export const FAQ_QUESTIONS = [
   {
     id: 'faq_cooking_stove_safety',
     code: 'STOVE_SAFETY',
@@ -462,37 +459,23 @@ export function savePatientDailyCheckin(patientId, answers) {
 /**
  * Calls FastAPI detection endpoint with client-side fallback
  */
-export async function evaluateTelemetry({
-  patient_id,
-  demographics,
-  motor,
-  functional,
-  memoryQuiz,
-  memoryJourney,
-}: {
-  patient_id?: string;
-  demographics?: Record<string, unknown>;
-  motor?: Record<string, unknown>;
-  functional?: Record<string, unknown>;
-  memoryQuiz?: Record<string, unknown>;
-  memoryJourney?: unknown;
-}) {
+export async function evaluateTelemetry({ patient_id, demographics, motor, functional, memoryQuiz }) {
   const payload = {
     patient_id: patient_id || 'patient_local',
     demographics: {
-      age: Number(demographics?.age || 75.0),
-      education_years: Number(demographics?.education_years || 0.0),
+      age: Number(demographics.age || 75.0),
+      education_years: Number(demographics.education_years || 0.0),
     },
     motor: {
-      tap_latency_mean_ms: Number(motor?.tap_latency_mean_ms || 280.0),
-      tap_latency_std_ms: Number(motor?.tap_latency_std_ms || 35.0),
-      sampling_interval_jitter_ms: Number(motor?.sampling_interval_jitter_ms || 2.0),
-      finger_lift_velocity_px_ms: Number(motor?.finger_lift_velocity_px_ms || 2.2),
-      stroke_curvature_index: Number(motor?.stroke_curvature_index || 1.3),
-      stroke_hesitation_count: Number(motor?.stroke_hesitation_count || 1),
+      tap_latency_mean_ms: Number(motor.tap_latency_mean_ms || 280.0),
+      tap_latency_std_ms: Number(motor.tap_latency_std_ms || 35.0),
+      sampling_interval_jitter_ms: Number(motor.sampling_interval_jitter_ms || 2.0),
+      finger_lift_velocity_px_ms: Number(motor.finger_lift_velocity_px_ms || 2.2),
+      stroke_curvature_index: Number(motor.stroke_curvature_index || 1.3),
+      stroke_hesitation_count: Number(motor.stroke_hesitation_count || 1),
     },
     functional: {
-      faq_medication_compliance: Number(functional?.faq_medication_compliance || 0),
+      faq_medication_compliance: Number(functional.faq_medication_compliance || 0),
       faq_cooking_stove_safety: Number(functional.faq_cooking_stove_safety || 0),
       faq_financial_handling: Number(functional.faq_financial_handling || 0),
       faq_orientation_time_space: Number(functional.faq_orientation_time_space || 0),
@@ -514,37 +497,47 @@ export async function evaluateTelemetry({
     );
   }
 
-  const data = await apiRequest('/api/v1/telemetry/evaluate', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  });
-  if (data) {
-    saveLatestEvaluation(patient_id, data);
-    return data;
+  try {
+    const res = await fetch('/api/v1/telemetry/evaluate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      saveLatestEvaluation(patient_id, data);
+      return data;
+    }
+  } catch {
+    /* fall through to python / local */
   }
 
-  const py = await apiRequest('/auth-api/detection/evaluate', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-    timeoutMs: 2500,
-  });
-  if (py) {
-    const data = py;
-    if (Number.isFinite(quizPct)) {
-      data.domain_sub_indices = {
-        ...(data.domain_sub_indices || {}),
-        'Memory Quiz': {
-          domain_name: 'Memory Quiz',
-          risk_level: quizPct >= 80 ? 'LOW' : quizPct >= 60 ? 'MILD' : 'MODERATE',
-          normalized_score: Number(((100 - quizPct) / 100).toFixed(2)),
-          additive_attribution: Number(((100 - quizPct) / 400).toFixed(3)),
-          clinical_summary: `Daily memory check scored ${quizPct}% (${quiz?.score ?? 0}/${quiz?.totalQuestions ?? 0}).`,
-        },
-      };
-      data.memory_quiz = quiz;
+  try {
+    const res = await fetch('/auth-api/detection/evaluate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (Number.isFinite(quizPct)) {
+        data.domain_sub_indices = {
+          ...(data.domain_sub_indices || {}),
+          'Memory Quiz': {
+            domain_name: 'Memory Quiz',
+            risk_level: quizPct >= 80 ? 'LOW' : quizPct >= 60 ? 'MILD' : 'MODERATE',
+            normalized_score: Number(((100 - quizPct) / 100).toFixed(2)),
+            additive_attribution: Number(((100 - quizPct) / 400).toFixed(3)),
+            clinical_summary: `Daily memory check scored ${quizPct}% (${quiz?.score ?? 0}/${quiz?.totalQuestions ?? 0}).`,
+          },
+        };
+        data.memory_quiz = quiz;
+      }
+      saveLatestEvaluation(patient_id, data);
+      return data;
     }
-    saveLatestEvaluation(patient_id, data);
-    return data;
+  } catch (err) {
+    console.warn('[detection] Backend evaluate unreachable, calculating fallback:', err);
   }
 
   // Client-side fallback calculation matching calibrator logic

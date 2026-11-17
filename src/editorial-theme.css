@@ -32,7 +32,7 @@
 .daily-routine-page,
 .memory-progress-page,
 .care-circle-page {
-  background: transparent;
+  background: #f4f7f5;
 }
 
 .routine-header h1,
@@ -98,13 +98,12 @@
   color: #4a5f58 !important;
 }
 
-/* Lakeside shells paint scenery + glass; keep solid paper only off-scenery */
-.ss-theme:not(.ss-has-region-scenery) .main-content {
+.ss-theme .main-content {
   background:
     linear-gradient(180deg, #f4f7f5 0%, #f8faf9 40%, #f8faf9 100%) !important;
 }
 
-.ss-theme:not(.ss-has-region-scenery) .sidebar {
+.ss-theme .sidebar {
   background: #ffffff !important;
 }
 

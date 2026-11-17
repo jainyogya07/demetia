@@ -1,7 +1,5 @@
--- LEGACY combined dump. Prefer numbered files 001–010 (see supabase/README.md).
--- Do not run this file after the numbered migrations — policy names will collide.
 -- Smriti Saarthi / Caresahaay core Supabase schema.
--- Run numbered SQL in the Dashboard SQL Editor as the project owner.
+-- Run this in Supabase Dashboard → SQL Editor as the project owner.
 -- This file intentionally uses no service_role key in the app.
 
 create table if not exists public.profiles (

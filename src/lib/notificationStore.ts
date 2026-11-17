@@ -4,21 +4,19 @@
  * alarm alerts, upcoming alarm reminders, document uploads, and government schemes.
  */
 
-import type { AppNotification, NotificationPriority } from '../types/app';
-
 const STORAGE_KEY = 'ss-notifications-v1';
 const EVENT_NAME = 'ss-notifications-updated';
 
-function readJson<T>(key: string, fallback: T): T {
+function readJson(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
+    return raw ? JSON.parse(raw) : fallback;
   } catch {
     return fallback;
   }
 }
 
-function writeJson(key: string, value: unknown) {
+function writeJson(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     if (typeof window !== 'undefined') {
@@ -34,7 +32,7 @@ function uid(prefix = 'notif') {
 }
 
 // Seed notifications representing the core requested features
-const INITIAL_NOTIFICATIONS: AppNotification[] = [
+const INITIAL_NOTIFICATIONS = [
   {
     id: 'seed-upcoming-1',
     type: 'alarm_upcoming',
@@ -103,19 +101,19 @@ const INITIAL_NOTIFICATIONS: AppNotification[] = [
   },
 ];
 
-export function getNotifications(): AppNotification[] {
-  const saved = readJson<unknown>(STORAGE_KEY, null);
-  if (Array.isArray(saved)) return saved as AppNotification[];
+export function getNotifications() {
+  const saved = readJson(STORAGE_KEY, null);
+  if (Array.isArray(saved)) return saved;
   writeJson(STORAGE_KEY, INITIAL_NOTIFICATIONS);
   return INITIAL_NOTIFICATIONS;
 }
 
-export function saveNotifications(list: AppNotification[]) {
+export function saveNotifications(list) {
   writeJson(STORAGE_KEY, list);
   return list;
 }
 
-function playNotificationChime(priority: NotificationPriority = 'normal') {
+function playNotificationChime(priority = 'normal') {
   try {
     const Ctx = window.AudioContext || window.webkitAudioContext;
     if (!Ctx) return;
@@ -142,16 +140,7 @@ function playNotificationChime(priority: NotificationPriority = 'normal') {
   }
 }
 
-export function addNotification(payload: {
-  type?: string;
-  title?: string;
-  message?: string;
-  time?: string;
-  priority?: NotificationPriority;
-  actionUrl?: string;
-  actionLabel?: string;
-  meta?: Record<string, unknown>;
-}) {
+export function addNotification(payload) {
   const list = getNotifications();
   const newNotif = {
     id: uid('notif'),
@@ -172,7 +161,7 @@ export function addNotification(payload: {
   return newNotif;
 }
 
-export function markAsRead(id: string) {
+export function markAsRead(id) {
   const list = getNotifications();
   const updated = list.map((item) => (item.id === id ? { ...item, read: true } : item));
   return saveNotifications(updated);
@@ -184,7 +173,7 @@ export function markAllAsRead() {
   return saveNotifications(updated);
 }
 
-export function removeNotification(id: string) {
+export function removeNotification(id) {
   const list = getNotifications().filter((item) => item.id !== id);
   return saveNotifications(list);
 }
@@ -197,7 +186,7 @@ export function getUnreadCount() {
   return getNotifications().filter((item) => !item.read).length;
 }
 
-export function subscribeNotifications(handler: (list: AppNotification[]) => void) {
+export function subscribeNotifications(handler) {
   const onStorage = (e) => {
     if (e.key === STORAGE_KEY) handler(getNotifications());
   };
@@ -212,7 +201,7 @@ export function subscribeNotifications(handler: (list: AppNotification[]) => voi
   };
 }
 
-export function triggerDemoNotification(type: string) {
+export function triggerDemoNotification(type) {
   switch (type) {
     case 'doctor':
       return addNotification({

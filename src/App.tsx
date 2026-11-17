@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef, Component } from 'react';
+import { createPortal } from 'react-dom';
 import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import {
   Home, MessageSquare, Puzzle, CalendarDays, Landmark, LineChart,
@@ -580,6 +581,15 @@ function UserWorkspace({ boot }: { boot?: string }) {
               </button>
             )}
           </motion.div>
+          <button
+            type="button"
+            className="ss-sidebar-close-mob-btn"
+            onClick={() => setRailOpen(false)}
+            aria-label={t('chrome.close') || 'Close menu'}
+            title="Close"
+          >
+            <X size={18} />
+          </button>
         </div>
 
         <button
@@ -664,6 +674,10 @@ function UserWorkspace({ boot }: { boot?: string }) {
             >
               <Menu size={22} />
             </button>
+            <div className="ss-mobile-brand-title">
+              <span className="ss-mob-logo-dot" />
+              <strong>स्मृति सारथी</strong>
+            </div>
             <button
               type="button"
               className="ss-ask-saarthi-hero-btn"
@@ -837,7 +851,7 @@ function UserWorkspace({ boot }: { boot?: string }) {
           {t('chrome.dockHelp')}
         </button>
       </nav>
-      {showMemoryQuiz && (
+      {showMemoryQuiz && createPortal(
         <QuizErrorBoundary
           onClose={() => {
             markMemoryQuizDay();
@@ -862,8 +876,13 @@ function UserWorkspace({ boot }: { boot?: string }) {
               markMemoryQuizDay();
               setShowMemoryQuiz(false);
             }}
+            onClose={() => {
+              markMemoryQuizDay();
+              setShowMemoryQuiz(false);
+            }}
           />
-        </QuizErrorBoundary>
+        </QuizErrorBoundary>,
+        document.body
       )}
       <AlarmRuntime />
       {showGuide && (

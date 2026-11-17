@@ -3,15 +3,13 @@
  * No API keys. City is shared across map, 360, metrics, and Safety.
  */
 
-import type { DemoCity, DemoHome, LatLng } from '../types/app';
-
-function offsetMetres(lat: number, lng: number, northM: number, eastM: number) {
+function offsetMetres(lat, lng, northM, eastM) {
   const dLat = northM / 111320;
   const dLng = eastM / (111320 * Math.cos((lat * Math.PI) / 180));
   return { lat: lat + dLat, lng: lng + dLng };
 }
 
-export function haversineM(a: LatLng, b: LatLng) {
+export function haversineM(a, b) {
   const toRad = (n) => (n * Math.PI) / 180;
   const dLat = toRad(b.lat - a.lat);
   const dLng = toRad(b.lng - a.lng);
@@ -21,7 +19,7 @@ export function haversineM(a: LatLng, b: LatLng) {
   return 6371000 * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1 - s));
 }
 
-export function bearingDeg(from: LatLng, to: LatLng) {
+export function bearingDeg(from, to) {
   const toRad = (n) => (n * Math.PI) / 180;
   const y = Math.sin(toRad(to.lng - from.lng)) * Math.cos(toRad(to.lat));
   const x =
@@ -30,14 +28,14 @@ export function bearingDeg(from: LatLng, to: LatLng) {
   return (Math.atan2(y, x) * 180) / Math.PI;
 }
 
-export function cardinalFromHeading(deg: number) {
+export function cardinalFromHeading(deg) {
   const dirs = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
   const i = Math.round((((deg % 360) + 360) % 360) / 45) % 8;
   return dirs[i];
 }
 
-function densify(points: LatLng[], perSeg = 8) {
-  const out: LatLng[] = [];
+function densify(points, perSeg = 8) {
+  const out = [];
   for (let i = 0; i < points.length - 1; i += 1) {
     const a = points[i];
     const b = points[i + 1];
@@ -54,14 +52,14 @@ function densify(points: LatLng[], perSeg = 8) {
   return out;
 }
 
-function polygonFromOffsets(home: DemoHome, ring: [number, number][]): [number, number][] {
+function polygonFromOffsets(home, ring) {
   return ring.map(([n, e]) => {
     const p = offsetMetres(home.lat, home.lng, n, e);
     return [p.lat, p.lng];
   });
 }
 
-function pathFromScript(home: DemoHome, script: { n: number; e: number; name: string }[]) {
+function pathFromScript(home, script) {
   return densify(
     script.map((p) => ({
       ...offsetMetres(home.lat, home.lng, p.n, p.e),
@@ -71,10 +69,7 @@ function pathFromScript(home: DemoHome, script: { n: number; e: number; name: st
   );
 }
 
-function placesFromHome(
-  home: DemoHome,
-  extras: Array<{ id: string; name: string; n: number; e: number; radius: number; familiarity: string }>,
-) {
+function placesFromHome(home, extras) {
   return [
     {
       id: 'place_home',
@@ -91,7 +86,7 @@ function placesFromHome(
   ];
 }
 
-const ASSAM_HOME_DEF: DemoHome = {
+const ASSAM_HOME_DEF = {
   lat: 26.16952,
   lng: 91.76785,
   label: 'Home — Zoo Road, Guwahati',
@@ -99,7 +94,7 @@ const ASSAM_HOME_DEF: DemoHome = {
   radiusM: 280,
 };
 
-const DELHI_HOME_DEF: DemoHome = {
+const DELHI_HOME_DEF = {
   lat: 28.59155,
   lng: 77.22105,
   label: 'Home — Lodhi Colony, Delhi',
@@ -152,14 +147,14 @@ const DELHI_SCRIPT = [
   { n: 18, e: 16, name: 'Home garden' },
 ];
 
-export const DEMO_CITIES: DemoCity[] = [
+export const DEMO_CITIES = [
   {
     id: 'assam',
     shortLabel: 'Assam',
     cityLabel: 'Guwahati',
     liveChip: 'Live simulation · Assam',
-    viewerTitle: 'Simulation · 360° · Assam',
-    panoCaption: 'Assam · Wikimedia street photosphere',
+    viewerTitle: 'Simulated 360° walk · Assam',
+    panoCaption: 'Assam · simulated street look',
     weather: 'Soft Assam day',
     eveningFeel: 'Calm',
     safetyIntro: 'Home garden on Zoo Road, Guwahati. Demo walk plays a gentle loop for filming; GPS is optional.',
@@ -189,8 +184,8 @@ export const DEMO_CITIES: DemoCity[] = [
     shortLabel: 'Delhi',
     cityLabel: 'Delhi',
     liveChip: 'Live simulation · Delhi',
-    viewerTitle: 'Simulation · 360° · Delhi',
-    panoCaption: 'Delhi · Wikimedia garden photosphere',
+    viewerTitle: 'Simulated 360° walk · Delhi',
+    panoCaption: 'Delhi · simulated street look',
     weather: 'Soft Delhi evening',
     eveningFeel: 'Calm',
     safetyIntro: 'Home garden by Lodhi Garden, South Delhi. Demo walk plays a gentle loop for filming; GPS is optional.',
@@ -220,7 +215,7 @@ export const DEMO_CITIES: DemoCity[] = [
 export const DEFAULT_DEMO_CITY_ID = 'assam';
 
 const CITY_KEY = 'ss-spatial-demo-city';
-const cityListeners = new Set<(city: DemoCity) => void>();
+const cityListeners = new Set();
 
 function readStoredCityId() {
   try {
@@ -234,7 +229,7 @@ function readStoredCityId() {
 
 let activeCityId = readStoredCityId();
 
-export function getDemoCity(id = activeCityId): DemoCity {
+export function getDemoCity(id = activeCityId) {
   return DEMO_CITIES.find((c) => c.id === id) || DEMO_CITIES[0];
 }
 
@@ -246,14 +241,12 @@ export function getActiveDemoCity() {
   return getDemoCity(activeCityId);
 }
 
-export function subscribeDemoCity(callback: (city: DemoCity) => void) {
+export function subscribeDemoCity(callback) {
   cityListeners.add(callback);
-  return () => {
-    cityListeners.delete(callback);
-  };
+  return () => cityListeners.delete(callback);
 }
 
-export function setActiveDemoCityId(id: string) {
+export function setActiveDemoCityId(id) {
   const next = getDemoCity(id);
   if (!next || next.id === activeCityId) return next;
   activeCityId = next.id;
@@ -273,7 +266,7 @@ export const DEMO_PATH = DEMO_CITIES[0].path;
 export const DEMO_DURATION_MS = DEMO_CITIES[0].durationMs;
 export const ASSAM_FAMILIAR_PLACES = DEMO_CITIES[0].places;
 
-export function sampleDemoWalk(progress01: number, city = getActiveDemoCity()) {
+export function sampleDemoWalk(progress01, city = getActiveDemoCity()) {
   const path = city.path;
   const t = ((progress01 % 1) + 1) % 1;
   const max = path.length - 1;
@@ -288,18 +281,18 @@ export function sampleDemoWalk(progress01: number, city = getActiveDemoCity()) {
   return { lat, lng, heading, place: frac < 0.5 ? a.name : b.name, index: i };
 }
 
-export function trailUpTo(progress01: number, city = getActiveDemoCity(), maxPoints = 48) {
+export function trailUpTo(progress01, city = getActiveDemoCity(), maxPoints = 48) {
   const path = city.path;
   const t = ((progress01 % 1) + 1) % 1;
   const end = Math.max(1, Math.floor(t * (path.length - 1)));
   const step = Math.max(1, Math.floor(end / maxPoints));
-  const pts: LatLng[] = [];
+  const pts = [];
   for (let i = 0; i <= end; i += step) pts.push(path[i]);
   pts.push(path[end]);
   return pts;
 }
 
-export function pointInPolygon(lat: number, lng: number, ring: [number, number][]) {
+export function pointInPolygon(lat, lng, ring) {
   let inside = false;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i, i += 1) {
     const yi = ring[i][0];
@@ -312,16 +305,12 @@ export function pointInPolygon(lat: number, lng: number, ring: [number, number][
   return inside;
 }
 
-export function computeSpatialMetrics(
-  sample: { lat: number; lng: number; heading: number; place?: string },
-  trail: LatLng[],
-  city = getActiveDemoCity(),
-) {
+export function computeSpatialMetrics(sample, trail, city = getActiveDemoCity()) {
   const home = city.home;
   const dist = haversineM(sample, home);
   const inPoly = pointInPolygon(sample.lat, sample.lng, city.polygon);
   const inside = inPoly || dist <= home.radiusM;
-  const headings: number[] = [];
+  const headings = [];
   for (let i = 1; i < Math.min(trail.length, 16); i += 1) {
     headings.push(bearingDeg(trail[i - 1], trail[i]));
   }

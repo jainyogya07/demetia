@@ -3,7 +3,6 @@ import { useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, Mic, Send } from 'lucide-react';
 import companionPortrait from '../assets/infinity_pfp.jpg';
 import { useAppNav } from '../AppNavContext';
-import { apiRequest } from '../lib/apiClient';
 import './HomeChat.css';
 
 const CHAT_KEY = 'sarthi-home-chat-v1';
@@ -78,11 +77,13 @@ export default function HomeChat({ defaultOpen = true }) {
         role: row.role === 'ai' ? 'model' : 'user',
         text: row.text,
       }));
-      const data = await apiRequest('/api/home-chat', {
+      const res = await fetch('/api/home-chat', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ messages: history }),
       });
-      const reply = String(data?.reply || '').trim();
+      const data = await res.json().catch(() => ({}));
+      const reply = String(data.reply || '').trim();
       const weak = !reply || /thoda ruk|line kamzor|Assist FAB/i.test(reply);
       push('ai', weak ? fallbackReply(text) : reply);
     } catch {

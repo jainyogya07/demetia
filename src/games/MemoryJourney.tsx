@@ -172,13 +172,11 @@ export default function MemoryJourney({
         const saved = await getMemoryJourneyConfig(patientId);
         if (!mountedRef.current) return;
 
-        const steps = saved?.route?.steps;
-        const playable = Array.isArray(steps)
-          && steps.filter((step) => step && (step.direction || step.instruction)).length >= 2;
-        if (playable) {
+        if (saved && saved.route && Array.isArray(saved.route.steps) && saved.route.steps.length >= 2) {
           setConfig(saved);
           setIsCustomConfig(true);
         } else {
+          // Fallback to rich default journey! Never block user!
           setConfig(DEFAULT_JOURNEY_CONFIG);
           setIsCustomConfig(false);
         }

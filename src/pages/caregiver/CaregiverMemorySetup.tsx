@@ -1,12 +1,10 @@
 // @ts-nocheck — leftover JS-shaped module; runtime unchanged
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 import {
   getMemoryJourneyConfig,
   saveMemoryJourneyConfig,
 } from "../../lib/memoryJourneyStore";
-import MemoryJourney, { DEFAULT_JOURNEY_CONFIG } from "../../games/MemoryJourney";
 
 import "./CaregiverMemorySetup.css";
 
@@ -69,13 +67,7 @@ export default function CaregiverMemorySetup({
   patientId = DEFAULT_PATIENT_ID,
   onBack,
   onSaved,
-}: {
-  patientId?: string;
-  onBack?: () => void;
-  onSaved?: (config: unknown) => void;
 }) {
-  const navigate = useNavigate();
-  const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const [saving, setSaving] = useState(false);
@@ -110,15 +102,15 @@ export default function CaregiverMemorySetup({
 
         if (existing) {
           setRouteTitle(
-            existing.route?.title || DEFAULT_JOURNEY_CONFIG.route.title
+            existing.route?.title || ""
           );
 
           setStartMessage(
-            existing.route?.startMessage || DEFAULT_JOURNEY_CONFIG.route.startMessage
+            existing.route?.startMessage || ""
           );
 
           setLanguage(
-            existing.language || "hi"
+            existing.language || "en"
           );
 
           setDifficulty(
@@ -136,22 +128,12 @@ export default function CaregiverMemorySetup({
           );
 
           setSteps(
-            existing.route?.steps?.length
-              ? existing.route.steps
-              : DEFAULT_JOURNEY_CONFIG.route.steps
+            existing.route?.steps || []
           );
 
           setLandmarks(
-            existing.landmarks?.length
-              ? existing.landmarks
-              : DEFAULT_JOURNEY_CONFIG.landmarks
+            existing.landmarks || []
           );
-        } else {
-          setRouteTitle(DEFAULT_JOURNEY_CONFIG.route.title);
-          setStartMessage(DEFAULT_JOURNEY_CONFIG.route.startMessage);
-          setLanguage(DEFAULT_JOURNEY_CONFIG.language || "hi");
-          setSteps(DEFAULT_JOURNEY_CONFIG.route.steps);
-          setLandmarks(DEFAULT_JOURNEY_CONFIG.landmarks);
         }
       } catch (error) {
         console.error(
@@ -166,21 +148,6 @@ export default function CaregiverMemorySetup({
     loadExistingConfig();
   }, [patientId]);
 
-
-  const goBack = () => {
-    if (typeof onBack === "function") onBack();
-    else navigate("/caregiver");
-  };
-
-  if (playing) {
-    return (
-      <MemoryJourney
-        patientId={patientId}
-        onExit={() => setPlaying(false)}
-        onBack={() => setPlaying(false)}
-      />
-    );
-  }
 
   if (loading) {
     return (
@@ -366,7 +333,6 @@ export default function CaregiverMemorySetup({
 
     try {
       await saveMemoryJourneyConfig(
-        patientId,
         journeyConfig
       );
 
@@ -401,7 +367,7 @@ export default function CaregiverMemorySetup({
         <button
           type="button"
           className="caregiver-back-btn"
-          onClick={goBack}
+          onClick={onBack}
         >
           ← Back
         </button>
@@ -783,20 +749,9 @@ export default function CaregiverMemorySetup({
           <button
             type="button"
             className="caregiver-secondary-btn"
-            onClick={goBack}
+            onClick={onBack}
           >
             Cancel
-          </button>
-
-          <button
-            type="button"
-            className="caregiver-primary-btn"
-            onClick={async () => {
-              await handleSave();
-              setPlaying(true);
-            }}
-          >
-            Play journey
           </button>
 
           <button

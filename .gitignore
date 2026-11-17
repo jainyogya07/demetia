@@ -9,6 +9,7 @@ _from-amongus-auth/
 backend/.env
 # Rust build output
 services/spatial-rust/target/
+**/target/
 # Go binaries
 services/detection-go/bin/
 # Python cache

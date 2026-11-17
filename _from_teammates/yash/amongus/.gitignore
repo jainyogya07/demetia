@@ -1,0 +1,11 @@
+node_modules
+dist
+.DS_Store
+.env
+.env.local
+.env.*.local
+*.log
+_from-amongus-auth/
+backend/.env
+__pycache__/
+*.pyc

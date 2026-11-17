@@ -4,25 +4,11 @@ import {
   useContext,
   useEffect,
   useState,
-  type ReactNode,
 } from "react";
 import { useI18n } from "../I18nContext";
 import { detectAndResolveLang } from "../lib/regionLanguage";
 
-interface LanguageContextValue {
-  language: string;
-  setLanguage: (code: string, manual?: boolean) => void;
-  t: (key: string) => string;
-  translations: Record<string, Record<string, string>>;
-  setDemoRegion: (region: string) => void;
-  isDemoLocation: boolean;
-  detectedRegion: string;
-  regionExplicit: boolean;
-  enableAutomaticLanguage: () => Promise<{ lang?: string; region?: string }>;
-  locationLoading: boolean;
-}
-
-const LanguageContext = createContext<LanguageContextValue | null>(null);
+const LanguageContext = createContext();
 
 export const translations = {
   en: {
@@ -31,7 +17,7 @@ export const translations = {
     brainGames: "Brain Games",
     talkToSmriti: "Talk to Care Agent",
     dailyRoutine: "Daily Routine",
-    medicineHealth: "Schemes",
+    medicineHealth: "Medicine & Health",
     memoryProgress: "Memory Progress",
     careCircle: "My Care Circle",
     safetyLocation: "Safety & Location",
@@ -169,7 +155,7 @@ export const translations = {
     brainGames: "दिमाग के खेल",
     talkToSmriti: "स्मृति से बात करें",
     dailyRoutine: "रोज़ का काम",
-    medicineHealth: "योजनाएँ",
+    medicineHealth: "दवाई और सेहत",
     memoryProgress: "स्मृति की प्रगति",
     careCircle: "मेरा देखभाल चक्र",
     safetyLocation: "सुरक्षा और जगह",
@@ -280,7 +266,7 @@ export const translations = {
     brainGames: "মগজৰ খেল",
     talkToSmriti: "স্মৃতিৰ সৈতে কথা পাতক",
     dailyRoutine: "দৈনিক ৰুটিন",
-    medicineHealth: "আঁচনি",
+    medicineHealth: "ঔষধ আৰু স্বাস্থ্য",
     memoryProgress: "স্মৃতিৰ অগ্ৰগতি",
     careCircle: "মোৰ যত্ন চক্র",
     safetyLocation: "সুৰক্ষা আৰু অৱস্থান",
@@ -392,7 +378,7 @@ export const translations = {
     brainGames: "Brain Games",
     talkToSmriti: "Talk to Care Agent",
     dailyRoutine: "Daily Routine",
-    medicineHealth: "Schemes",
+    medicineHealth: "Medicine & Health",
     memoryProgress: "Memory Progress",
     careCircle: "My Care Circle",
     safetyLocation: "Safety & Location",
@@ -504,7 +490,7 @@ export const translations = {
     brainGames: "Brain Games",
     talkToSmriti: "Talk to Care Agent",
     dailyRoutine: "Daily Routine",
-    medicineHealth: "Schemes",
+    medicineHealth: "Medicine & Health",
     memoryProgress: "Memory Progress",
     careCircle: "My Care Circle",
     safetyLocation: "Safety & Location",
@@ -613,7 +599,7 @@ export const translations = {
     brainGames: "Brain Games",
     talkToSmriti: "Talk to Care Agent",
     dailyRoutine: "Daily Routine",
-    medicineHealth: "Schemes",
+    medicineHealth: "Medicine & Health",
     memoryProgress: "Memory Progress",
     careCircle: "My Care Circle",
     safetyLocation: "Safety & Location",
@@ -722,7 +708,7 @@ export const translations = {
     brainGames: "Brain Games",
     talkToSmriti: "Talk to Care Agent",
     dailyRoutine: "Daily Routine",
-    medicineHealth: "Schemes",
+    medicineHealth: "Medicine & Health",
     memoryProgress: "Memory Progress",
     careCircle: "My Care Circle",
     safetyLocation: "Safety & Location",
@@ -839,7 +825,7 @@ translations.ta = {
   brainGames: "மூளை விளையாட்டு",
   talkToSmriti: "ஸ்மிருதியுடன் பேசு",
   dailyRoutine: "இன்றைய பணி",
-  medicineHealth: "திட்டங்கள்",
+  medicineHealth: "மருந்து மற்றும் உடல்நலம்",
   memoryProgress: "நினைவு முன்னேற்றம்",
   careCircle: "பராமரிப்பு வட்டம்",
   safetyLocation: "பாதுகாப்பு மற்றும் இடம்",
@@ -966,7 +952,7 @@ export const DEMO_REGIONS = [
   { value: "Delhi", label: "Delhi → Hindi" },
 ];
 
-export const LanguageProvider = ({ children }: { children: ReactNode }) => {
+export const LanguageProvider = ({ children }) => {
   const { lang: i18nLang, setLang: setI18nLang } = useI18n();
   const [language, setLanguageState] = useState(() => dashboardLang(i18nLang));
   const [detectedRegion, setDetectedRegion] = useState(() => {
@@ -1012,7 +998,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const markRegionPick = (region: string) => {
+  const markRegionPick = (region) => {
     setRegionExplicit(Boolean(region));
     try {
       if (region) localStorage.setItem("smriti-region-pick", "1");
@@ -1026,7 +1012,7 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   // Detect / setDemoRegion sets the lock so region scenery wins until the next manual pick.
   // Always push the *i18n* code into I18nContext so t() stays in sync (do not round-trip
   // through dashboardLang first — collapsing an unknown dash code to "en" would freeze UI copy).
-  const setLanguage = (newLanguage: string, manual = true) => {
+  const setLanguage = (newLanguage, manual = true) => {
     const raw = typeof newLanguage === "string" ? newLanguage.trim() : "";
     const dash = dashboardLang(raw || newLanguage);
     setLanguageState(dash);
@@ -1047,11 +1033,11 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const t = (key: string) => {
+  const t = (key) => {
     return translations[language]?.[key] || translations.en[key] || key;
   };
 
-  const setDemoRegion = (region: string) => {
+  const setDemoRegion = (region) => {
     if (!region) {
       setIsDemoLocation(false);
       markRegionPick("");

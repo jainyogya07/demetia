@@ -144,11 +144,7 @@ function OtpBoxes({ value, onChange }) {
   );
 }
 
-export default function AuthFlow({ variant = 'page', onSkip, requireAccount = false }: {
-  variant?: string;
-  onSkip?: () => void;
-  requireAccount?: boolean;
-}) {
+export default function AuthFlow({ variant = 'page', onSkip, requireAccount = false }) {
   const { signIn, authMode } = useAuth();
   const navigate = useNavigate();
   const [pane, setPane] = useState(authMode === 'login' ? 'login' : 'signup');

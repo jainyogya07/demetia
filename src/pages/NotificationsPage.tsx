@@ -117,7 +117,7 @@ function formatDate(isoString) {
   return `${rel} • ${dateStr}, ${timeStr}`;
 }
 
-export default function NotificationsPage({ standalone = false }: { standalone?: boolean }) {
+export default function NotificationsPage({ standalone = false }) {
   const [notifications, setNotifications] = useState(() => getNotifications());
   const [activeCategory, setActiveCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -127,7 +127,8 @@ export default function NotificationsPage({ standalone = false }: { standalone?:
   const navigate = useNavigate();
 
   useEffect(() => {
-    bffFetch('/api/v1/inbox/summary');
+    bffFetch('/api/v1/notifications');
+    bffFetch('/api/v1/notifications/alarms');
     return subscribeNotifications((list) => {
       setNotifications(list);
     });

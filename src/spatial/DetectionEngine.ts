@@ -1,8 +1,7 @@
 import { SpatialStatus } from './SpatialTypes';
 import { getActiveDemoCity, subscribeDemoCity } from './demoWalk';
-import type { DemoCity } from '../types/app';
 
-function mockFor(city: DemoCity) {
+function mockFor(city) {
   return {
     status: SpatialStatus.NORMAL,
     lastKnownLocation: `Home garden, ${city.cityLabel}`,
@@ -16,7 +15,7 @@ function mockFor(city: DemoCity) {
 export const MOCK_DETECTION_STATE = mockFor(getActiveDemoCity());
 
 let currentState = { ...MOCK_DETECTION_STATE };
-const listeners = new Set<(state: typeof currentState) => void>();
+const listeners = new Set();
 
 subscribeDemoCity((city) => {
   currentState = mockFor(city);
@@ -27,16 +26,14 @@ export function getDetectionState() {
   return currentState;
 }
 
-export function setDetectionState(newState: Partial<typeof currentState>) {
+export function setDetectionState(newState) {
   currentState = { ...currentState, ...newState };
   listeners.forEach((fn) => fn(currentState));
 }
 
-export function subscribeDetectionState(callback: (state: typeof currentState) => void) {
+export function subscribeDetectionState(callback) {
   listeners.add(callback);
-  return () => {
-    listeners.delete(callback);
-  };
+  return () => listeners.delete(callback);
 }
 
 export function simulateRouteDeviation() {

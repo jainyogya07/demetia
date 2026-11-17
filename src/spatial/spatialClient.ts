@@ -1,19 +1,19 @@
-import { io, type Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { setDetectionState } from './DetectionEngine';
 
 // Replace with your actual deployed Node.js Orchestrator URL
 const SOCKET_SERVER_URL = 'http://localhost:4000';
 
-let socket: Socket | null = null;
+let socket = null;
 
-export const initializeSpatialClient = (patientId: string) => {
+export const initializeSpatialClient = (patientId) => {
   if (socket) return socket; // Already connected
 
   socket = io(SOCKET_SERVER_URL);
 
   socket.on('connect', () => {
     console.log('✅ Connected to Spatial Orchestrator');
-    socket?.emit('subscribe:patient', patientId);
+    socket.emit('subscribe:patient', patientId);
   });
 
   socket.on('spatial:state_update', (update) => {
@@ -36,7 +36,7 @@ export const initializeSpatialClient = (patientId: string) => {
   return socket;
 };
 
-export const disconnectSpatialClient = (patientId?: string) => {
+export const disconnectSpatialClient = (patientId) => {
   if (socket) {
     socket.emit('unsubscribe:patient', patientId);
     socket.disconnect();

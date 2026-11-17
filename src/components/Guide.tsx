@@ -136,7 +136,7 @@ const pages = [
 ];
 
 
-function Guide({ onClose }: { onClose?: () => void }) {
+function Guide({ onClose }) {
   const [currentPage, setCurrentPage] = useState(0);
 
   const page = pages[currentPage];

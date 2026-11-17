@@ -14,7 +14,7 @@ function historyFor(city) {
 export const MOCK_ROUTE_HISTORY = historyFor(getActiveDemoCity());
 
 let currentRoute = [...MOCK_ROUTE_HISTORY];
-const listeners = new Set<(route: typeof currentRoute) => void>();
+const listeners = new Set();
 
 subscribeDemoCity((city) => {
   currentRoute = historyFor(city);
@@ -25,14 +25,12 @@ export function getRouteHistory() {
   return currentRoute;
 }
 
-export function addRoutePoint(point: (typeof currentRoute)[number]) {
+export function addRoutePoint(point) {
   currentRoute = [...currentRoute, point];
   listeners.forEach((fn) => fn(currentRoute));
 }
 
-export function subscribeRouteHistory(callback: (route: typeof currentRoute) => void) {
+export function subscribeRouteHistory(callback) {
   listeners.add(callback);
-  return () => {
-    listeners.delete(callback);
-  };
+  return () => listeners.delete(callback);
 }

@@ -29,7 +29,8 @@ export default function BlurText({
   const ref = useRef<any>(null);
 
   useEffect(() => {
-    if (!ref.current) return undefined;
+    const timer = setTimeout(() => setInView(true), 200);
+    if (!ref.current) return () => clearTimeout(timer);
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -37,10 +38,13 @@ export default function BlurText({
           observer.unobserve(ref.current);
         }
       },
-      { threshold, rootMargin },
+      { threshold: 0, rootMargin: '0px' },
     );
     observer.observe(ref.current);
-    return () => observer.disconnect();
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
   }, [threshold, rootMargin]);
 
   const defaultFrom = useMemo(

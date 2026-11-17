@@ -1,10 +1,14 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
+
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 import random
 import smtplib
 import time
+import asyncio
+import json
 from email.mime.text import MIMEText
 from pathlib import Path
 from typing import Any
@@ -166,3 +170,75 @@ def detection_health():
             detection_engine and detection_engine.onnx_runner.model_path.exists()
         ),
     }
+
+
+class CompanionChatRequest(BaseModel):
+    patient_id: str = "aita"
+    message: str
+    language: str = "hi"
+
+
+async def stream_companion_tokens(message: str, patient_id: str, language: str):
+    # Simulated RAG Context for dementia reassurance
+    greetings = {
+        "hi": "नमस्ते आइता जी! मैं आपका स्मृति सारथी हूँ। आप पूरी तरह सुरक्षित हैं और अपने घर पर हैं। ",
+        "en": "Hello Aita ji! I am your Smriti Saarthi. You are safe and at home. "
+    }
+    prefix = greetings.get(language, greetings["hi"])
+    reassurance = (
+        "आज मौसम बहुत सुहावना है। अनन्य और प्रिया ने आपके लिए सुबह की चाय और दवाइयाँ तैयार रखी थीं। "
+        "क्या आप कोई पुराना गीत सुनना चाहेंगे या हम मिलकर पुरानी तस्वीरें देखें?"
+    )
+    tokens = (prefix + reassurance).split(" ")
+    for tok in tokens:
+        chunk = json.dumps({"token": tok + " ", "done": False})
+        yield f"data: {chunk}\n\n"
+        await asyncio.sleep(0.04)
+
+    yield f"data: {json.dumps({'token': '', 'done': True})}\n\n"
+
+
+@app.post("/api/v1/ai/companion/chat/stream")
+async def chat_companion_stream(req: CompanionChatRequest):
+    return StreamingResponse(
+        stream_companion_tokens(req.message, req.patient_id, req.language),
+        media_type="text/event-stream",
+    )
+
+
+class ClinicalScoreRequest(BaseModel):
+    patient_id: str = "aita"
+    orientation_score: int
+    registration_score: int
+    attention_score: int
+    recall_score: int
+    language_score: int
+
+
+@app.post("/api/v1/clinical/assessment/score")
+def calculate_clinical_score(req: ClinicalScoreRequest):
+    mmse_total = (
+        req.orientation_score
+        + req.registration_score
+        + req.attention_score
+        + req.recall_score
+        + req.language_score
+    )
+
+    stage = "NORMAL"
+    if mmse_total < 10:
+        stage = "SEVERE_COGNITIVE_IMPAIRMENT"
+    elif mmse_total < 20:
+        stage = "MODERATE_DEMENTIA"
+    elif mmse_total < 25:
+        stage = "MILD_COGNITIVE_IMPAIRMENT"
+
+    return {
+        "patient_id": req.patient_id,
+        "mmse_total": mmse_total,
+        "max_score": 30,
+        "clinical_stage": stage,
+        "recommendation": "Maintain daily familiar routines and spatial orientation checks.",
+        "evaluated_at": time.time(),
+    }
+

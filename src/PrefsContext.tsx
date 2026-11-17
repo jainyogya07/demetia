@@ -1,10 +1,9 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { user as seedUser } from './data/user';
-import type { UserPrefs } from './types/app';
 
 export const PREFS_STORAGE_KEY = 'smriti-user-prefs';
 
-export const DEFAULT_PREFS: UserPrefs = {
+export const DEFAULT_PREFS = {
   profile: {
     name: seedUser.name || '',
     phone: '',
@@ -36,25 +35,24 @@ export const DEFAULT_PREFS: UserPrefs = {
   },
 };
 
-function readPrefs(): UserPrefs {
+function readPrefs() {
   try {
     const raw = localStorage.getItem(PREFS_STORAGE_KEY);
     if (!raw) return DEFAULT_PREFS;
-    const parsed: unknown = JSON.parse(raw);
-    const row = parsed && typeof parsed === 'object' ? (parsed as Record<string, Record<string, unknown>>) : {};
+    const parsed = JSON.parse(raw);
     return {
-      profile: { ...DEFAULT_PREFS.profile, ...(row.profile || {}) },
-      accessibility: { ...DEFAULT_PREFS.accessibility, ...(row.accessibility || {}) },
-      notifications: { ...DEFAULT_PREFS.notifications, ...(row.notifications || {}) },
-      privacy: { ...DEFAULT_PREFS.privacy, ...(row.privacy || {}) },
-      voice: { ...DEFAULT_PREFS.voice, ...(row.voice || {}) },
-    } as UserPrefs;
+      profile: { ...DEFAULT_PREFS.profile, ...(parsed.profile || {}) },
+      accessibility: { ...DEFAULT_PREFS.accessibility, ...(parsed.accessibility || {}) },
+      notifications: { ...DEFAULT_PREFS.notifications, ...(parsed.notifications || {}) },
+      privacy: { ...DEFAULT_PREFS.privacy, ...(parsed.privacy || {}) },
+      voice: { ...DEFAULT_PREFS.voice, ...(parsed.voice || {}) },
+    };
   } catch {
     return DEFAULT_PREFS;
   }
 }
 
-function applyAccessibility(accessibility: UserPrefs['accessibility']) {
+function applyAccessibility(accessibility) {
   const root = document.documentElement;
   root.dataset.uiFont = accessibility.fontSize || 'medium';
   root.dataset.uiScale = String(accessibility.uiScale || 100);
@@ -62,19 +60,13 @@ function applyAccessibility(accessibility: UserPrefs['accessibility']) {
   root.classList.toggle('ui-simple', !!accessibility.simpleMode);
 }
 
-interface PrefsContextValue {
-  prefs: UserPrefs;
-  updatePrefs: (patch: Partial<{ [K in keyof UserPrefs]: Partial<UserPrefs[K]> }>) => void;
-  resetPrefs: () => void;
-}
-
-const PrefsContext = createContext<PrefsContextValue>({
+const PrefsContext = createContext({
   prefs: DEFAULT_PREFS,
   updatePrefs: () => {},
   resetPrefs: () => {},
 });
 
-export function PrefsProvider({ children }: { children: ReactNode }) {
+export function PrefsProvider({ children }) {
   const [prefs, setPrefs] = useState(readPrefs);
 
   useEffect(() => {
@@ -86,7 +78,7 @@ export function PrefsProvider({ children }: { children: ReactNode }) {
     }
   }, [prefs]);
 
-  const updatePrefs = useCallback((patch: Partial<{ [K in keyof UserPrefs]: Partial<UserPrefs[K]> }>) => {
+  const updatePrefs = useCallback((patch) => {
     setPrefs((prev) => ({
       profile: { ...prev.profile, ...(patch.profile || {}) },
       accessibility: { ...prev.accessibility, ...(patch.accessibility || {}) },

@@ -75,8 +75,14 @@ export default function Aurora({
   useEffect(() => {
     const ctn = ctnDom.current;
     if (!ctn) return undefined;
-    const renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: false, dpr: 1 });
-    const gl = renderer.gl;
+    let renderer: any;
+    try {
+      renderer = new Renderer({ alpha: true, premultipliedAlpha: true, antialias: false, dpr: 1 });
+    } catch {
+      return undefined;
+    }
+    const gl = renderer?.gl;
+    if (!gl) return undefined;
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);

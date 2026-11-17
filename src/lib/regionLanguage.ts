@@ -24,7 +24,7 @@ const REGION_LANGUAGE_MAP = {
   Punjab: 'pa',
 };
 
-export function languageForRegion(region?: string | null) {
+export function languageForRegion(region) {
   if (!region) return null;
   if (REGION_LANGUAGE_MAP[region]) return REGION_LANGUAGE_MAP[region];
   const hit = Object.keys(REGION_LANGUAGE_MAP).find((state) =>
@@ -33,7 +33,7 @@ export function languageForRegion(region?: string | null) {
   return hit ? REGION_LANGUAGE_MAP[hit] : null;
 }
 
-function placeFromGeo(data: Record<string, string | undefined>) {
+function placeFromGeo(data) {
   const region = data.principalSubdivision || '';
   const city = data.city || data.locality || data.localityName || '';
   const unique = [...new Set([city, region].filter(Boolean))];
@@ -46,7 +46,7 @@ function placeFromGeo(data: Record<string, string | undefined>) {
 
 export async function detectIndianRegion() {
   if (typeof navigator === 'undefined' || !navigator.geolocation) return null;
-  const coords = await new Promise<{ lat: number; lng: number } | null>((resolve) => {
+  const coords = await new Promise((resolve) => {
     navigator.geolocation.getCurrentPosition(
       (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
       () => resolve(null),
@@ -59,8 +59,8 @@ export async function detectIndianRegion() {
       `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${coords.lat}&longitude=${coords.lng}&localityLanguage=en`,
     );
     if (!res.ok) return null;
-    const data: unknown = await res.json();
-    const found = placeFromGeo(data && typeof data === 'object' ? (data as Record<string, string | undefined>) : {});
+    const data = await res.json();
+    const found = placeFromGeo(data);
     try {
       if (found.region) localStorage.setItem('smriti-region', found.region);
       if (found.city) localStorage.setItem('smriti-city', found.city);
@@ -78,7 +78,7 @@ export async function detectAndResolveLang() {
   const region = await detectIndianRegion();
   let code = languageForRegion(region);
   if (!code && typeof navigator !== 'undefined') {
-    const nav = String(navigator.language || (navigator as Navigator & { userLanguage?: string }).userLanguage || '').toLowerCase();
+    const nav = String(navigator.language || navigator.userLanguage || '').toLowerCase();
     if (nav.startsWith('hi')) code = 'hi';
     else if (nav.startsWith('as')) code = 'as';
     else if (nav.startsWith('bn')) code = 'bn';

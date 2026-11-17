@@ -318,14 +318,7 @@ export function removeDoc(id) {
 
 /* —— Calendar —— */
 export function getCalendar() {
-  const list = ensureList(KEYS.calendar, seedCalendar);
-  const valid = Array.isArray(list)
-    && list.length > 0
-    && list.every((col) => col && typeof col.day === 'string' && Array.isArray(col.items));
-  if (valid) return list;
-  const seed = seedCalendar();
-  writeJson(KEYS.calendar, seed);
-  return seed;
+  return ensureList(KEYS.calendar, seedCalendar);
 }
 
 export function saveCalendar(list) {

@@ -3,8 +3,7 @@ import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, CalendarDays, MapPin, LineChart, Users, FileText, Settings, Phone, UserRound, BrainCircuit, ClipboardList, Compass, Heart,
 } from 'lucide-react';
-import { Component, useEffect, useState, type ReactNode } from 'react';
-import { caregiverNavIsActive } from './caregiverRoutes';
+import { useEffect, useState } from 'react';
 import BrandLogo from '../../components/BrandLogo';
 import HeaderProfileMenu from '../../components/HeaderProfileMenu';
 import HeaderLanguageControl from '../../components/HeaderLanguageControl';
@@ -16,25 +15,7 @@ import DashAurora from '../../components/bits/DashAurora';
 import BlurText from '../../components/bits/BlurText';
 import RegionSceneryBackground from '../../components/RegionSceneryBackground';
 import { useI18n } from '../../I18nContext';
-class ShellErrorBoundary extends Component<{ children?: ReactNode }, { error: Error | null }> {
-  state = { error: null as Error | null };
-  static getDerivedStateFromError(error: Error) {
-    return { error };
-  }
-  render() {
-    if (this.state.error) {
-      return (
-        <div className="os-page cg-route-fallback">
-          <p>This board could not open. Try another page in the sidebar, or refresh.</p>
-          <button type="button" className="cg-btn cg-btn-primary" onClick={() => this.setState({ error: null })}>
-            Try again
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
+import { AnimatePresence, motion } from 'motion/react';
 
 const NAV_GROUPS = [
   {
@@ -60,7 +41,6 @@ const NAV_GROUPS = [
       { to: '/caregiver/memory-journey', icon: Compass, labelKey: 'cgChrome.memoryJourney' },
       { to: '/caregiver/train-ai', icon: BrainCircuit, labelKey: 'cgChrome.trainAi' },
       { to: '/caregiver/documents', icon: FileText, labelKey: 'cgChrome.documents' },
-      { to: '/caregiver/schemes', icon: Heart, labelKey: 'nav.schemes' },
       { to: '/caregiver/profile', icon: UserRound, labelKey: 'cgChrome.profile' },
       { to: '/caregiver/settings', icon: Settings, labelKey: 'cgChrome.settings' },
     ],
@@ -81,7 +61,6 @@ const TITLE_KEYS = {
   '/caregiver/circle': ['cgChrome.careCircle', 'Rina, Doom, Anita Das, Dr. Sharma — call from here.'],
   '/caregiver/notifications': ['Notifications', 'Doctor notes, routine reminders, and care-agent updates.'],
   '/caregiver/documents': ['cgChrome.documents', 'Prescriptions Latveria’s circle can see.'],
-  '/caregiver/schemes': ['nav.schemes', 'Government help for elderly people — pensions, hospitals, helplines.'],
   '/caregiver/profile': ['Profile', 'Rina Devi — primary caregiver.'],
   '/caregiver/spatial-presence': ['cgChrome.safeJourney', 'We’re with you on the walk — Assam or Delhi demo.'],
   '/caregiver/spatial-config': ['cgChrome.familiarPlaces', 'Home garden and known lanes for Latveria.'],
@@ -124,10 +103,9 @@ export default function CaregiverLayout() {
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    end={item.end || item.to === '/caregiver'}
-                    className={() => `nav-item ${caregiverNavIsActive(pathname, item.to, item.end) ? 'active' : ''}`}
-                    aria-current={caregiverNavIsActive(pathname, item.to, item.end) ? 'page' : undefined}
-                    aria-label={t(item.labelKey)}
+                    end={item.end}
+                    className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                    title={t(item.labelKey)}
                   >
                     <item.icon size={18} />
                     <span className="ss-rail-label">{t(item.labelKey)}</span>
@@ -141,10 +119,8 @@ export default function CaregiverLayout() {
             <nav className="sidebar-nav">
               <NavLink 
                 to="/caregiver/spatial-presence" 
-                end
-                className={() => `nav-item${caregiverNavIsActive(pathname, '/caregiver/spatial-presence') ? ' active' : ''}`}
-                aria-current={caregiverNavIsActive(pathname, '/caregiver/spatial-presence') ? 'page' : undefined}
-                aria-label="Safe Journey"
+                className={({isActive}) => `nav-item${isActive ? ' active' : ''}`}
+                title="We’re with you on the walk"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><circle cx="12" cy="11" r="3"/></svg>
                   <span className="ss-rail-label">Safe Journey</span>
@@ -152,10 +128,8 @@ export default function CaregiverLayout() {
 
               <NavLink 
                 to="/caregiver/spatial-config" 
-                end
-                className={() => `nav-item${caregiverNavIsActive(pathname, '/caregiver/spatial-config') ? ' active' : ''}`}
-                aria-current={caregiverNavIsActive(pathname, '/caregiver/spatial-config') ? 'page' : undefined}
-                aria-label="Familiar places"
+                className={({isActive}) => `nav-item${isActive ? ' active' : ''}`}
+                title="Familiar places"
               >
                 <MapPin size={20} />
                 <span className="ss-rail-label">Familiar places</span>
@@ -215,22 +189,23 @@ export default function CaregiverLayout() {
         </header>
         <nav className="ss-mobile-subnav" aria-label="Caregiver pages">
           {FLAT_NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end || item.to === '/caregiver'}
-              className={() => caregiverNavIsActive(pathname, item.to, item.end) ? 'active' : undefined}
-            >
+            <NavLink key={item.to} to={item.to} end={item.end}>
               {t(item.labelKey)}
             </NavLink>
           ))}
         </nav>
         <div className="dashboard-scroll">
-          <div className="cg-outlet" key={pathname}>
-            <ShellErrorBoundary>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={pathname}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            >
               <Outlet />
-            </ShellErrorBoundary>
-          </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </main>
       <CaregiverAssistModal open={showAssist} onClose={() => setShowAssist(false)} />

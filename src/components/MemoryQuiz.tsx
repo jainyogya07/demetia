@@ -33,15 +33,10 @@ const UI_TEXT = {
     recognized: "I heard:",
     correct: "That's correct!",
     tryAgain: "Let's try again.",
-    theAnswer: "The answer is",
-    youGot: "You got",
-    of: "of",
-    right: "right",
     skipped: "That's okay. Let's move on.",
     completed: "Memory Check Complete",
     score: "Your Score",
     continue: "Continue to Dashboard",
-    next: "Next",
     monitoring:
       "This activity is for memory and cognitive monitoring. It is not a medical diagnosis.",
     microphoneError:
@@ -69,11 +64,6 @@ const UI_TEXT = {
     completed: "स्मृति जाँच पूरी हुई",
     score: "आपका स्कोर",
     continue: "डैशबोर्ड पर जाएँ",
-    next: "आगे",
-    theAnswer: "सही उत्तर है",
-    youGot: "आपको मिले",
-    of: "में से",
-    right: "सही",
     monitoring:
       "यह गतिविधि स्मृति और संज्ञानात्मक निगरानी के लिए है। यह कोई चिकित्सीय निदान नहीं है।",
     microphoneError:
@@ -365,37 +355,6 @@ function answerMatches(spokenAnswer, acceptedAnswers = []) {
     );
   });
 }
-
-function primaryAnswer(question) {
-  return String((question?.answers || []).find((a) => String(a || "").trim()) || "").trim();
-}
-
-function revealedAnswer(question) {
-  const choices = question?.choices || [];
-  const answers = question?.answers || [];
-  const isTF =
-    choices.some((c) => /^true$/i.test(String(c).trim())) &&
-    choices.some((c) => /^false$/i.test(String(c).trim()));
-  if (isTF) {
-    const yes = answers.some((a) => /^(true|yes|haan|sahi)$/i.test(normalizeText(a)));
-    return yes ? "True" : "False";
-  }
-  return primaryAnswer(question);
-}
-
-function ensureQuestionChoices(question) {
-  if (!question) return question;
-  if (Array.isArray(question.choices) && question.choices.length >= 2) return question;
-  const right = primaryAnswer(question);
-  if (!right) return question;
-  const distractors = ["Apple", "Chair", "Bed", "Table", "Mango", "Home", "Five", "Rina", "Doom"]
-    .filter((d) => normalizeText(d) !== normalizeText(right));
-  return {
-    ...question,
-    choices: [right, distractors[0] || "Home"].slice(0, 2),
-  };
-}
-
 function MemoryQuiz({ onComplete, onSkip }) {
   const { lang: appLang } = useI18n();
   const [language, setLanguage] = useState(() => (
@@ -411,8 +370,6 @@ function MemoryQuiz({ onComplete, onSkip }) {
   const [microphoneError, setMicrophoneError] = useState("");
 
   const recognitionRef = useRef<any>(null);
-  const advanceTimerRef = useRef<any>(null);
-  const scoreRef = useRef(0);
   const { speak, stop: stopSpeech } = useGameSpeech({ lang: language });
 
   const patientName = PATIENT?.name || "";
@@ -442,7 +399,7 @@ function MemoryQuiz({ onComplete, onSkip }) {
       en: [
         {
           text: "What is your name?",
-          answers: [patientName, "Latveria"].filter(Boolean),
+          answers: [patientName],
         },
         {
           text: daughterName
@@ -473,35 +430,21 @@ function MemoryQuiz({ onComplete, onSkip }) {
           text:
             "Which one can you eat: an apple or a chair?",
           answers: ["apple", "an apple"],
-          choices: ["Apple", "Chair"],
         },
         {
           text:
             "What do we use for sleeping: a bed or a table?",
           answers: ["bed", "a bed"],
-          choices: ["Bed", "Table"],
         },
         {
           text:
             "How many fingers are on one hand?",
           answers: ["five", "5"],
-          choices: ["Five", "Two"],
-        },
-        {
-          text: "True or false: an apple is something we can eat.",
-          answers: ["true", "yes"],
-          choices: ["True", "False"],
-        },
-        {
-          text: "True or false: we sleep on a chair.",
-          answers: ["false", "no"],
-          choices: ["True", "False"],
         },
         {
           text:
             "Please remember this word: mango.",
           answers: ["mango"],
-          choices: ["Mango", "Chair"],
         },
         {
           text:
@@ -854,8 +797,7 @@ function MemoryQuiz({ onComplete, onSkip }) {
     };
 
     const list = questionSets[language] || questionSets.en || [];
-    const raw = Array.isArray(list) && list.length ? list : (questionSets.en || []);
-    return raw.map(ensureQuestionChoices);
+    return Array.isArray(list) && list.length ? list : (questionSets.en || []);
   }, [
     language,
     patientName,
@@ -881,9 +823,6 @@ function MemoryQuiz({ onComplete, onSkip }) {
       window.speechSynthesis.getVoices();
     }
     return () => {
-      if (advanceTimerRef.current) {
-        window.clearTimeout(advanceTimerRef.current);
-      }
       try {
         recognitionRef.current?.stop();
       } catch {
@@ -984,39 +923,29 @@ function MemoryQuiz({ onComplete, onSkip }) {
     }
   };
 
-  const checkAnswer = (overrideAnswer) => {
-    const filled = String(overrideAnswer ?? spokenAnswer ?? "").trim();
-    if (!filled) {
+  const checkAnswer = () => {
+    if (!spokenAnswer.trim()) {
       setFeedback(t.noSpeech);
       setFeedbackType("warning");
       return;
     }
 
-    if (advanceTimerRef.current) {
-      window.clearTimeout(advanceTimerRef.current);
-      advanceTimerRef.current = null;
-    }
-
-    const accepted = (question?.answers || []).filter((answer) =>
-      String(answer || "").trim()
+    const correct = answerMatches(
+      spokenAnswer,
+      question?.answers || []
     );
-    const correct = accepted.length > 0 && answerMatches(filled, accepted);
-    const actual = revealedAnswer(question);
-    const actualLine = actual ? ` ${t.theAnswer}: ${actual}.` : "";
 
     if (correct) {
-      scoreRef.current += 1;
-      setScore(scoreRef.current);
-      setFeedback(`${t.correct}${actualLine}`);
+      setScore(
+        (previousScore) => previousScore + 1
+      );
+
+      setFeedback(t.correct);
       setFeedbackType("correct");
     } else {
-      setFeedback(`${t.tryAgain}${actualLine}`);
+      setFeedback(t.tryAgain);
       setFeedbackType("wrong");
     }
-
-    advanceTimerRef.current = window.setTimeout(() => {
-      goToNextQuestion();
-    }, 2400);
   };
 
   const finishQuiz = () => {
@@ -1026,15 +955,10 @@ function MemoryQuiz({ onComplete, onSkip }) {
       window.speechSynthesis.cancel();
     }
 
-    setScore(scoreRef.current);
     setFinished(true);
   };
 
   const goToNextQuestion = () => {
-    if (advanceTimerRef.current) {
-      window.clearTimeout(advanceTimerRef.current);
-      advanceTimerRef.current = null;
-    }
     stopListening();
 
     if ("speechSynthesis" in window) {
@@ -1058,10 +982,6 @@ function MemoryQuiz({ onComplete, onSkip }) {
   };
 
   const skipQuestion = () => {
-    if (advanceTimerRef.current) {
-      window.clearTimeout(advanceTimerRef.current);
-      advanceTimerRef.current = null;
-    }
     stopListening();
 
     if ("speechSynthesis" in window) {
@@ -1184,13 +1104,6 @@ function MemoryQuiz({ onComplete, onSkip }) {
           </div>
 
           <h2>{t.score}</h2>
-          <p className="memory-score-actual">
-            {t.youGot}{" "}
-            <strong>
-              {score} {t.of} {questions.length || 0}
-            </strong>{" "}
-            {t.right}
-          </p>
 
           <p className="memory-monitoring-text">
             {t.monitoring}
@@ -1293,29 +1206,6 @@ function MemoryQuiz({ onComplete, onSkip }) {
 
           <h2>{question?.text || ""}</h2>
 
-          {Array.isArray(question?.choices) && question.choices.length > 0 ? (
-            <div className="memory-choice-row">
-              {question.choices.map((choice) => (
-                <button
-                  key={choice}
-                  type="button"
-                  className={`memory-choice-btn${spokenAnswer === choice ? " is-on" : ""}${
-                    (feedbackType === "correct" || feedbackType === "wrong") &&
-                    normalizeText(choice) === normalizeText(revealedAnswer(question))
-                      ? " is-actual"
-                      : ""
-                  }`}
-                  onClick={() => {
-                    setSpokenAnswer(choice);
-                    checkAnswer(choice);
-                  }}
-                >
-                  {choice}
-                </button>
-              ))}
-            </div>
-          ) : null}
-
           <button
             className="hear-question-button"
             onClick={speakQuestion}
@@ -1356,12 +1246,6 @@ function MemoryQuiz({ onComplete, onSkip }) {
             className="memory-type-answer"
             value={spokenAnswer}
             onChange={(event) => setSpokenAnswer(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                checkAnswer();
-              }
-            }}
             placeholder="Type here if the mic does not hear you"
             autoComplete="off"
           />
@@ -1395,7 +1279,7 @@ function MemoryQuiz({ onComplete, onSkip }) {
         {/* BUTTONS */}
         <div className="memory-action-row">
 
-          {feedbackType === "correct" || feedbackType === "wrong" ? (
+          {feedbackType === "correct" ? (
             <button
               type="button"
               className="memory-check-button"
@@ -1403,13 +1287,13 @@ function MemoryQuiz({ onComplete, onSkip }) {
             >
               {currentQuestion + 1 >= questions.length
                 ? t.continue
-                : (t.next || "Next")}
+                : "→"}
             </button>
           ) : (
             <button
               type="button"
               className="memory-check-button"
-              onClick={() => checkAnswer()}
+              onClick={checkAnswer}
               disabled={!spokenAnswer.trim()}
             >
               {t.checkAnswer}

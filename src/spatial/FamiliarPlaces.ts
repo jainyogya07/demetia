@@ -15,7 +15,7 @@ function taggedPlaces(city) {
 export const DEFAULT_FAMILIAR_PLACES = taggedPlaces(getActiveDemoCity());
 
 let currentPlaces = [...DEFAULT_FAMILIAR_PLACES];
-const listeners = new Set<(places: typeof currentPlaces) => void>();
+const listeners = new Set();
 
 subscribeDemoCity((city) => {
   currentPlaces = taggedPlaces(city);
@@ -26,14 +26,12 @@ export function getFamiliarPlaces() {
   return currentPlaces;
 }
 
-export function updateFamiliarPlaces(newPlaces: typeof currentPlaces) {
+export function updateFamiliarPlaces(newPlaces) {
   currentPlaces = newPlaces;
   listeners.forEach((fn) => fn(currentPlaces));
 }
 
-export function subscribeFamiliarPlaces(callback: (places: typeof currentPlaces) => void) {
+export function subscribeFamiliarPlaces(callback) {
   listeners.add(callback);
-  return () => {
-    listeners.delete(callback);
-  };
+  return () => listeners.delete(callback);
 }

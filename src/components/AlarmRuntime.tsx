@@ -7,14 +7,12 @@ import {
   getAlarmPrefs,
   snoozeAlarm,
 } from '../lib/alarms';
-import type { AuthSession } from '../types/app';
-import type { RoutineItem } from '../types/app';
 import { useAuth } from '../context/AuthContext';
 import './AlarmRuntime.css';
 
 const POLL_MS = 15000;
 
-async function postAlarmEvent(session: AuthSession | null, item: RoutineItem | null, action: string) {
+async function postAlarmEvent(session, item, action) {
   if (!session?.householdCode || !item) return;
   try {
     await fetch('/auth-api/alarms/event', {
@@ -36,7 +34,7 @@ async function postAlarmEvent(session: AuthSession | null, item: RoutineItem | n
 
 export default function AlarmRuntime() {
   const { session } = useAuth();
-  const [active, setActive] = useState<RoutineItem | null>(null);
+  const [active, setActive] = useState(null);
 
   useEffect(() => {
     let cancelled = false;

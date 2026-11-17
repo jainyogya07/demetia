@@ -1,0 +1,2064 @@
+/* =========================================================
+   SMRITI SAARTHI — HOW TO USE GUIDE
+   Clean • Normal • Elderly Friendly • No Overlap
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+.guide-page {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: #f5f9f9;
+  color: #244c59;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
+
+/* =========================================================
+   TOP BAR
+   ========================================================= */
+
+.guide-topbar {
+  height: 68px;
+  min-height: 68px;
+
+  padding: 0 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #ffffff;
+  border-bottom: 1px solid #e5eeee;
+}
+
+.guide-brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.guide-logo {
+  width: 42px;
+  height: 42px;
+
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #58bdbd;
+  color: white;
+}
+
+.guide-brand h3 {
+  margin: 0;
+
+  color: #285766;
+
+  font-size: 17px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.guide-brand span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #84969a;
+
+  font-size: 12px;
+}
+
+.guide-close {
+  width: 38px;
+  height: 38px;
+
+  border: none;
+  border-radius: 50%;
+
+  background: transparent;
+  color: #71868b;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}
+
+.guide-close:hover {
+  background: #edf6f6;
+}
+
+/* =========================================================
+   MAIN AREA
+   ========================================================= */
+
+.guide-main {
+  flex: 1;
+  min-height: 0;
+
+  padding: 18px 25px 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   MAIN CARD
+   ========================================================= */
+
+.guide-card {
+  width: min(900px, 100%);
+  height: min(620px, calc(100vh - 115px));
+
+  padding: 24px 42px 18px;
+
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+
+  background: #ffffff;
+  border: 1px solid #e3eeee;
+  border-radius: 24px;
+
+  box-shadow:
+    0 12px 30px rgba(37, 80, 90, 0.07),
+    0 2px 6px rgba(37, 80, 90, 0.03);
+}
+
+/* =========================================================
+   PAGE NUMBER
+   ========================================================= */
+
+.guide-page-number {
+  position: absolute;
+
+  top: 20px;
+  right: 25px;
+
+  padding: 5px 10px;
+
+  border-radius: 14px;
+
+  background: #edf7f7;
+  color: #3d9293;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* =========================================================
+   HEADER ICON
+   ========================================================= */
+
+.guide-icon {
+  width: 56px;
+  height: 56px;
+
+  margin: 0 auto 9px;
+
+  flex-shrink: 0;
+
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e8f7f6;
+  color: #3fa3a4;
+}
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+.guide-card h1 {
+  margin: 0;
+
+  text-align: center;
+
+  color: #245263;
+
+  font-size: 28px;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.guide-subtitle {
+  max-width: 650px;
+
+  margin: 6px auto 0;
+
+  text-align: center;
+
+  color: #7c8f94;
+
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* =========================================================
+   CONTENT AREA
+   ========================================================= */
+
+.guide-content {
+  width: 100%;
+  max-width: 750px;
+
+  flex: 1;
+  min-height: 0;
+
+  margin: 17px auto 0;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.guide-content p {
+  line-height: 1.5;
+}
+
+.guide-content strong {
+  font-weight: 700;
+}
+
+/* =========================================================
+   GENERAL CONTENT
+   ========================================================= */
+
+.content-box {
+  width: 100%;
+
+  padding: 17px;
+
+  border-radius: 16px;
+
+  background: #f8fbfb;
+  border: 1px solid #e5eeee;
+}
+
+.info-highlight {
+  margin-top: 12px;
+
+  padding: 11px 14px;
+
+  border-radius: 12px;
+
+  background: #eef8f7;
+  border: 1px solid #dceeed;
+
+  color: #59777c;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   PAGE 1 — WELCOME
+   ========================================================= */
+
+.welcome-box {
+  text-align: center;
+}
+
+.welcome-illustration {
+  height: 105px;
+
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.robot-face {
+  width: 82px;
+  height: 66px;
+
+  position: relative;
+
+  border-radius: 21px;
+
+  background: #e1f5f4;
+  border: 2px solid #57baba;
+}
+
+.robot-eyes {
+  position: absolute;
+
+  top: 21px;
+  left: 20px;
+  right: 20px;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.robot-eyes::before,
+.robot-eyes::after {
+  content: "";
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: #3c9192;
+}
+
+.robot-smile {
+  position: absolute;
+
+  bottom: 14px;
+  left: 50%;
+
+  width: 27px;
+  height: 10px;
+
+  transform: translateX(-50%);
+
+  border-bottom: 2px solid #3c9192;
+  border-radius: 0 0 20px 20px;
+}
+
+.floating-heart {
+  position: absolute;
+
+  top: 5px;
+  right: 34%;
+
+  color: #e98997;
+}
+
+.welcome-box h2 {
+  margin: 4px 0 7px;
+
+  color: #285867;
+
+  font-size: 21px;
+}
+
+.welcome-box p {
+  max-width: 570px;
+
+  margin: 0 auto;
+
+  color: #73878c;
+
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+/* =========================================================
+   PAGE 2 — DASHBOARD
+   ========================================================= */
+
+.dashboard-demo {
+  width: 100%;
+}
+
+.demo-description {
+  margin: 0 0 16px;
+
+  text-align: center;
+
+  color: #788b90;
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+.dashboard-grid {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 12px;
+}
+
+.dashboard-item {
+  min-height: 95px;
+
+  padding: 15px;
+
+  border-radius: 16px;
+
+  border: 1px solid #e4eeee;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.dashboard-item strong {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #315a66;
+
+  font-size: 13px;
+}
+
+.dashboard-item span {
+  display: block;
+
+  color: #7c8e93;
+
+  font-size: 12px;
+
+  line-height: 1.45;
+}
+
+.dashboard-item.routine {
+  background: #f3faf8;
+}
+
+.dashboard-item.brain {
+  background: #f6f4fb;
+}
+
+.dashboard-item.progress {
+  background: #f3f7fc;
+}
+
+.dashboard-item.safety {
+  background: #fff7f3;
+}
+
+.dashboard-item.care {
+  background: #fff6f8;
+}
+
+.dashboard-item.memory {
+  background: #f8f5fc;
+}
+
+/* =========================================================
+   PAGE 3 — TALK TO SMRITI
+   ========================================================= */
+
+.voice-demo {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* Voice flow */
+
+.voice-flow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.voice-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 80px;
+}
+
+.voice-circle {
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e9f6f4;
+  color: #4d9689;
+  border: 1px solid #cfe9e4;
+}
+
+.voice-step span {
+  color: #60787e;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.flow-arrow {
+  color: #a0b7bb;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* Conversation */
+
+.conversation {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.user-message,
+.smriti-message {
+  max-width: 82%;
+  padding: 10px 13px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.user-message {
+  align-self: flex-end;
+  background: #eaf2fb;
+  color: #496879;
+  border-bottom-right-radius: 4px;
+}
+
+.smriti-message {
+  align-self: flex-start;
+  background: #edf8f5;
+  color: #4f716b;
+  border-bottom-left-radius: 4px;
+}
+
+.voice-tip {
+  margin-top: 13px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #faf6ec;
+  border: 1px solid #eee4ca;
+  color: #7c6d4f;
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+
+/* =========================================================
+   PAGE 4 — YOUR LANGUAGE
+   ========================================================= */
+
+.language-demo {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.language-intro {
+  margin: 0 0 13px;
+  color: #71848a;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* Language options */
+
+.language-option {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 48px;
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border: 1px solid #e2ebed;
+  border-radius: 12px;
+  background: #ffffff;
+  text-align: left;
+}
+
+.language-option.selected {
+  border-color: #8fcfc3;
+  background: #eef9f7;
+}
+
+.language-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  border-radius: 9px;
+  background: #edf5f6;
+  color: #578994;
+  font-size: 14px;
+}
+
+.language-option.selected .language-icon {
+  background: #d8eee9;
+  color: #438779;
+}
+
+.language-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.language-text strong {
+  color: #456570;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.language-text span {
+  color: #839398;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.language-tip {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f3f0fa;
+  border: 1px solid #e5def2;
+  color: #6c6380;
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+
+/* =========================================================
+   IMPORTANT — PREVENT TEXT OVERLAP
+   ========================================================= */
+
+.guide-content strong,
+.guide-content span,
+.guide-content p,
+.guide-content h3,
+.guide-content h4 {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.guide-content * {
+  max-width: 100%;
+}
+
+
+/* =========================================================
+   RESPONSIVE — TABLET
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .voice-flow {
+    gap: 9px;
+  }
+
+  .voice-step {
+    min-width: 65px;
+  }
+}
+
+
+/* =========================================================
+   RESPONSIVE — MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .dashboard-item {
+    min-height: 76px;
+    padding: 10px;
+  }
+
+  .dashboard-item strong {
+    font-size: 12px;
+  }
+
+  .dashboard-item span {
+    font-size: 10px;
+  }
+
+  .voice-flow {
+    gap: 5px;
+  }
+
+  .voice-circle {
+    width: 46px;
+    height: 46px;
+  }
+
+  .voice-step {
+    min-width: 58px;
+  }
+
+  .voice-step span {
+    font-size: 10px;
+  }
+
+  .flow-arrow {
+    font-size: 14px;
+  }
+
+  .user-message,
+  .smriti-message {
+    max-width: 90%;
+  }
+}
+/* =========================================================
+   PAGE 5 — ASK FOR A LIST
+   ========================================================= */
+
+.list-demo {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.list-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* List cards */
+
+.list-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #e4ecee;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(40, 80, 90, 0.04);
+}
+
+.list-card.user-list {
+  background: #f3f7fb;
+  border-color: #dce8f0;
+}
+
+.list-card.result-list {
+  background: #f0f8f6;
+  border-color: #d8ebe6;
+}
+
+.list-card-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: #e8f1f4;
+  color: #568895;
+}
+
+.result-list .list-card-icon {
+  background: #dceee9;
+  color: #4c9385;
+}
+
+.list-label {
+  margin-bottom: 5px;
+  color: #56717a;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.list-card p {
+  margin: 0;
+  color: #6f8186;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* Medicine mini list */
+
+.mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 8px;
+  padding: 0;
+}
+
+.mini-list span {
+  display: block;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #647b81;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.list-demo::after {
+  content: "You can ask naturally — “Show my medicine list”";
+  display: block;
+  margin-top: 11px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: #faf6ed;
+  border: 1px solid #eee3ca;
+  color: #7c6d4f;
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+
+/* =========================================================
+   PAGE 6 — ADD THINGS BY SPEAKING
+   ========================================================= */
+
+.add-demo {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.add-example {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* User voice card */
+
+.add-user-card {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f3f7fb;
+  border: 1px solid #dce8f0;
+}
+
+.add-mic {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e4eef7;
+  color: #5d8298;
+}
+
+.add-user-card p {
+  margin: 0;
+  color: #58727c;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* Added result */
+
+.add-result-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #f0f8f5;
+  border: 1px solid #d6ebe4;
+}
+
+.add-check {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: #dcefe8;
+  color: #4c9383;
+}
+
+.add-result-card strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #4f756c;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.add-result-card p {
+  margin: 0;
+  color: #70847f;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+/* Examples */
+
+.add-examples {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.small-action {
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 9px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid #e4ebed;
+  color: #6d8187;
+  font-size: 10px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+
+/* =========================================================
+   PAGE 7 — MEMORY QUIZ
+   ========================================================= */
+
+.quiz-demo {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+}
+
+.quiz-card {
+  width: 100%;
+  padding: 15px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e3ebed;
+  box-shadow: 0 3px 10px rgba(50, 80, 90, 0.05);
+}
+
+/* Quiz header */
+
+.quiz-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 13px;
+}
+
+.quiz-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: #eeeafa;
+  color: #8172a9;
+}
+
+.quiz-header strong {
+  color: #596d74;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+/* Question */
+
+.quiz-question {
+  margin: 0 0 12px;
+  padding: 11px 12px;
+  border-radius: 9px;
+  background: #f7f5fb;
+  color: #596775;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: center;
+}
+
+/* Answer options */
+
+.quiz-options {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.quiz-option {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 9px;
+  border-radius: 9px;
+  border: 1px solid #e1e8ea;
+  background: #ffffff;
+  color: #687b81;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.quiz-option.correct {
+  background: #edf8f3;
+  border-color: #b9ddcf;
+  color: #4f8b79;
+}
+
+/* Quiz tip */
+
+.quiz-tip {
+  margin-top: 11px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: #fdf7ec;
+  border: 1px solid #eee4ce;
+  color: #7a6b4f;
+  font-size: 10px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+
+/* =========================================================
+   SMALL-SCREEN ADJUSTMENTS
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .add-examples {
+    grid-template-columns: 1fr;
+  }
+
+  .small-action {
+    min-height: 38px;
+  }
+
+  .quiz-options {
+    grid-template-columns: 1fr;
+  }
+
+  .quiz-option {
+    min-height: 38px;
+  }
+}
+
+
+/* =========================================================
+   EXTRA PROTECTION AGAINST OVERLAPPING TEXT
+   ========================================================= */
+
+.list-card *,
+.add-example *,
+.quiz-card * {
+  box-sizing: border-box;
+}
+
+.list-card p,
+.add-user-card p,
+.add-result-card p,
+.quiz-question,
+.quiz-tip {
+  white-space: normal;
+  overflow: visible;
+}
+/* =========================================================
+   PAGE 8 — REMINDERS
+   ========================================================= */
+
+.reminder-demo {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.reminder-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+}
+
+.reminder-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  min-height: 58px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e4ebed;
+  box-shadow: 0 2px 7px rgba(40, 80, 90, 0.04);
+}
+
+.reminder-item.medicine {
+  border-left: 4px solid #7bb9a8;
+}
+
+.reminder-item.appointment {
+  border-left: 4px solid #9b8bc5;
+}
+
+.reminder-item.family {
+  border-left: 4px solid #d69aaf;
+}
+
+/* Reminder icon */
+
+.reminder-icon {
+  width: 35px;
+  height: 35px;
+  flex: 0 0 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: #edf5f4;
+  color: #568f84;
+}
+
+.reminder-item.appointment .reminder-icon {
+  background: #f0edf8;
+  color: #7d6da6;
+}
+
+.reminder-item.family .reminder-icon {
+  background: #f8edf1;
+  color: #a66d83;
+}
+
+/* Reminder details */
+
+.reminder-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.reminder-details strong {
+  display: block;
+  margin-bottom: 3px;
+  color: #526b73;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.reminder-details span {
+  display: block;
+  color: #7d8d92;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.reminder-time {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border-radius: 7px;
+  background: #f4f7f7;
+  color: #60777d;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   PAGE 9 — SAFETY & EMERGENCY
+   ========================================================= */
+
+.safety-demo {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* Main safety card */
+
+.safety-main-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  width: 100%;
+  padding: 14px;
+  margin-bottom: 12px;
+  border-radius: 13px;
+  background: #edf8f4;
+  border: 1px solid #d6ebe3;
+}
+
+.safety-shield {
+  width: 45px;
+  height: 45px;
+  flex: 0 0 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: #dcefe8;
+  color: #4f9382;
+}
+
+.safety-main-text {
+  min-width: 0;
+}
+
+.safety-main-text strong {
+  display: block;
+  margin-bottom: 4px;
+  color: #4d756b;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.safe-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #558779;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Emergency section */
+
+.emergency-demo {
+  width: 100%;
+  padding: 13px;
+  border-radius: 13px;
+  background: #fff7f5;
+  border: 1px solid #f0dcd7;
+}
+
+.emergency-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.emergency-icon {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #f7e6e2;
+  color: #b56f65;
+}
+
+.emergency-header strong {
+  color: #765e5a;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+/* Emergency actions */
+
+.emergency-actions {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.emergency-action {
+  min-height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 8px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid #ecdeda;
+  color: #746965;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.safety-tip {
+  margin-top: 11px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: #f4f7fb;
+  border: 1px solid #e0e8f0;
+  color: #687985;
+  font-size: 10px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+
+/* =========================================================
+   PAGE 10 — CARE CIRCLE
+   ========================================================= */
+
+.care-demo {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+/* Main Care Circle */
+
+.care-circle-main {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: #f7f3fa;
+  border: 1px solid #e7dff0;
+}
+
+/* Center */
+
+.care-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.care-center-icon {
+  width: 43px;
+  height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: #e8def2;
+  color: #806a9d;
+}
+
+.care-center strong {
+  color: #675b72;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+/* Care members */
+
+.care-member {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 49px;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #e7e5e9;
+}
+
+.care-member:last-child {
+  margin-bottom: 0;
+}
+
+.member-avatar {
+  width: 31px;
+  height: 31px;
+  flex: 0 0 31px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #eaf2f4;
+  color: #5b8791;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.member-one .member-avatar {
+  background: #e5f1ed;
+  color: #568c7d;
+}
+
+.member-two .member-avatar {
+  background: #eee9f7;
+  color: #78699b;
+}
+
+.member-three .member-avatar {
+  background: #f7e9ee;
+  color: #9b6d80;
+}
+
+.care-member strong {
+  display: block;
+  margin-bottom: 2px;
+  color: #5e7177;
+  font-size: 11px;
+  line-height: 1.3;
+}
+
+.care-member span {
+  display: block;
+  color: #879499;
+  font-size: 9px;
+  line-height: 1.3;
+}
+
+/* Care features */
+
+.care-features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.care-feature {
+  min-height: 43px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px 8px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid #e6e3e9;
+  color: #707d82;
+  font-size: 10px;
+  line-height: 1.35;
+  text-align: center;
+}
+
+
+/* =========================================================
+   TEXT SAFETY FOR PAGES 8–10
+   ========================================================= */
+
+.reminder-demo *,
+.safety-demo *,
+.care-demo * {
+  box-sizing: border-box;
+}
+
+.reminder-details strong,
+.reminder-details span,
+.safety-main-text strong,
+.safe-status,
+.emergency-header strong,
+.care-center strong,
+.care-member strong,
+.care-member span,
+.care-feature {
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+
+/* =========================================================
+   RESPONSIVE — PAGES 8–10
+   ========================================================= */
+
+@media (max-width: 600px) {
+  .emergency-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .emergency-action {
+    min-height: 38px;
+  }
+
+  .care-features {
+    grid-template-columns: 1fr;
+  }
+
+  .care-feature {
+    min-height: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .reminder-item {
+    gap: 8px;
+    padding: 8px 9px;
+  }
+
+  .reminder-icon {
+    width: 31px;
+    height: 31px;
+    flex-basis: 31px;
+  }
+
+  .reminder-details strong {
+    font-size: 11px;
+  }
+
+  .reminder-details span {
+    font-size: 9px;
+  }
+
+  .reminder-time {
+    font-size: 9px;
+    padding: 4px 6px;
+  }
+
+  .safety-main-card {
+    padding: 11px;
+  }
+
+  .safety-shield {
+    width: 39px;
+    height: 39px;
+    flex-basis: 39px;
+  }
+
+  .care-circle-main {
+    padding: 11px;
+  }
+}
+
+/* =========================================================
+   PAGE 11 — MEMORY BOOK
+   ========================================================= */
+
+.memory-demo {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.memory-book {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  background: #fffaf2;
+  border: 1px solid #eee3cf;
+}
+
+/* Memory book header */
+
+.memory-book-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.memory-book-icon {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #f5e9d1;
+  color: #a17d4d;
+}
+
+.memory-book-header strong {
+  display: block;
+  color: #725f48;
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.memory-book-header span {
+  display: block;
+  margin-top: 2px;
+  color: #988a77;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+/* Memory cards */
+
+.memory-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+}
+
+.memory-card {
+  min-height: 105px;
+  padding: 9px;
+  border-radius: 11px;
+  background: #ffffff;
+  border: 1px solid #eadfce;
+  overflow: hidden;
+}
+
+.memory-picture {
+  width: 100%;
+  height: 52px;
+  margin-bottom: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #f4eee3;
+  color: #ad9471;
+}
+
+.memory-card-text {
+  display: block;
+  color: #766958;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+}
+
+.memory-tip {
+  margin-top: 11px;
+  padding: 9px 11px;
+  border-radius: 9px;
+  background: #ffffff;
+  border: 1px solid #eadfce;
+  color: #857765;
+  font-size: 10px;
+  line-height: 1.45;
+  text-align: center;
+}
+
+
+/* =========================================================
+   PAGE 12 — YOU'RE READY
+   ========================================================= */
+
+.finish-demo {
+  width: 100%;
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Finish illustration */
+
+.finish-illustration {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  height: 75px;
+  margin-bottom: 10px;
+}
+
+.finish-circle {
+  width: 62px;
+  height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #e4f2ed;
+  border: 1px solid #cce6dc;
+  color: #579582;
+}
+
+.finish-stars {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.finish-stars::before,
+.finish-stars::after {
+  content: "✦";
+  position: absolute;
+  color: #b69bd0;
+  font-size: 15px;
+}
+
+.finish-stars::before {
+  left: 31%;
+  top: 12px;
+}
+
+.finish-stars::after {
+  right: 31%;
+  bottom: 10px;
+  font-size: 12px;
+}
+
+/* Finish features */
+
+.finish-features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.finish-feature {
+  min-height: 58px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 7px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #e4ebed;
+  color: #647980;
+  font-size: 10px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.finish-feature svg {
+  color: #62978d;
+}
+
+.finish-message {
+  margin: 11px auto 0;
+  max-width: 520px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f5f1fa;
+  border: 1px solid #e5def0;
+  color: #70677c;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+
+/* =========================================================
+   GUIDE NAVIGATION
+   ========================================================= */
+
+.guide-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin-top: 18px;
+}
+
+.guide-back,
+.guide-next,
+.guide-start {
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 8px 15px;
+  border-radius: 9px;
+  border: 1px solid transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    opacity 0.15s ease,
+    background 0.15s ease;
+}
+
+.guide-back {
+  background: #f1f5f5;
+  border-color: #dfe8e9;
+  color: #62777d;
+}
+
+.guide-next {
+  margin-left: auto;
+  background: #5e9f94;
+  border-color: #5e9f94;
+  color: #ffffff;
+}
+
+.guide-start {
+  margin-left: auto;
+  background: #5e9f94;
+  border-color: #5e9f94;
+  color: #ffffff;
+}
+
+.guide-back:hover:not(:disabled),
+.guide-next:hover,
+.guide-start:hover {
+  transform: translateY(-1px);
+}
+
+.guide-back:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.guide-skip {
+  display: block;
+  margin: 10px auto 0;
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  color: #87979b;
+  font-family: inherit;
+  font-size: 10px;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.guide-skip:hover {
+  color: #587980;
+}
+
+
+/* =========================================================
+   PROGRESS DOTS
+   ========================================================= */
+
+.guide-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  margin-top: 17px;
+}
+
+.progress-dot {
+  display: block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #d8e2e3;
+  transition:
+    width 0.2s ease,
+    background 0.2s ease;
+}
+
+.progress-dot.active {
+  width: 17px;
+  border-radius: 5px;
+  background: #65a69b;
+}
+
+
+/* =========================================================
+   GUIDE FOOTER
+   ========================================================= */
+
+.guide-footer {
+  min-height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 15px;
+  color: #94a4a7;
+  font-size: 10px;
+  line-height: 1.3;
+}
+
+.guide-footer svg {
+  color: #75a99f;
+}
+
+
+/* =========================================================
+   FINAL RESPONSIVE — TABLET
+   ========================================================= */
+
+@media (max-width: 700px) {
+  .memory-cards {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+  }
+
+  .memory-card {
+    min-height: 95px;
+    padding: 7px;
+  }
+
+  .memory-picture {
+    height: 46px;
+  }
+
+  .finish-features {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+/* =========================================================
+   FINAL RESPONSIVE — MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .memory-book {
+    padding: 10px;
+  }
+
+  .memory-cards {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .memory-card {
+    min-height: auto;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px;
+  }
+
+  .memory-picture {
+    width: 48px;
+    height: 42px;
+    flex: 0 0 48px;
+    margin-bottom: 0;
+  }
+
+  .memory-card-text {
+    text-align: left;
+    font-size: 10px;
+  }
+
+  .finish-features {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+  }
+
+  .finish-feature {
+    min-height: 52px;
+    font-size: 9px;
+  }
+
+  .finish-illustration {
+    height: 65px;
+  }
+
+  .finish-circle {
+    width: 55px;
+    height: 55px;
+  }
+
+  .guide-navigation {
+    gap: 8px;
+  }
+
+  .guide-back,
+  .guide-next,
+  .guide-start {
+    min-height: 38px;
+    padding: 7px 11px;
+    font-size: 11px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .guide-back,
+  .guide-next,
+  .guide-start {
+    padding: 7px 9px;
+    font-size: 10px;
+  }
+
+  .guide-navigation {
+    margin-top: 14px;
+  }
+
+  .guide-progress {
+    margin-top: 13px;
+  }
+
+  .finish-features {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+
+/* =========================================================
+   FINAL GLOBAL TEXT PROTECTION
+   ========================================================= */
+
+.guide-page h1,
+.guide-page h2,
+.guide-page h3,
+.guide-page h4,
+.guide-page p,
+.guide-page span,
+.guide-page strong {
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.guide-page button {
+  white-space: normal;
+}
+
+.guide-content {
+  overflow: visible;
+}
+
+
+/* =========================================================
+   ACCESSIBILITY
+   ========================================================= */
+
+.guide-back:focus-visible,
+.guide-next:focus-visible,
+.guide-start:focus-visible,
+.guide-skip:focus-visible,
+.guide-close:focus-visible {
+  outline: 2px solid #6ca89f;
+  outline-offset: 2px;
+}
+
+
+/* =========================================================
+   END OF GUIDE.CSS
+   ========================================================= */

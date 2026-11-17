@@ -38,7 +38,7 @@
         });
 
         // Unregister broken service worker cache on reload if requested
-        if (location.search.indexOf('reset=1') !== -1 || sessionStorage.getItem('ss-force-clean') === '1') {
+        if (location.search.indexOf('reset=') !== -1 || sessionStorage.getItem('ss-force-clean') === '1') {
           sessionStorage.removeItem('ss-force-clean');
           if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function (regs) {

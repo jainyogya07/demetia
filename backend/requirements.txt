@@ -9,3 +9,6 @@ onnx>=1.15
 onnxruntime>=1.17
 shap>=0.44
 onnxmltools>=1.12
+aiofiles>=23.0
+httpx>=0.25
+python-multipart>=0.0.9

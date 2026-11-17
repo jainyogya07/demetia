@@ -441,14 +441,13 @@ html, body, #root {
 }
 
 .top-bar {
-  height: auto;
-  min-height: 56px;
+  height: 70px;
   background-color: var(--card-bg);
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 32px;
+  padding: 0 32px;
   flex-shrink: 0;
 }
 

@@ -9,16 +9,16 @@ import { addNotification } from './notificationStore';
 
 const REMINDED_KEY = 'ss-upcoming-reminded-v1';
 
-function readJson<T>(key: string, fallback: T): T {
+function readJson(key, fallback) {
   try {
     const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
+    return raw ? JSON.parse(raw) : fallback;
   } catch {
     return fallback;
   }
 }
 
-function writeJson(key: string, value: unknown) {
+function writeJson(key, value) {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {

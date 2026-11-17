@@ -66,10 +66,6 @@ export default function CaregiverMemorySetup({
   patientId = "latveria",
   initialPatientName = "Latveria",
   onSaved,
-}: {
-  patientId?: string;
-  initialPatientName?: string;
-  onSaved?: () => void;
 }) {
   const [patientName, setPatientName] =
     useState(initialPatientName);

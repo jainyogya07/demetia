@@ -1,6 +1,6 @@
 /** At most one Gemini Live session: companion | assist | stories | null. */
 
-let voiceOwner: 'companion' | 'assist' | 'stories' | null = null;
+let voiceOwner = null;
 
 export const VOICE_EVENTS = {
   GAME_START: 'smriti:game-voice-start',
@@ -10,12 +10,12 @@ export const VOICE_EVENTS = {
   VOICE_CLAIM: 'smriti:voice-claim',
 };
 
-export function emitVoice(type: string, detail?: unknown) {
+export function emitVoice(type, detail) {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent(type, { detail }));
 }
 
-export function onVoice(type: string, handler: EventListener) {
+export function onVoice(type, handler) {
   if (typeof window === 'undefined') return () => {};
   window.addEventListener(type, handler);
   return () => window.removeEventListener(type, handler);
@@ -29,7 +29,7 @@ export function getVoiceOwner() {
  * Exclusive Gemini Live lock. Listeners must drop their session when owner !== them.
  * @param {'companion' | 'assist' | 'stories'} owner
  */
-export function claimVoice(owner: 'companion' | 'assist' | 'stories' | null) {
+export function claimVoice(owner) {
   if (!owner) return voiceOwner;
   const prev = voiceOwner;
   voiceOwner = owner;
@@ -47,7 +47,7 @@ export function claimVoice(owner: 'companion' | 'assist' | 'stories' | null) {
   return owner;
 }
 
-export function releaseVoice(owner: 'companion' | 'assist' | 'stories' | null) {
+export function releaseVoice(owner) {
   if (voiceOwner !== owner) return;
   voiceOwner = null;
   if (owner === 'stories') emitVoice(VOICE_EVENTS.GAME_STOP);

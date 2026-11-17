@@ -2,119 +2,28 @@
 
 .ss-mobile-dock,
 .ss-mobile-more-btn,
-.ss-more-sheet,
-.ss-mobile-brand-title,
-.ss-sidebar-close-mob-btn {
+.ss-more-sheet {
   display: none;
 }
 
 @media (max-width: 860px) {
   .ss-patient-shell {
-    display: flex;
     flex-direction: column;
-    width: 100%;
-    height: 100dvh;
-    max-height: 100dvh;
-    overflow: hidden;
-    background: transparent;
-    position: relative;
+    background:
+      linear-gradient(180deg, #eef6f2 0%, #f8faf9 28%, #f8faf9 100%);
   }
 
-  .ss-patient-shell.ss-theme.ss-lakeside.ss-has-region-scenery .sidebar,
-  .ss-patient-shell.is-home-route.ss-has-region-scenery .sidebar,
   .ss-patient-shell .sidebar {
     display: flex;
-    flex-direction: column;
-    position: fixed !important;
+    position: fixed;
     left: 0;
     top: 0;
     bottom: 0;
-    z-index: 12000 !important;
-    width: min(var(--ss-sidebar-width, 280px), 84vw);
+    z-index: 60;
+    width: min(280px, 88vw);
     transform: translateX(-105%);
-    transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), width 0.32s cubic-bezier(0.22, 1, 0.36, 1);
-    box-shadow: 14px 0 45px rgba(10, 30, 24, 0.4) !important;
-    background: #fbfdfc !important;
-    background-color: #fbfdfc !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    border-right: 1px solid rgba(23, 107, 88, 0.2) !important;
-    opacity: 1 !important;
-  }
-
-  .ss-patient-shell.is-rail-open .sidebar {
-    transform: translateX(0) !important;
-  }
-
-  .ss-patient-shell .sidebar-header {
-    background: #f1f7f4 !important;
-    border-bottom: 1px solid rgba(23, 107, 88, 0.12) !important;
-    padding: 12px 14px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    flex-shrink: 0;
-  }
-
-  .ss-sidebar-close-mob-btn {
-    display: inline-flex !important;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: 1px solid rgba(23, 107, 88, 0.18);
-    background: #ffffff;
-    color: #176b58;
-    cursor: pointer;
-    margin-left: auto;
-    flex-shrink: 0;
-    transition: transform 0.15s ease, background 0.15s ease;
-  }
-
-  .ss-sidebar-close-mob-btn:active {
-    transform: scale(0.92);
-    background: #e6f3ee;
-  }
-
-  .ss-patient-shell .ss-gpt-scroll {
-    background: #fbfdfc !important;
-    flex: 1;
-    overflow-y: auto;
-    padding: 8px 8px 16px;
-  }
-
-  .ss-patient-shell .sidebar-footer {
-    background: #f1f7f4 !important;
-    border-top: 1px solid rgba(23, 107, 88, 0.12) !important;
-    padding: 10px 12px;
-    flex-shrink: 0;
-  }
-
-  .ss-rail-backdrop {
-    display: block !important;
-    position: fixed !important;
-    inset: 0 !important;
-    z-index: 11990 !important;
-    background: rgba(8, 22, 17, 0.68) !important;
-    backdrop-filter: blur(8px) !important;
-    -webkit-backdrop-filter: blur(8px) !important;
-  }
-
-  .ss-patient-shell .main-content {
-    flex: 1 1 auto;
-    width: 100%;
-    height: 100%;
-    min-height: 0;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    position: relative;
-    z-index: 2;
-  }
-
-  .ss-patient-shell .ss-sidebar-resize {
-    display: none;
+    transition: transform 0.22s ease;
+    box-shadow: 8px 0 32px rgba(18, 40, 34, 0.12);
   }
 
   .ss-patient-shell.is-rail-open .sidebar {
@@ -122,12 +31,11 @@
   }
 
   .ss-patient-shell .sidebar.is-collapsed {
-    width: min(var(--ss-sidebar-width, 188px), 86vw);
+    width: min(280px, 88vw);
   }
 
   .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-rail-label,
   .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-brand-text,
-  .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-new-brand-text,
   .ss-patient-shell.is-rail-open .sidebar.is-collapsed .ss-rail-kicker,
   .ss-patient-shell.is-rail-open .sidebar.is-collapsed .help-now-content {
     display: block;
@@ -143,11 +51,10 @@
     align-items: center;
     justify-content: center;
     min-height: 44px;
-    min-width: 44px;
     padding: 0 14px;
     border-radius: 999px;
-    border: 1px solid rgba(255, 255, 255, 0.55);
-    background: rgba(255, 255, 255, 0.78);
+    border: 1px solid #d8e5df;
+    background: #f4e4d9;
     color: #214d42;
     font: inherit;
     font-size: 14px;
@@ -157,102 +64,10 @@
   }
 
   .ss-patient-shell .top-bar {
-    min-height: 52px;
-    padding: calc(6px + env(safe-area-inset-top, 0px)) 12px 6px;
+    min-height: 64px;
+    padding: 10px 14px 8px;
     gap: 8px;
-    flex-wrap: nowrap;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    position: relative;
-    z-index: 20;
-    flex-shrink: 0;
-    background: rgba(255, 255, 255, 0.72) !important;
-    backdrop-filter: blur(20px) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.65) !important;
-  }
-
-  .ss-patient-shell .ss-header-left {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    flex: 0 1 auto;
-    min-width: 0;
-  }
-
-  .ss-mobile-brand-title {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 14.5px;
-    font-weight: 800;
-    color: #14352c;
-    letter-spacing: -0.01em;
-    max-width: 140px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .ss-mobile-brand-title strong {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .ss-mobile-brand-title .ss-mob-logo-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #176b58;
-    box-shadow: 0 0 6px rgba(23, 107, 88, 0.7);
-    flex-shrink: 0;
-  }
-
-  .ss-patient-shell .ss-header-left .ss-role-switch {
-    display: none !important;
-  }
-
-  .ss-patient-shell .ss-header-left .ss-ask-saarthi-hero-btn {
-    display: none !important;
-  }
-
-  .ss-patient-shell .ss-header-center {
-    display: none !important;
-  }
-
-  .ss-patient-shell .ss-header-right {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    flex-shrink: 0;
-  }
-
-  .ss-patient-shell .ss-header-region-btn {
-    display: none !important;
-  }
-
-  .ss-patient-shell .ss-header-lang-label {
-    display: none !important;
-  }
-
-  .ss-patient-shell .ss-header-lang-btn {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
-    padding: 0 !important;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50% !important;
-    box-shadow: 0 4px 14px rgba(26, 61, 52, 0.08);
-  }
-
-  .ss-patient-shell .ss-notification-bell-btn {
-    width: 38px;
-    height: 38px;
+    flex-wrap: wrap;
   }
 
   .ss-patient-shell .ss-greeting-block h1 {
@@ -266,8 +81,9 @@
   }
 
   .ss-patient-shell .ss-offline-chip,
+  .ss-patient-shell .ss-bell,
   .ss-patient-shell .tab-add {
-    display: none !important;
+    display: none;
   }
 
   .ss-patient-shell .ss-profile span {
@@ -275,27 +91,20 @@
   }
 
   .ss-patient-shell .tab-system {
-    display: none !important;
+    display: flex;
+    padding: 0 10px;
+    gap: 6px;
   }
 
-  .ss-patient-shell .tab-contents-wrapper {
-    flex: 1 1 auto;
-    min-height: 0;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    z-index: 10;
-    overflow: hidden;
+  .ss-patient-shell .tab {
+    min-height: 40px;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 12px;
   }
 
   .ss-patient-shell .dashboard-scroll {
-    flex: 1 1 auto !important;
-    min-height: 0 !important;
-    height: 100% !important;
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch;
-    padding: 6px 4px 110px !important;
+    padding: 10px 12px 108px;
   }
 
   .ss-patient-shell .daily-routine-page,
@@ -304,32 +113,18 @@
     padding: 12px 4px 24px;
   }
 
-  .ss-tab-pane {
-    transition: opacity 0.22s ease, transform 0.22s ease;
-  }
-
-  .ss-tab-pane.is-active {
-    opacity: 1 !important;
-    transform: none !important;
-    display: block !important;
-    height: 100% !important;
-  }
-
   .ss-mobile-dock {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     position: fixed;
-    left: 12px;
-    right: 12px;
+    left: 10px;
+    right: 10px;
     bottom: 10px;
-    z-index: 50;
-    padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
-    background: rgba(18, 48, 40, 0.95);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    z-index: 40;
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+    background: #214d42;
     border-radius: 28px;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    box-shadow: 0 16px 40px rgba(10, 32, 26, 0.45);
+    box-shadow: 0 16px 40px rgba(18, 87, 71, 0.35);
   }
 
   .ss-mobile-dock button {
@@ -346,20 +141,14 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
-    min-height: 54px;
-    border-radius: 18px;
+    min-height: 64px;
+    border-radius: 20px;
     cursor: pointer;
-    transition: background 0.18s ease, transform 0.18s ease, color 0.18s ease;
-  }
-
-  .ss-mobile-dock button:active {
-    transform: scale(0.93);
   }
 
   .ss-mobile-dock button.is-on {
-    background: linear-gradient(135deg, #176b58 0%, #1e876f 100%);
+    background: #176b58;
     color: #fff;
-    box-shadow: 0 4px 14px rgba(23, 107, 88, 0.4);
   }
 
   .ss-mobile-dock .dock-emergency {
@@ -446,9 +235,7 @@
 
   .granth-home .top-grid,
   .granth-home .middle-grid,
-  .granth-home .bottom-grid,
-  .granth-home .hero-grid,
-  .granth-home .bottom-extras-grid {
+  .granth-home .bottom-grid {
     grid-template-columns: 1fr;
     gap: 12px;
     margin-bottom: 12px;
@@ -458,11 +245,6 @@
     padding: 2px 0 8px;
   }
 
-  .granth-home .unified-dashboard-content {
-    padding: 12px 4px;
-    gap: 16px;
-  }
-
   .granth-home .voice-companion-card,
   .granth-home .daily-routine-card,
   .granth-home .brain-activity-card,
@@ -470,17 +252,10 @@
     min-height: 0;
   }
 
-  .granth-home .speak-button,
-  .granth-home .ss-hero-speak-btn {
+  .granth-home .speak-button {
     min-height: 64px;
-    font-size: 18px;
+    font-size: 20px;
     border-radius: 999px;
-  }
-
-  .granth-home .ss-suggestion-chip,
-  .granth-home .ss-calm-tell-btn,
-  .granth-home .ss-calm-view-all {
-    min-height: 44px;
   }
 
   .granth-home .bottom-status {
